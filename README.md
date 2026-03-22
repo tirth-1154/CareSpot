@@ -1,1 +1,3 @@
-# carespot
+# CareSpot
+Major project using Django 
+
