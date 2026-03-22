@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block title %}Total Patients{% endblock %}
+{% block nav_dashboard %}current{% endblock %}
+{% block sidebar_nav_dashboard %}active{% endblock %}
+{% block nav_home %}{% endblock %}
+{% block content %}
+<style>
+  .dashboard-box {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.05);
+    margin-bottom: 28px;
+    overflow: hidden;
+    border: 1px solid #eef2f7;
+  }
+  .box-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid #f0f4f8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .box-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    color: #1a1f36;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .box-header h3 i {
+    color: #0f6db6;
+    font-size: 18px;
+  }
+  .dash-table-container {
+    overflow-x: auto;
+  }
+  .dash-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .dash-table thead th {
+    background: #f8fafd;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 14px 20px;
+    border-bottom: 2px solid #eef2f7;
+    white-space: nowrap;
+  }
+  .dash-table tbody tr {
+    border-bottom: 1px solid #f8fafd;
+    transition: background 0.15s;
+  }
+  .dash-table tbody tr:hover {
+    background: #f5f9ff;
+  }
+  .dash-table tbody td {
+    padding: 13px 20px;
+    color: #374151;
+    vertical-align: middle;
+  }
+  .patient-ring {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-right: 10px;
+    color: #fff;
+    background: linear-gradient(135deg, #0f6db6, #1a90d4);
+  }
+  .patient-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    border: 2px solid #eef2f7;
+  }
+  .tbl-action-btn {
+    background: linear-gradient(135deg, #0f6db6, #1a90d4);
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .tbl-action-btn:hover {
+    background: linear-gradient(135deg, #0d5c9c, #147ab1);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(15, 109, 182, 0.2);
+  }
+  .tbl-action-btn-secondary {
+    background: rgba(15, 109, 182, 0.1);
+    color: #0f6db6;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .tbl-action-btn-secondary:hover {
+    background: #0f6db6;
+    color: #fff;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #94a3b8;
+  }
+  .empty-state i {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 12px;
+    opacity: 0.4;
+  }
+  .empty-state p {
+    font-size: 15px;
+    margin: 0;
+  }
+</style>
+
+<div class="container-fluid p-0">
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert" style="border-radius: 12px;">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="dashboard-box mb-4">
+    <div class="box-header">
+      <h3><i class="fa-solid fa-users"></i> Total Patients</h3>
+    </div>
+    <div class="dash-table-container">
+      <table class="dash-table">
+        <thead>
+          <tr>
+            <th>Patient Info</th>
+            <th>Contact Details</th>
+            <th>Medical Info</th>
+            <th>Engagement</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in patient_data %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                {% if p.client.userID.profilePic %}
+                <img src="{{ p.client.userID.profilePic.url }}" alt="{{ p.client.name }}" class="patient-avatar" />
+                {% else %}
+                <div class="patient-ring">{{ p.client.name|first|upper }}</div>
+                {% endif %}
+                <div>
+                  <strong>{{ p.client.name }}</strong>
+                  <div style="font-size: 11px; color: #64748b;">DOB: {{ p.client.dob|date:"M d, Y" }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="font-size: 12.5px;"><i class="fa-solid fa-envelope text-muted me-1"></i> {{ p.client.userID.email }}</div>
+              <div style="font-size: 12.5px;"><i class="fa-solid fa-phone text-muted me-1"></i> {{ p.client.userID.mobileNumber }}</div>
+              {% if p.client.address %}
+              <div style="font-size: 11px; color: #64748b; margin-top: 4px;"><i class="fa-solid fa-location-dot me-1"></i>{{ p.client.address|truncatechars:30 }}</div>
+              {% endif %}
+            </td>
+            <td>
+              <div style="font-size: 12.5px;"><strong>Gender:</strong> {{ p.client.gender }}</div>
+              <div style="font-size: 12.5px;"><strong>Blood:</strong> <span class="badge" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">{{ p.client.bloodGroup }}</span></div>
+              {% if p.client.description %}
+              <div style="font-size: 11px; color: #64748b; margin-top: 4px; max-width: 200px; white-space: normal;">{{ p.client.description|truncatechars:40 }}</div>
+              {% endif %}
+            </td>
+            <td>
+              <div style="font-size: 12.5px;"><strong>Visits:</strong> {{ p.total_appointments }}</div>
+              {% if p.latest_appointment %}
+              <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Last: {{ p.latest_appointment|date:"M d, Y" }}</div>
+              {% endif %}
+              {% if p.case_studies_count > 0 %}
+              <div style="font-size: 11px; margin-top: 4px;">
+                <span class="badge" style="background: #e6f9ee; color: #15803d;">{{ p.case_studies_count }} Case Studies</span>
+              </div>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              {% if p.case_studies_count > 0 %}
+              <a href="{% url 'doctorCaseStudy' p.client.clientID %}" class="tbl-action-btn-secondary">
+                <i class="fa-solid fa-plus"></i> Add Another
+              </a>
+              {% else %}
+              <a href="{% url 'doctorCaseStudy' p.client.clientID %}" class="tbl-action-btn">
+                <i class="fa-solid fa-file-medical"></i> Case Study
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <i class="fa-solid fa-users-slash"></i>
+                <p>No patients found.</p>
+                <small class="text-muted">Patients who book appointments with you will appear here.</small>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

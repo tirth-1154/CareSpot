@@ -1,0 +1,99 @@
+{% extends 'customadmin/admin_base.html' %}
+
+{% block page_title %}Patient Reviews{% endblock %}
+{% block page_subtitle %}Monitor and manage feedback. Total: {{ total_count }}{% endblock %}
+
+{% block header_actions %}
+<span class="badge badge-admin violet p-2 px-3 fs-6">
+    <i class="fa-solid fa-star-half-stroke me-1"></i> {{ total_count }} Reviews
+</span>
+{% endblock %}
+
+{% block content %}
+
+<!-- Filter Bar -->
+<form method="GET" class="filter-bar animate-in">
+    <div class="search-input">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" name="q" placeholder="Search in reviews, doctor or patient..." value="{{ query }}">
+    </div>
+    
+    <select name="rating" class="filter-select">
+        <option value="">All Ratings</option>
+        <option value="5" {% if rating_filter == '5' %}selected{% endif %}>5 Stars</option>
+        <option value="4" {% if rating_filter == '4' %}selected{% endif %}>4 Stars</option>
+        <option value="3" {% if rating_filter == '3' %}selected{% endif %}>3 Stars</option>
+        <option value="2" {% if rating_filter == '2' %}selected{% endif %}>2 Stars</option>
+        <option value="1" {% if rating_filter == '1' %}selected{% endif %}>1 Star</option>
+    </select>
+    
+    <button type="submit" class="filter-btn">Filter Reviews</button>
+    {% if query or rating_filter %}
+        <a href="{% url 'customadmin:admin_reviews' %}" class="filter-reset">Clear</a>
+    {% endif %}
+</form>
+
+<!-- Reviews List (Grid/Cards) -->
+<div class="row animate-in" style="margin-left: -10px; margin-right: -10px;">
+    {% for review in reviews %}
+    <div class="col-12 col-md-6" style="padding: 10px;">
+        <div class="admin-card h-100">
+            <div class="admin-card-header" style="padding: 16px; background: transparent; border-bottom: 1px solid var(--admin-border);">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <div class="star-rating fs-5">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= review.rating %}
+                                <i class="fa-solid fa-star"></i>
+                            {% else %}
+                                <i class="fa-regular fa-star empty"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="action-btn delete" onclick="showDeleteModal('{% url 'customadmin:admin_review_delete' review.reviewID %}', 'review by {{ review.clientID.name }}')" title="Delete Review">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="admin-card-body" style="padding: 16px;">
+                <p style="font-size: 0.95rem; color: var(--admin-text); margin-bottom: 20px; line-height: 1.5;">
+                    "{{ review.comment }}"
+                </p>
+                
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 16px; border-top: 1px dashed var(--admin-border);">
+                    <div class="user-cell">
+                        <img src="{{ review.clientID.userID.profilePic.url|default:'https://ui-avatars.com/api/?name=U&background=64748b&color=fff' }}" alt="" style="width: 34px; height: 34px; border-radius: 50%;">
+                        <div class="user-cell-info">
+                            <div class="name" style="font-size: 0.8rem;">{{ review.clientID.name }}</div>
+                            <div class="email" style="font-size: 0.7rem;">Patient</div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: right;">
+                        <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-bottom: 4px;">Reviewed Doctor:</span>
+                        <div class="user-cell justify-content-end" style="gap: 8px;">
+                            <div class="user-cell-info" style="text-align: right;">
+                                <div class="name" style="font-size: 0.8rem;">{{ review.doctorID.displayName }}</div>
+                            </div>
+                            <img src="{{ review.doctorID.userID.profilePic.url|default:'https://ui-avatars.com/api/?name=Dr&background=0ea5e9&color=fff' }}" alt="" style="width: 24px; height: 24px; border-radius: 6px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12" style="padding: 10px;">
+        <div class="admin-card">
+            <div class="admin-card-body">
+                <div class="empty-state">
+                    <i class="fa-solid fa-comments"></i>
+                    <h4>No reviews found</h4>
+                    <p>Try adjusting your search or filters.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

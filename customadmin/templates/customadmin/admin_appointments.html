@@ -1,0 +1,116 @@
+{% extends 'customadmin/admin_base.html' %}
+
+{% block page_title %}Appointments{% endblock %}
+{% block page_subtitle %}Track and manage all bookings. Total: {{ total_count }}{% endblock %}
+
+{% block header_actions %}
+<span class="badge badge-admin warning p-2 px-3 fs-6">
+    <i class="fa-solid fa-calendar-check me-1"></i> {{ total_count }} Appointments
+</span>
+{% endblock %}
+
+{% block content %}
+
+<!-- Filter Bar -->
+<form method="GET" class="filter-bar animate-in">
+    <div class="search-input">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" name="q" placeholder="Search doctor or patient..." value="{{ query }}">
+    </div>
+    
+    <select name="status" class="filter-select">
+        <option value="">All Statuses</option>
+        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="accepted" {% if status_filter == 'accepted' %}selected{% endif %}>Accepted</option>
+        <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+    </select>
+
+    <div class="d-flex align-items-center gap-2">
+        <input type="date" name="date_from" value="{{ date_from }}" class="filter-select" style="min-width: 130px;">
+        <span class="text-muted" style="font-size: 0.8rem;">to</span>
+        <input type="date" name="date_to" value="{{ date_to }}" class="filter-select" style="min-width: 130px;">
+    </div>
+    
+    <button type="submit" class="filter-btn">Filter Appointments</button>
+    {% if query or status_filter or date_from or date_to %}
+        <a href="{% url 'customadmin:admin_appointments' %}" class="filter-reset">Clear</a>
+    {% endif %}
+</form>
+
+<!-- Appointments Table -->
+<div class="admin-card animate-in">
+    <div class="admin-card-body p-0">
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th>Booked On</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                    <tr>
+                        <td style="font-size: 0.8rem; color: var(--admin-text-muted);">#APT-{{ appt.appointmentID }}</td>
+                        <td>
+                            <div class="user-cell">
+                                <img src="{{ appt.clientID.userID.profilePic.url|default:'https://ui-avatars.com/api/?name=User&background=64748b&color=fff' }}" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                                <div class="user-cell-info">
+                                    <div class="name" style="font-size: 0.8rem;">{{ appt.clientID.name }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="user-cell">
+                                <img src="{{ appt.doctorID.userID.profilePic.url|default:'https://ui-avatars.com/api/?name=Dr&background=0ea5e9&color=fff' }}" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                                <div class="user-cell-info">
+                                    <div class="name" style="font-size: 0.8rem;">{{ appt.doctorID.displayName }}</div>
+                                    <div class="email" style="font-size: 0.7rem;">{{ appt.doctorID.subcategoryID.subcategoryName }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 500;"><i class="fa-regular fa-calendar text-primary me-1"></i> {{ appt.appointmentDate|date:"M d, Y" }}</div>
+                            <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">
+                                <i class="fa-regular fa-clock me-1"></i> {{ appt.appointmentTime|time:"h:i A" }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if appt.isAccepted %}
+                                <span class="badge-admin success"><i class="fa-solid fa-check me-1"></i> Accepted</span>
+                            {% elif appt.isRejected %}
+                                <span class="badge-admin danger"><i class="fa-solid fa-xmark me-1"></i> Rejected</span>
+                            {% else %}
+                                <span class="badge-admin warning"><i class="fa-regular fa-clock me-1"></i> Pending</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-size: 0.8rem; color: var(--admin-text-muted);">{{ appt.createdDT|date:"M d, Y" }}</td>
+                        <td class="text-center">
+                            <button type="button" class="action-btn delete" onclick="showDeleteModal('{% url 'customadmin:admin_appointment_delete' appt.appointmentID %}', 'appointment #APT-{{ appt.appointmentID }}')" title="Delete Appointment">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-calendar-xmark"></i>
+                                <h4>No appointments found</h4>
+                                <p>Try adjusting your search or filters.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

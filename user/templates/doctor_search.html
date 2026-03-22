@@ -1,0 +1,423 @@
+{% extends 'base.html' %} {% block title %}Search Doctors{% endblock %}
+ {% block content %}
+<style>
+  :root {
+    /* =========================================================
+       🎨 COLOR CUSTOMIZATION (Change these hex codes to your liking)
+       ========================================================= */
+    --primary: #2a41e8;           /* Main Brand Color */
+    --primary-hover: #16269b;     /* Main Brand Hover Color */
+    
+    /* Backgrounds & Surfaces */
+    --bg-body: #f7f9fc;           /* Main page background */
+    --bg-card: #ffffff;           /* Card background */
+    
+    /* Text Colors */
+    --text-main: #2b2b2b;         /* Primary heading text */
+    --text-muted: #6b7280;        /* Secondary paragraph text */
+    --text-light: #9ca3af;        /* Very light text (dates, metadata) */
+    
+    /* Borders & Shadows */
+    --border-color: #edf2f7;      /* Subtle border color */
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.04);
+    --shadow-hover: 0 20px 40px rgba(42, 65, 232, 0.1);
+    
+    /* Border Radiuses */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 50px;
+  }
+
+  /* Title bar overrides */
+  #titlebar {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    margin-bottom: 40px;
+    padding: 50px 0;
+  }
+  #titlebar h2 {
+    font-weight: 800;
+    color: var(--text-main);
+  }
+
+  /* ----------------------
+     Sidebar Filters
+     ---------------------- */
+  .search-sidebar {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    box-shadow: var(--shadow-soft);
+    position: sticky;
+    top: 20px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
+  }
+  .filter-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 25px;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 15px;
+    position: relative;
+  }
+  .filter-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--primary);
+  }
+
+  .filter-group {
+    margin-bottom: 25px;
+  }
+  .filter-group label {
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    display: block;
+    font-size: 14px;
+  }
+
+  /* Inputs */
+  .search-input-sidebar, .filter-select {
+    width: 100%;
+    background: #f8fafc !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 14px 20px !important;
+    font-size: 14px;
+    color: var(--text-main);
+    transition: all 0.3s ease !important;
+    font-weight: 500;
+    height: auto !important;
+  }
+  .search-input-sidebar:focus, .filter-select:focus {
+    background: #ffffff !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(42, 65, 232, 0.1) !important;
+    outline: none;
+  }
+
+  /* Clear Button */
+  .btn-clear-all {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+    background: #f1f5f9;
+    color: var(--text-muted);
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .btn-clear-all:hover {
+    background: #e2e8f0;
+    color: var(--text-main);
+    transform: translateY(-2px);
+  }
+
+  /* ----------------------
+     Doctor Grid & Cards
+     ---------------------- */
+  .freelancer-box {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-color);
+    padding: 30px 20px;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  .freelancer-box:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(42, 65, 232, 0.2);
+  }
+  
+  .freelancer-avatar {
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+  }
+  .freelancer-avatar img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ffffff;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+  }
+  .freelancer-box:hover .freelancer-avatar img {
+    transform: scale(1.05);
+  }
+  
+  /* Status Dot (Optional UI Touch) */
+  .status-dot {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border: 3px solid #fff;
+    border-radius: 50%;
+  }
+
+  .freelancer-name h4 {
+    margin-bottom: 8px;
+    font-weight: 800;
+    font-size: 18px;
+  }
+  .freelancer-name h4 a {
+    color: var(--text-main);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  .freelancer-box:hover .freelancer-name h4 a {
+    color: var(--primary);
+  }
+
+  .freelancer-name span {
+    background: rgba(42, 65, 232, 0.08);
+    color: var(--primary);
+    padding: 6px 16px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  .freelancer-footer {
+    margin-top: auto;
+    padding-top: 25px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .btn-view-profile {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .btn-view-profile:hover {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(42, 65, 232, 0.3);
+  }
+
+  /* Empty State */
+  .premium-empty-state {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px dashed #d1d5db;
+    padding: 80px 30px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    width: 100%;
+  }
+  .premium-empty-state-icon {
+    font-size: 60px;
+    color: #e5e7eb;
+    margin-bottom: 20px;
+  }
+  .premium-empty-state h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 10px;
+  }
+</style>
+
+<!-- Titlebar -->
+<div id="titlebar">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Find Your Doctor</h2>
+        <span>Discover top-rated specialists</span>
+        
+        <!-- Breadcrumbs -->
+        <nav id="breadcrumbs" class="dark">
+          <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li>Search Doctors</li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container margin-bottom-60">
+  <div class="row">
+    
+    <!-- LEFT SIDEBAR FILTER -->
+    <div class="col-xl-3 col-lg-4">
+      <div class="search-sidebar">
+        <h3 class="filter-title">Filters</h3>
+
+        <form method="POST" action="{% url 'doctorSearch' %}" id="search-filter-form">{% csrf_token %}
+          
+          <!-- Search Name -->
+          <div class="filter-group">
+            <label>Doctor Name</label>
+            <input
+              type="text"
+              name="q"
+              class="search-input-sidebar"
+              placeholder="Search by name"
+              value="{{ query }}"
+            />
+          </div>
+
+          <!-- City -->
+          <div class="filter-group">
+            <label>City</label>
+            <select name="city" class="filter-select">
+              <option value="">All Cities</option>
+              {% for c in cities %}
+              <option value="{{ c.cityID }}" {% if selected_city == c.cityID|stringformat:"s" %}selected{% endif %}>{{ c.cityName }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Specialization -->
+          <div class="filter-group">
+            <label>Specialization</label>
+            <select name="subcategory" class="filter-select">
+              <option value="">All Specialties</option>
+              {% for s in subcategories %}
+              <option value="{{ s.subcategoryID }}" {% if selected_cat == s.subcategoryID|stringformat:"s" %}selected{% endif %}>
+                {{ s.subcategoryName }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Rating -->
+          <div class="filter-group">
+            <label>Patient Rating</label>
+            <select name="rating" class="filter-select">
+              <option value="">Any Rating</option>
+              <option value="5" {% if selected_rating == "5" %}selected{% endif %}>5 Stars (Exceptional)</option>
+              <option value="4" {% if selected_rating == "4" %}selected{% endif %}>4 Stars & Above</option>
+              <option value="3" {% if selected_rating == "3" %}selected{% endif %}>3 Stars & Above</option>
+            </select>
+          </div>
+
+          <a href="{% url 'doctorSearch' %}" class="btn-clear-all margin-top-10">Clear All Filters</a> 
+        </form>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE DOCTOR PROFILES -->
+    <div class="col-xl-9 col-lg-8">
+      <div class="row" id="doctor-list-container">
+        {% if doctors %}
+          {% for doc in doctors %}
+          <div class="col-xl-4 col-md-6 margin-bottom-30">
+            <div class="freelancer-box">
+              <div class="freelancer-avatar">
+                {% if doc.userID.profilePic %}
+                <img src="{{ doc.userID.profilePic.url }}" />
+                {% else %}
+                <img src="/static/images/user-avatar-placeholder.png" onerror="this.src='/static/images/avatar.png';" />
+                {% endif %}
+                <div class="status-dot"></div>
+              </div>
+
+              <div class="freelancer-name">
+                <h4>
+                  <a href="{% url 'viewDoctorProfile' doc.doctorID %}">
+                    {{ doc.displayName }}
+                  </a>
+                </h4>
+                <span>{{ doc.subcategoryID.subcategoryName }}</span>
+              </div>
+
+              <div class="freelancer-footer">
+                <a
+                  href="{% url 'viewDoctorProfile' doc.doctorID %}"
+                  class="btn-view-profile"
+                >
+                  View Profile
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <!-- Empty State -->
+          <div class="premium-empty-state">
+            <i class="icon-feather-search premium-empty-state-icon"></i>
+            <h3>No Doctors Found</h3>
+            <p class="text-muted">We couldn't find any doctors matching your current filters. Try adjusting your search criteria.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  const form = document.getElementById("search-filter-form");
+  const inputs = document.querySelectorAll(".filter-select, input[name='q']");
+  const resultBox = document.getElementById("doctor-list-container");
+
+  function loadDoctors(){
+      let params = new URLSearchParams(new FormData(form));
+
+      fetch(form.action + "?" + params,{
+          headers: {"X-Requested-With":"XMLHttpRequest"}
+      })
+      .then(res => res.text())
+      .then(html => {
+          let doc = new DOMParser().parseFromString(html,"text/html");
+          resultBox.innerHTML = doc.getElementById("doctor-list-container").innerHTML;
+      });
+  }
+
+  /* run when typing */
+  let timer;
+  document.querySelector("input[name='q']").addEventListener("keyup",()=>{
+      clearTimeout(timer);
+      timer=setTimeout(loadDoctors,500);
+  });
+
+  /* run when dropdown changes */
+  inputs.forEach(i=>{
+      i.addEventListener("change",loadDoctors);
+  });
+
+  /* stop normal form submit */
+  form.addEventListener("submit",e=>{
+      e.preventDefault();
+      loadDoctors();
+  });
+</script>
+{% endblock %}

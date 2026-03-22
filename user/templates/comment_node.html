@@ -1,0 +1,45 @@
+{% for comment in comments %}
+<li class="comment-node">
+	<div class="comment-wrapper">
+		<!-- Avatar -->
+		{% if comment.userID.profilePic %}
+		<img src="{{comment.userID.profilePic.url}}" alt="" class="comment-avatar">
+		{% else %}
+		<img src="https://ui-avatars.com/api/?name={{comment.userID.userName}}&background=random" alt=""
+			class="comment-avatar">
+		{% endif %}
+
+		<!-- Content -->
+		<div class="comment-content">
+			<div class="comment-header">
+				<div>
+					<h5 class="comment-author">{{comment.userID.userName}}</h5>
+					<div class="comment-date">{{comment.createdDT|date:"F j, Y, g:i a"}}</div>
+				</div>
+				<a href="#add-comment" class="comment-reply-btn"
+					onclick="document.getElementById('parent_id').value='{{comment.commentsID}}'; document.getElementById('comment-text').focus(); document.getElementById('replying-to').style.display='block'; document.getElementById('reply-user').innerText='{{comment.userID.userName}}';"><i
+						class="fa-solid fa-reply me-1"></i> Reply</a>
+			</div>
+
+			<div class="comment-body">
+				{{comment.comment}}
+			</div>
+
+			{% if comment.replies.all %}
+			{% if comment.replies.all|length >= 2 %}
+			<button class="toggle-replies-btn" onclick="toggleReplies('replies-{{comment.commentsID}}', this)">
+				<i class="fa-solid fa-chevron-down me-1"></i> View {{ comment.replies.all|length }} replies
+			</button>
+			<ul class="replies-list" id="replies-{{comment.commentsID}}" style="display: none;">
+				{% include "comment_node.html" with comments=comment.replies.all %}
+			</ul>
+			{% else %}
+			<ul class="replies-list" id="replies-{{comment.commentsID}}">
+				{% include "comment_node.html" with comments=comment.replies.all %}
+			</ul>
+			{% endif %}
+			{% endif %}
+		</div>
+	</div>
+</li>
+{% endfor %}

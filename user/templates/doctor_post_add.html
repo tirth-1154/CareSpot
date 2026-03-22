@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% block nav_dashboard %}{% endblock %}
+{% block sidebar_nav_profile %}active{% endblock %}
+{% block nav_home %}{% endblock %}
+{% block title %}Add Blog{% endblock %}
+
+{% block css %}
+<style>
+    /* Dashboard Layout Tweaks */
+    .dashboard-headline {
+        margin-bottom: 30px;
+        padding: 0 15px;
+    }
+
+    .dashboard-headline h3 {
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+    }
+
+    .subtitle {
+        color: #6c757d;
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 0;
+    }
+
+    /* Box container for the form */
+    .dashboard-box {
+        background: var(--card-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+    .dashboard-box .headline {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eef2f5;
+        background-color: #fff;
+    }
+
+    .dashboard-box .headline h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+    }
+
+    .dashboard-box .headline h3 i {
+        color: var(--primary-color);
+        margin-right: 12px;
+        font-size: 20px;
+    }
+
+    /* Form Styling Improvements */
+    .form-container {
+        padding: 30px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #e0e6ed;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-size: 15px;
+        transition: all 0.2s ease;
+        background-color: #f8fafc;
+        color: var(--text-color);
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-color);
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgba(15, 109, 182, 0.1);
+        outline: none;
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    /* File Upload Styling */
+    .file-upload-wrapper {
+        position: relative;
+        text-align: center;
+        border: 2px dashed #e0e6ed;
+        border-radius: 12px;
+        padding: 40px 20px;
+        background-color: #f8fafc;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .file-upload-wrapper:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(15, 109, 182, 0.02);
+    }
+
+    .file-upload-icon {
+        font-size: 36px;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+    }
+
+    .file-upload-text {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 5px;
+    }
+
+    .file-upload-subtext {
+        font-size: 13px;
+        color: #8c98a4;
+    }
+
+    .uploadButton-input {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 10;
+    }
+
+    /* Submit Button Details */
+    .btn-submit {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: #fff;
+        font-weight: 600;
+        padding: 14px 28px;
+        border-radius: 8px;
+        border: none;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(15, 109, 182, 0.2);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(15, 109, 182, 0.3);
+        color: #fff;
+    }
+
+    .btn-submit i {
+        margin-right: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid p-0">
+    <!-- Dashboard Headline -->
+    <div class="dashboard-headline">
+        <h3>Publish a New Blog Post</h3>
+        <p class="subtitle mt-2">Share medical insights, news, and updates with patients.</p>
+    </div>
+
+    <!-- Row -->
+    <div class="row">
+        <!-- Dashboard Box -->
+        <div class="col-xl-9 mx-auto mb-4">
+            <div class="dashboard-box">
+                <!-- Headline -->
+                <div class="headline">
+                    <h3><i class="fa-solid fa-pen-nib"></i> Post Details</h3>
+                </div>
+
+                <div class="content form-container">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-4">
+
+                            <!-- Image Upload -->
+                            <div class="col-12">
+                                <label class="form-label">Blog Thumbnail Image</label>
+                                <div class="file-upload-wrapper">
+                                    <input class="uploadButton-input" type="file" name="profile" id="upload"
+                                        accept="image/*" required onchange="updateFileName(this)" />
+                                    <div class="file-upload-icon">
+                                        <i class="fa-regular fa-image"></i>
+                                    </div>
+                                    <div class="file-upload-text" id="file-name-display">Click or drag a cover image
+                                        here</div>
+                                    <div class="file-upload-subtext">JPEG, PNG, or GIF up to 5MB</div>
+                                </div>
+                            </div>
+
+                            <!-- Title -->
+                            <div class="col-12">
+                                <label class="form-label">Blog Title</label>
+                                <input type="text" class="form-control" name="title"
+                                    placeholder="E.g., 5 Signs You Should See a Specialist" required>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label class="form-label">Post Content / Description</label>
+                                <textarea class="form-control" name="description"
+                                    placeholder="Write your full medical article or post content here..."
+                                    required></textarea>
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="col-12 mt-5 text-end">
+                                <input type="submit" name="btnAddBlog" class="btn-submit">
+
+
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    // JS snippet to show the selected file name in the custom upload box
+    function updateFileName(input) {
+        var display = document.getElementById('file-name-display');
+        var icon = document.querySelector('.file-upload-icon i');
+        if (input.files && input.files[0]) {
+            display.textContent = "Selected: " + input.files[0].name;
+            display.style.color = "var(--primary-color)";
+            icon.className = "fa-solid fa-file-circle-check";
+            icon.style.color = "var(--primary-color)";
+        } else {
+            display.textContent = "Click or drag a cover image here";
+            display.style.color = "var(--text-color)";
+            icon.className = "fa-regular fa-image";
+            icon.style.color = "var(--secondary-color)";
+        }
+    }
+</script>
+{% endblock %}

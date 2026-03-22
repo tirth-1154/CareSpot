@@ -1,0 +1,528 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root, [data-theme="dark"] {
+    --primary-color: #0F6DB6; /* CareSpot Primary */
+    --secondary-color: #23B6B3; /* CareSpot Secondary */
+    --bg-color: #F4FAFB; /* CareSpot Background */
+    --text-color: #1E2A38;
+    --sidebar-width: 260px;
+    --header-height: 70px;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --transition: all 0.3s ease;
+
+    /* Override Django Dark Theme Variables to force light mode colors */
+    --body-fg: #2C3E50 !important;
+    --body-bg: #F4F9FB !important;
+    --body-quiet-color: #666 !important;
+    --body-loud-color: #000 !important;
+    --header-color: #ffffff !important;
+    --header-bg: var(--primary-color) !important;
+    --header-link-color: #ffffff !important;
+    --breadcrumbs-fg: #c4dce8 !important;
+    --breadcrumbs-link-fg: #ffffff !important;
+    --breadcrumbs-bg: var(--primary-color) !important;
+    --link-fg: #2E86C1 !important;
+    --link-hover-fg: #036 !important;
+    --link-selected-fg: #5b80b2 !important;
+    --hairline-color: #e8e8e8 !important;
+    --border-color: #e1e9f1 !important;
+    
+    --darkened-bg: #ffffff !important; /* Forces tables and panels to be white instead of black */
+    --selected-bg: #f8fafc !important;
+    --selected-row: #f1f5f9 !important;
+    
+    --button-fg: #ffffff !important;
+    --button-bg: var(--primary-color) !important;
+    --button-hover-bg: #0A5FA1 !important;
+    --default-button-bg: var(--secondary-color) !important;
+    --default-button-hover-bg: #3ED1C8 !important;
+    --close-button-bg: #888888 !important;
+    --close-button-hover-bg: #747474 !important;
+    --delete-button-bg: #ba2121 !important;
+    --delete-button-hover-bg: #a41515 !important;
+}
+
+body {
+    font-family: 'Inter', sans-serif !important;
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Header Redesign */
+#header {
+    background: white !important;
+    color: var(--text-color) !important;
+    height: var(--header-height) !important;
+    padding: 0 2rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid #e1e9f1 !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+#branding h1 {
+    color: var(--primary-color) !important;
+    font-weight: 700 !important;
+    font-size: 1.5rem !important;
+    margin: 0 !important;
+}
+
+#user-tools {
+    color: #6c757d !important;
+    font-weight: 500 !important;
+}
+
+#user-tools a {
+    color: var(--primary-color) !important;
+    text-decoration: none !important;
+    transition: var(--transition) !important;
+}
+
+#user-tools a:hover {
+    color: var(--secondary-color) !important;
+}
+
+/* Dashboard Modules */
+.module {
+    margin-bottom: 2rem !important;
+    background: white !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-sm) !important;
+    overflow: hidden !important;
+}
+
+.module caption {
+    background: #f8fafc !important;
+    padding: 1rem 1.5rem !important;
+    font-weight: 700 !important;
+    color: var(--primary-color) !important;
+    text-transform: uppercase !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.05em !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.module tr th, .module tr td {
+    padding: 0.75rem 1.5rem !important;
+    border-bottom: 1px solid var(--hairline-color) !important;
+}
+
+.module tr:last-child th, .module tr:last-child td {
+    border-bottom: none !important;
+}
+
+.module tr:hover {
+    background-color: #f1f5f9 !important;
+}
+
+.module a {
+    color: #4a5568 !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+}
+
+.module a:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Dashboard Cards */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.75rem 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    border-left: 5px solid var(--primary-color);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    background: #eef2f7;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: var(--primary-color);
+    font-size: 1.8rem;
+}
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #718096;
+    font-weight: 600;
+}
+
+.stat-info .value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+/* Table Enhancements */
+#changelist {
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-sm) !important;
+    overflow: hidden !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+#changelist table {
+    width: 100% !important;
+}
+
+#changelist thead th {
+    background: #f8fafc !important;
+    color: #718096 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    padding: 1rem !important;
+    font-size: 0.75rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+#changelist tbody tr {
+    transition: var(--transition) !important;
+}
+
+#changelist tbody tr:hover {
+    background-color: #f1f5f9 !important;
+}
+
+#changelist tbody td, #changelist tbody th {
+    padding: 1rem !important;
+    border-bottom: 1px solid var(--hairline-color) !important;
+}
+
+/* Status Badges */
+.badge {
+    padding: 0.35rem 0.75rem !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    display: inline-block;
+}
+
+.badge-success { background-color: #def7ec !important; color: #03543f !important; }
+.badge-danger { background-color: #fde8e8 !important; color: #9b1c1c !important; }
+.badge-warning { background-color: #fef3c7 !important; color: #92400e !important; }
+.badge-info { background-color: #e1effe !important; color: #1e429f !important; }
+
+/* Form Styles */
+.module h2 {
+    background: var(--primary-color) !important;
+    color: white !important;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 1rem !important;
+}
+
+input[type=text], input[type=password], input[type=email], input[type=url], input[type=number], input[type=tel], textarea, select {
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 0.75rem !important;
+    transition: var(--transition) !important;
+    outline: none !important;
+    background: white !important;
+    color: var(--text-color) !important;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(46, 134, 193, 0.2) !important;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: var(--primary-color) !important;
+    color: white !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1.25rem !important;
+    font-weight: 600 !important;
+    border: none !important;
+    transition: var(--transition) !important;
+    cursor: pointer !important;
+}
+
+.button:hover, input[type=submit]:hover {
+    background: #246b9a !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.button.default, input[type=submit].default {
+    background: var(--secondary-color) !important;
+}
+
+.button.default:hover, input[type=submit].default:hover {
+    background: #239a8e !important;
+}
+
+/* Sidebar Recent Actions */
+#content-related {
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-sm) !important;
+    padding: 1.5rem !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+#content-related .module h2 {
+    background: transparent !important;
+    color: var(--primary-color) !important;
+    border-bottom: 2px solid var(--primary-color) !important;
+    padding: 0 0 0.5rem 0 !important;
+    margin-bottom: 1rem !important;
+    border-radius: 0 !important;
+    font-size: 1.1rem !important;
+}
+
+#content-related h3 {
+    color: #4a5568 !important;
+}
+
+/* Content layout overrides for proper spacing */
+#content {
+    padding: 2rem !important;
+}
+
+#content-main {
+    flex: 1 1 auto;
+}
+
+/* ========= Form Layout Enhancements ========= */
+
+/* Wrap each change/add form in a clean card */
+.change-form #content-main > .module {
+    border-radius: 16px !important;
+    box-shadow: var(--shadow-md) !important;
+    border: 1px solid var(--border-color) !important;
+    overflow: hidden !important;
+}
+
+.change-form #content-main > .module h2 {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) !important;
+    font-size: 1.1rem !important;
+    letter-spacing: 0.04em !important;
+}
+
+/* Align labels and fields nicely */
+.aligned .form-row {
+    display: grid !important;
+    grid-template-columns: 260px minmax(0, 1fr) !important;
+    column-gap: 1.75rem !important;
+    align-items: center !important;
+    padding: 0.9rem 1.5rem !important;
+    border-bottom: 1px dashed var(--hairline-color) !important;
+    background-color: #ffffff !important;
+}
+
+.aligned .form-row:nth-child(odd) {
+    background-color: #f9fbff !important;
+}
+
+.aligned .form-row:last-child {
+    border-bottom: none !important;
+}
+
+.aligned .form-row label {
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    color: #4a5568 !important;
+}
+
+.aligned .form-row .field-box {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+}
+
+/* Make textareas and inputs use full available width */
+.aligned .form-row textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 140px !important;
+}
+
+.aligned .form-row input[type="text"],
+.aligned .form-row input[type="email"],
+.aligned .form-row input[type="number"],
+.aligned .form-row input[type="url"],
+.aligned .form-row input[type="tel"],
+.aligned .form-row select {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.aligned .form-row .help,
+.aligned .form-row .helptext {
+    margin-top: 0.35rem !important;
+    font-size: 0.78rem !important;
+    color: #718096 !important;
+}
+
+/* Boolean fields row (checkboxes) */
+.aligned .form-row.checkbox-row,
+.aligned .form-row div.field-booleanfield {
+    grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* Inline related objects (add/edit/view icons next to selects) */
+.related-widget-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+}
+
+.related-widget-wrapper select,
+.related-widget-wrapper input {
+    flex: 1 1 auto !important;
+}
+
+.related-widget-wrapper-link {
+    flex: 0 0 auto !important;
+    background: #e6f3ff !important;
+    border-radius: 50% !important;
+    padding: 0.15rem !important;
+    border: 1px solid var(--border-color) !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.related-widget-wrapper-link img,
+.related-widget-wrapper-link svg {
+    width: 14px !important;
+    height: 14px !important;
+}
+
+.related-widget-wrapper-link:hover {
+    background: #d4e8ff !important;
+}
+
+/* Submit row: make action buttons stick out and align right */
+.submit-row {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 0.75rem !important;
+    padding: 1.25rem 1.75rem !important;
+    background: #f8fafc !important;
+    border-top: 1px solid var(--border-color) !important;
+}
+
+.submit-row input[type=submit],
+.submit-row input[type=button] {
+    min-width: 130px !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Login Page Customization */
+body.login {
+    background: #f0f4f8 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.login #container {
+    width: 450px;
+    margin: 0;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 1px solid #e1e9f1;
+}
+
+body.login #header {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    justify-content: center !important;
+    margin-bottom: 30px !important;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+body.login #branding h1 {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+body.login #branding h1 img {
+    height: 80px !important;
+    margin-bottom: 15px;
+}
+
+body.login #branding h1 span {
+    font-size: 1.8rem !important;
+}
+
+body.login #content {
+    padding: 0 !important;
+}
+
+body.login .form-row {
+    padding: 15px 0 !important;
+    border: none !important;
+}
+
+body.login label {
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+}
+
+body.login input[type=text], body.login input[type=password] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 12px !important;
+}
+
+body.login .submit-row {
+    background: transparent !important;
+    border: none !important;
+    padding: 20px 0 0 0 !important;
+}
+
+body.login .submit-row input {
+    width: 100% !important;
+    padding: 12px !important;
+    font-size: 1rem !important;
+}

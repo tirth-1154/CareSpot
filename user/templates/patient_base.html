@@ -1,0 +1,867 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Basic Page Needs
+================================================== -->
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link href="{% static 'css/carespot-theme.css' %}" rel="stylesheet" />
+    {% block css %}{% endblock %}
+    <!-- Bootstrap 5 CSS for responsive layout and components -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- FontAwesome for standard medical and UI icons -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Google Fonts for modern typography -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS Styling -->
+    <style>
+      :root {
+        --bg-light: #f0f7f9;
+        --primary-color: #076FC5; /* Medical Blue */
+        --secondary-color: #26a69a; /* Medical Teal */
+        --accent-color: #00bfa5;
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --nav-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Smooth Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #f0f7f9 0%, #e8f1f2 100%);
+        color: #2d3748;
+        overflow-x: hidden;
+      }
+
+      /* --- Glassmorphism Navbar --- */
+      .top-navbar {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: var(--nav-shadow);
+        z-index: 1050;
+        transition: all 0.3s ease;
+      }
+
+      .navbar-brand img {
+        transition: transform 0.3s ease;
+      }
+
+      .navbar-brand:hover img {
+        transform: scale(1.05);
+      }
+
+      .navbar-nav .nav-link {
+        font-weight: 500;
+        color: #4a5568 !important;
+        padding: 0.6rem 1.2rem;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .navbar-nav .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: 0px;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--primary-color);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+      }
+
+      .navbar-nav .nav-link:hover {
+        {% comment %} color: var(--primary-color) !important; {% endcomment %}
+         color: #076FC5 !important;
+      }
+
+      .navbar-nav .nav-link:hover::after {
+        width: 60%;
+      }
+
+      .navbar-nav .nav-link i {
+        margin-right: 6px;
+        font-size: 0.95rem;
+        transition: transform 0.3s ease;
+      }
+
+      .navbar-nav .nav-link:hover i {
+        transform: translateY(-2px);
+      }
+
+      .navbar-nav .nav-link.active {
+        color: var(--primary-color) !important;
+        font-weight: 700;
+      }
+
+      .navbar-nav .nav-link.active::after {
+        width: 60%;
+        background: var(--primary-color);
+      }
+
+      .profile-btn {
+        padding: 4px 16px 4px 4px;
+        background: #f7fafc;
+        border-radius: 50px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+      }
+
+      .profile-btn:hover {
+        background: #edf2f7;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .dropdown-menu-custom {
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 8px 0;
+        min-width: 220px;
+      }
+
+      .dropdown-menu-custom .dropdown-item {
+        padding: 10px 20px;
+        font-weight: 500;
+        color: #4a5568;
+        transition: all 0.2s;
+      }
+
+      .dropdown-menu-custom .dropdown-item:hover {
+        background: #f0f7f9;
+        color: var(--primary-color);
+        padding-left: 24px;
+      }
+
+      /* Notification Pulse */
+      .notification-bell {
+        position: relative;
+        animation: none;
+      }
+
+      .notification-bell:hover i {
+        animation: ring 2s ease infinite;
+      }
+
+      @keyframes ring {
+        0% {
+          transform: rotate(0);
+        }
+        1% {
+          transform: rotate(30deg);
+        }
+        3% {
+          transform: rotate(-28deg);
+        }
+        5% {
+          transform: rotate(34deg);
+        }
+        7% {
+          transform: rotate(-32deg);
+        }
+        9% {
+          transform: rotate(30deg);
+        }
+        11% {
+          transform: rotate(-28deg);
+        }
+        13% {
+          transform: rotate(26deg);
+        }
+        15% {
+          transform: rotate(-24deg);
+        }
+        17% {
+          transform: rotate(22deg);
+        }
+        19% {
+          transform: rotate(-20deg);
+        }
+        21% {
+          transform: rotate(18deg);
+        }
+        23% {
+          transform: rotate(-16deg);
+        }
+        25% {
+          transform: rotate(14deg);
+        }
+        27% {
+          transform: rotate(-12deg);
+        }
+        29% {
+          transform: rotate(10deg);
+        }
+        31% {
+          transform: rotate(-8deg);
+        }
+        33% {
+          transform: rotate(6deg);
+        }
+        35% {
+          transform: rotate(-4deg);
+        }
+        37% {
+          transform: rotate(2deg);
+        }
+        39% {
+          transform: rotate(-1deg);
+        }
+        41% {
+          transform: rotate(1deg);
+        }
+        43% {
+          transform: rotate(0);
+        }
+        100% {
+          transform: rotate(0);
+        }
+      }
+
+      /* --- Main Content Fade-in --- */
+      .main-content {
+        padding: 110px 30px 40px;
+        min-height: calc(100vh - 120px);
+        animation: fadeIn 0.8s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive padding for main content wrapper */
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 90px 15px 30px;
+        }
+      }
+
+      /* --- Premium Footer --- */
+      .dashboard-footer {
+        background: #ffffff;
+        padding: 60px 0 30px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .dashboard-footer::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+      }
+
+      .footer-logo img {
+        max-width: 130px;
+        margin-bottom: 20px;
+      }
+
+      .footer-heading {
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+      }
+
+      .footer-link {
+        color: #718096;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-bottom: 12px;
+      }
+
+      .footer-link:hover {
+        color: var(--primary-color);
+        transform: translateX(5px);
+      }
+
+      .social-circle {
+        width: 40px;
+        height: 40px;
+        background: #f7fafc;
+        color: #4a5568;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      }
+
+      .social-circle:hover {
+        background: var(--primary-color);
+        color: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 118, 189, 0.2);
+      }
+
+      /* Responsive Mobile Menu */
+      @media (max-width: 991.98px) {
+        .navbar-collapse {
+          background: #fff;
+          margin-top: 15px;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-footer {
+          padding: 40px 0 20px;
+        }
+        .footer-heading {
+          margin-top: 25px;
+          margin-bottom: 15px;
+        }
+        .footer-logo img {
+          margin-bottom: 15px;
+          max-width: 110px;
+        }
+        .social-circles {
+          margin-bottom: 20px;
+        }
+      }
+      /* ----------------------------------
+           Medical History Highlight (Professional Redesign)
+           ---------------------------------- */
+      .navbar-nav .nav-highlight {
+        background: rgba(0, 118, 189, 0.05) !important;
+        border: 1.5px solid var(--primary-color) !important;
+        {% comment %} color: var(--primary-color) !important; {% endcomment %}
+        color: #076FC5 !important;
+        box-shadow: 0 4px 10px rgba(0, 118, 189, 0.08);
+        font-weight: 700;
+        padding: 10px 22px !important;
+        border-radius: 12px !important;
+        margin-left: 10px !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .navbar-nav .nav-highlight i {
+        {% comment %} color: var(--primary-color) !important; {% endcomment %}
+        color: #076FC5 !important;
+        margin-right: 10px;
+      }
+      .navbar-nav .nav-highlight:hover {
+        transform: translateY(-3px);
+        background: rgba(0, 118, 189, 0.1) !important;
+        box-shadow: 0 8px 15px rgba(0, 118, 189, 0.12);
+        {% comment %} color: var(--primary-color) !important; {% endcomment %}
+        color: #076FC5 !important;
+      }
+      .navbar-nav .nav-highlight::after {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ==========================================
+         1. TOP NAVBAR
+    =========================================== -->
+    {% block header %}
+    <header
+      class="navbar navbar-expand-lg navbar-light top-navbar fixed-top w-100"
+    >
+      <div class="container-fluid px-4 px-lg-5">
+        <!-- Website Logo / Hospital Name -->
+        <a
+          class="navbar-brand d-flex align-items-center"
+          href="{% url 'patientDashboard' %}"
+        >
+          <img
+            src="/media/images/careSpotText.png"
+            alt="CareSpot"
+            height="58"
+            class="me-2"
+          />
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button
+          class="navbar-toggler border-0 shadow-none"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#topNavbarContent"
+          aria-controls="topNavbarContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="topNavbarContent">
+          <!-- Navigation Links (Centered) -->
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'patientDoctorsList' %}"
+                ><i class="fa-solid fa-user-doctor"></i> Search Doctors</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'patientAppointments' %}"
+                ><i class="fa-solid fa-calendar-plus"></i> Book Appointment</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'patientMyAppointments' %}"
+                ><i class="fa-regular fa-calendar-check"></i> My Appointments</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'patientBlogs' %}">
+                <i class="fa-solid fa-blog"></i> Blogs
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link nav-highlight"
+                href="{% url 'patientMedicalHistory' %}"
+                ><i class="fa-solid fa-file-medical"></i> Medical History</a
+              >
+            </li>
+          </ul>
+
+          <ul class="navbar-nav align-items-center gap-3">
+            <!-- Notifications -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'patientMessages' %}"
+                ><i class="fa-regular fa-envelope"></i
+              ></a>
+            </li>
+            <li
+              class="nav-item dropdown notification-dropdown position-relative"
+            >
+              <a
+                class="nav-link fs-5 text-secondary p-0"
+                href="#"
+                id="notificationDropdownToggle"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <div
+                  class="bg-light rounded-circle d-flex align-items-center justify-content-center"
+                  style="width: 40px; height: 40px"
+                >
+                  <i class="fa-solid fa-bell text-primary"></i>
+                </div>
+                <!-- Red dot indicator -->
+                <span
+                  id="notificationDot"
+                  class="position-absolute d-none top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
+                  style="width: 12px; height: 12px; margin-top: 5px"
+                >
+                  <span class="visually-hidden">New alerts</span>
+                </span>
+              </a>
+              <!-- Notifications Dropdown Menu -->
+              <div
+                class="dropdown-menu dropdown-menu-end dropdown-menu-custom mt-2 p-0 shadow-lg border-0"
+                aria-labelledby="notificationDropdownToggle"
+                style="width: 320px; overflow: hidden"
+              >
+                <div
+                  class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center bg-light"
+                >
+                  <h6 class="mb-0 fw-bold" style="font-size: 0.95rem">
+                    Notifications
+                  </h6>
+                  <span
+                    id="notificationCount"
+                    class="badge bg-primary rounded-pill"
+                    >0</span
+                  >
+                </div>
+                <div
+                  id="notificationList"
+                  class="overflow-auto border-bottom"
+                  style="max-height: 300px"
+                >
+                  <!-- Dynamic Notifications Load Here -->
+                </div>
+                <div class="px-3 py-2 text-center bg-light">
+                  <a
+                    href="{% url 'patientMessages' %}"
+                    class="small text-decoration-none fw-semibold"
+                    >View All Notifications</a
+                  >
+                </div>
+              </div>
+            </li>
+            <!-- Patient Profile Dropdown -->
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link d-flex align-items-center border bg-white shadow-sm transition-all"
+                href="#"
+                id="profileDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                style="padding: 6px 20px 6px 6px; border-radius: 50px"
+              >
+                <img
+                  src="{{ request.session.profilePic }}"
+                  class="rounded-circle me-3 object-fit-cover shadow-sm"
+                  width="40"
+                  height="40"
+                  alt="Profile"
+                  style="border: 2px solid var(--primary-color); padding: 2px"
+                />
+                <div class="d-flex flex-column lh-1 text-start me-3">
+                  <span
+                    class="fw-bold text-dark"
+                    style="font-size: 15px; color: #1a202c !important"
+                    >{{ request.session.user_name }}</span
+                  >
+                  <span class="text-muted mt-1" style="font-size: 11px"
+                    >Patient</span
+                  >
+                </div>
+                <i
+                  class="fa-solid fa-chevron-down text-muted m-0"
+                  style="font-size: 12px"
+                ></i>
+              </a>
+              <ul
+                class="dropdown-menu dropdown-menu-end border-0 shadow mt-3"
+                aria-labelledby="profileDropdown"
+                style="border-radius: 12px; min-width: 220px; padding: 10px 0"
+              >
+                <li>
+                  <a
+                    class="dropdown-item py-2 px-3"
+                    href="{% url 'patientProfileUpdate' %}"
+                    ><i class="fa-regular fa-user me-2 text-primary"></i>
+                    Profile Settings</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item py-2 px-3"
+                    href="{% url 'patientMyAppointments' %}"
+                    ><i
+                      class="fa-regular fa-calendar-check me-2 text-primary"
+                    ></i>
+                    My Appointments</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider opacity-25 my-2" /></li>
+                <li>
+                  <a
+                    class="dropdown-item py-2 px-3 text-danger"
+                    href="{% url 'logout' %}"
+                    ><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>
+                    Logout</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    {% endblock %}
+    <!-- ==========================================
+         2. LEFT SIDEBAR
+    =========================================== -->
+    {% block sidebar %}
+    <!-- Sidebar removed in favor of top navigation -->
+    {% endblock %}
+    <!-- ==========================================
+             3. Main content
+        =========================================== -->
+    <main class="main-content">
+      {% block content %} {% endblock %}
+      <!-- ==========================================
+             4. FOOTER
+        =========================================== -->
+      {% block footer %}
+      <footer class="dashboard-footer mt-5">
+        <div class="container">
+          <div class="row gy-5">
+            <div class="col-lg-4 col-md-12">
+              <div class="footer-logo">
+                <img src="/media/images/careSpotText.png" alt="CareSpot" />
+              </div>
+              <p class="small text-muted mb-4">
+                Empowering patients through seamless digital healthcare.
+                Experience the future of medical appointments with CareSpot.
+              </p>
+              <div class="social-circles">
+                <a href="#" class="social-circle"
+                  ><i class="fa-brands fa-facebook-f"></i
+                ></a>
+                <a href="#" class="social-circle"
+                  ><i class="fa-brands fa-twitter"></i
+                ></a>
+                <a href="#" class="social-circle"
+                  ><i class="fa-brands fa-linkedin-in"></i
+                ></a>
+                <a href="#" class="social-circle"
+                  ><i class="fa-brands fa-instagram"></i
+                ></a>
+              </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+              <h6 class="footer-heading">Platform</h6>
+              <ul class="list-unstyled">
+                <li>
+                  <a
+                    href="{% url 'patientDashboard' %}"
+                    class="footer-link small"
+                    >Dashboard</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="{% url 'patientDoctorsList' %}"
+                    class="footer-link small"
+                    >Search Doctors</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="{% url 'patientAppointments' %}"
+                    class="footer-link small"
+                    >Book Appointment</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="{% url 'patientMyAppointments' %}"
+                    class="footer-link small"
+                    >My Records</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+              <h6 class="footer-heading">Informed</h6>
+              <ul class="list-unstyled">
+                <li>
+                  <a href="#" class="footer-link small">Privacy Policy</a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link small">Terms of Service</a>
+                </li>
+                <li><a href="#" class="footer-link small">Medical FAQs</a></li>
+                <li><a href="#" class="footer-link small">Support</a></li>
+              </ul>
+            </div>
+            <div class="col-lg-4 col-md-4">
+              <h6 class="footer-heading">Connect</h6>
+              <p class="small text-muted">
+                <i class="fa-solid fa-location-dot me-2 text-primary"></i> 123
+                Health Ave, Medical City, MC 45678
+              </p>
+              <p class="small text-muted">
+                <i class="fa-solid fa-phone me-2 text-primary"></i> +1 (234)
+                567-890
+              </p>
+              <p class="small text-muted">
+                <i class="fa-solid fa-envelope me-2 text-primary"></i>
+                hello@carespot.health
+              </p>
+            </div>
+          </div>
+          <hr class="my-5 opacity-5" />
+          <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+              <p class="small mb-0">
+                &copy; 2026 CareSpot – Smart Healthcare Platform. All rights
+                reserved.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+      {% endblock %}
+    </main>
+
+    <!-- Bootstrap 5 JS Bundle with Popper for dropdowns and interactive components -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- AJAX Notifications Logic -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const notifDot = document.getElementById("notificationDot");
+        const countBadge = document.getElementById("notificationCount");
+        const notifList = document.getElementById("notificationList");
+        const dropToggle = document.getElementById(
+          "notificationDropdownToggle",
+        );
+
+        function fetchNotifications() {
+          fetch("{% url 'get_unread_notifications' %}")
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === "success") {
+                updateNotificationUI(data.notifications, data.count);
+              }
+            })
+            .catch((error) =>
+              console.error("Error fetching notifications:", error),
+            );
+        }
+
+        function updateNotificationUI(notifications, count) {
+          // Update Dot & Badge
+          if (count > 0) {
+            notifDot.classList.remove("d-none");
+            countBadge.innerText = count;
+          } else {
+            notifDot.classList.add("d-none");
+            countBadge.innerText = "0";
+          }
+
+          // Build HTML list
+          if (notifications.length === 0) {
+            notifList.innerHTML = `<div class="p-4 text-center text-muted small"><i class="fa-regular fa-bell-slash mb-2 fs-4"></i><br>No new notifications</div>`;
+          } else {
+            let htmlStr = "";
+            notifications.forEach((notif) => {
+              htmlStr += `
+                <div class="dropdown-item px-3 py-2 border-bottom text-wrap position-relative notification-item-hover" style="font-size: 0.85rem;" 
+                  data-id="${notif.id}" 
+                  data-sender-id="${notif.sender_id || ''}" 
+                  data-type="${notif.type || 'appointment'}">
+                  <div class="d-flex w-100 justify-content-between align-items-start mb-1">
+                    <strong class="text-primary me-2"><i class="fa-solid fa-bell fa-fw me-1"></i> Alert</strong>
+                    <small class="text-muted" style="font-size: 0.70rem; white-space: nowrap;">${notif.time}</small>
+                  </div>
+                  <p class="mb-0 text-dark pe-3">${notif.message}</p>
+                </div>
+              `;
+            });
+            notifList.innerHTML = htmlStr;
+
+            // Attach mark as read clicks
+            document
+              .querySelectorAll(".notification-item-hover")
+              .forEach((item) => {
+                item.addEventListener("click", function (e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const notifId = this.getAttribute("data-id");
+                  const senderId = this.getAttribute("data-sender-id");
+                  const type = this.getAttribute("data-type");
+                  markAsRead(notifId, this, senderId, type);
+                });
+              });
+          }
+        }
+
+        function markAsRead(notifId, element, senderId, type) {
+          const csrfCookie = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("csrftoken="));
+          const csrfToken = csrfCookie ? csrfCookie.split("=")[1] : "";
+
+          const formData = new FormData();
+          formData.append("notification_id", notifId);
+
+          fetch("{% url 'mark_notifications_read' %}", {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": csrfToken,
+            },
+            body: formData,
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "success") {
+                // Determine redirection based on type
+                if (type === 'message' && senderId && senderId !== '' && senderId !== 'null' && senderId !== 'None') {
+                  // Message notification -> Go to specific chat
+                  window.location.href = "{% url 'patientMessages' %}?partner=" + senderId + "#messages";
+                  return;
+                } else if (type === 'appointment') {
+                  // Appointment notification -> Go to messages page with #messages hash
+                  window.location.href = "{% url 'patientMessages' %}#messages";
+                  return;
+                }
+
+                // Default: fade out and stay on same page
+                element.style.transition = "opacity 0.3s";
+                element.style.opacity = "0";
+                setTimeout(() => {
+                  fetchNotifications(); // Refresh entire list safely
+                }, 300);
+              }
+            });
+        }
+
+        // Fetch on load
+        fetchNotifications();
+
+        // Fetch every 30 seconds
+        setInterval(fetchNotifications, 30000);
+
+        // Optional: click bell to trigger manual fetch
+        dropToggle.addEventListener("show.bs.dropdown", function () {
+          fetchNotifications();
+        });
+      });
+    </script>
+
+    <style>
+      .notification-item-hover {
+        white-space: normal;
+        cursor: pointer;
+      }
+      .notification-item-hover:hover {
+        background-color: #f8f9fa;
+      }
+      .notification-dropdown .dropdown-toggle::after {
+        display: none;
+      }
+    </style>
+
+  </body>
+</html>

@@ -1,0 +1,745 @@
+{% extends 'base.html' %}
+{% block title %}Doctor Dashboard{% endblock %}
+{% block nav_dashboard %}current{% endblock %}
+{% block sidebar_nav_dashboard %}active{% endblock %}
+{% block nav_home %}{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       DOCTOR DASHBOARD — PREMIUM MEDICAL THEME
+    ============================================================ */
+
+    /* ---------- Welcome Card ---------- */
+    .welcome-card {
+        background: linear-gradient(135deg, #0F6DB6 0%, #1590c8 55%, #23B6B3 100%);
+        border-radius: 18px;
+        padding: 32px 36px;
+        color: #fff;
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 35px rgba(15, 109, 182, 0.28);
+    }
+    .welcome-card::before {
+        content: '';
+        position: absolute;
+        top: -50px; right: -50px;
+        width: 200px; height: 200px;
+        background: rgba(255,255,255,0.07);
+        border-radius: 50%;
+    }
+    .welcome-card::after {
+        content: '';
+        position: absolute;
+        bottom: -70px; right: 100px;
+        width: 260px; height: 260px;
+        background: rgba(255,255,255,0.04);
+        border-radius: 50%;
+    }
+    .welcome-card h3 {
+        font-size: 26px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 5px;
+    }
+    .welcome-date {
+        font-size: 14px;
+        opacity: 0.85;
+        margin-bottom: 12px;
+    }
+    .welcome-spec-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: rgba(255,255,255,0.18);
+        backdrop-filter: blur(4px);
+        color: #fff;
+        padding: 7px 18px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    /* ---------- Statistics Cards ---------- */
+    .stat-card {
+        border-radius: 16px;
+        padding: 24px 22px;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        top: -30px; right: -30px;
+        width: 110px; height: 110px;
+        background: rgba(255,255,255,0.09);
+        border-radius: 50%;
+    }
+    .stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 45px rgba(0,0,0,0.18);
+    }
+    .stat-card-blue   { background: linear-gradient(135deg, #0F6DB6, #1a90d4); }
+    .stat-card-teal   { background: linear-gradient(135deg, #23B6B3, #0fa8a5); }
+    .stat-card-purple { background: linear-gradient(135deg, #6f42c1, #9561e2); }
+    .stat-card-green  { background: linear-gradient(135deg, #28a745, #3fca60); }
+
+    .stat-label {
+        font-size: 12px;
+        font-weight: 600;
+        opacity: 0.88;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 8px;
+    }
+    .stat-value {
+        font-size: 40px;
+        font-weight: 800;
+        line-height: 1;
+        color: #fff;
+    }
+    .stat-icon-circle {
+        width: 60px; height: 60px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+        z-index: 1;
+    }
+
+    /* ---------- Dashboard Box ---------- */
+    .dashboard-box {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 4px 22px rgba(0,0,0,0.05);
+        margin-bottom: 28px;
+        overflow: hidden;
+        border: 1px solid #eef2f7;
+    }
+    .box-header {
+        padding: 18px 24px;
+        border-bottom: 1px solid #f0f4f8;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .box-header h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0;
+        color: #1a1f36;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .box-header h3 i { color: #0F6DB6; font-size: 18px; }
+
+    .view-all-link {
+        font-size: 12px;
+        font-weight: 600;
+        color: #0F6DB6;
+        text-decoration: none;
+        background: rgba(15,109,182,0.07);
+        padding: 5px 12px;
+        border-radius: 20px;
+        transition: background 0.15s;
+    }
+    .view-all-link:hover { background: rgba(15,109,182,0.14); color: #0F6DB6; }
+
+    /* ---------- Premium Tables ---------- */
+    .dash-table-container {
+        overflow-x: auto;
+        max-height: 320px;
+        overflow-y: auto;
+    }
+    .dash-table-container::-webkit-scrollbar { width: 4px; height: 4px; }
+    .dash-table-container::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 4px; }
+
+    .dash-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+    }
+    .dash-table thead th {
+        background: #f8fafd;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        padding: 14px 20px;
+        border-bottom: 2px solid #eef2f7;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        white-space: nowrap;
+    }
+    .dash-table tbody tr {
+        border-bottom: 1px solid #f8fafd;
+        transition: background 0.15s;
+    }
+    .dash-table tbody tr:last-child { border-bottom: none; }
+    .dash-table tbody tr:hover { background: #f5f9ff; }
+    .dash-table tbody td {
+        padding: 13px 20px;
+        color: #374151;
+        vertical-align: middle;
+    }
+
+    /* ---------- Patient Avatar Ring ---------- */
+    .patient-ring {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-right: 10px;
+        color: #fff;
+    }
+    .ring-blue   { background: linear-gradient(135deg, #0F6DB6, #1a90d4); }
+    .ring-purple { background: linear-gradient(135deg, #6f42c1, #9561e2); }
+    .ring-teal   { background: linear-gradient(135deg, #23B6B3, #0fa8a5); }
+
+    /* ---------- Status Badges ---------- */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        border-radius: 30px;
+        font-size: 11.5px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .badge-pending  { background: #fff8e1; color: #b45309; }
+    .badge-accepted { background: #e6f9ee; color: #15803d; }
+    .badge-rejected { background: #fef2f2; color: #dc2626; }
+    .badge-upcoming { background: #eff6ff; color: #1d4ed8; }
+
+    /* ---------- Table Action Buttons ---------- */
+    .tbl-action {
+        width: 30px; height: 30px;
+        border-radius: 7px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.18s;
+        text-decoration: none;
+        margin-right: 3px;
+    }
+    .tbl-action-primary { background: rgba(15,109,182,0.1); color: #0F6DB6; }
+    .tbl-action-primary:hover { background: #0F6DB6; color: #fff; }
+    .tbl-action-success { background: rgba(40,167,69,0.1);  color: #28a745; }
+    .tbl-action-success:hover { background: #28a745; color: #fff; }
+    .tbl-action-danger  { background: rgba(220,53,69,0.1);  color: #dc3545; }
+    .tbl-action-danger:hover  { background: #dc3545; color: #fff; }
+
+    /* ---------- Notifications ---------- */
+    .notif-scroll {
+        max-height: 330px;
+        overflow-y: auto;
+    }
+    .notif-scroll::-webkit-scrollbar { width: 4px; }
+    .notif-scroll::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 4px; }
+
+    .notif-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px 20px;
+        border-bottom: 1px solid #f8fafd;
+        transition: background 0.15s;
+        cursor: default;
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item:hover { background: #f5f9ff; }
+
+    .notif-icon {
+        width: 42px; height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+    .notif-icon-blue   { background: rgba(15,109,182,0.1);  color: #0F6DB6; }
+    .notif-icon-green  { background: rgba(40,167,69,0.1);   color: #28a745; }
+    .notif-icon-orange { background: rgba(255,152,0,0.1);   color: #f57c00; }
+    .notif-icon-red    { background: rgba(220,53,69,0.1);   color: #dc3545; }
+
+    .notif-msg {
+        font-size: 13.5px;
+        color: #374151;
+        line-height: 1.5;
+    }
+    .notif-time {
+        font-size: 11.5px;
+        color: #94a3b8;
+        margin-top: 4px;
+    }
+
+    /* ---------- Recent Patients List ---------- */
+    .patient-item {
+        display: flex;
+        align-items: center;
+        padding: 14px 20px;
+        border-bottom: 1px solid #f8fafd;
+        transition: background 0.15s;
+    }
+    .patient-item:last-child { border-bottom: none; }
+    .patient-item:hover { background: #f5f9ff; }
+    .patient-item-info { flex: 1; }
+    .patient-item-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1f36;
+        margin-bottom: 3px;
+    }
+    .patient-item-meta {
+        font-size: 12px;
+        color: #64748b;
+        display: flex;
+        gap: 14px;
+    }
+
+    /* ---------- Quick Actions ---------- */
+    .quick-action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px;
+        border-radius: 12px;
+        color: #fff;
+        text-decoration: none;
+        transition: transform 0.22s, box-shadow 0.22s;
+        margin-bottom: 14px;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.13);
+        position: relative;
+        overflow: hidden;
+    }
+    .quick-action-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.18); color: #fff; }
+    .quick-action-btn:hover .qa-arrow { transform: translateX(5px); }
+    .quick-action-btn:last-child { margin-bottom: 0; }
+    .qa-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    .qa-icon {
+        width: 36px; height: 36px;
+        border-radius: 9px;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+    }
+    .qa-arrow { transition: transform 0.22s ease; }
+
+    /* ---------- Weekly Schedule ---------- */
+    .schedule-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        padding: 20px 20px 24px;
+    }
+    .day-slot {
+        border-radius: 12px;
+        padding: 16px 6px;
+        text-align: center;
+        border: 1.5px solid #e9ecef;
+        background: #fff;
+        transition: all 0.2s;
+    }
+    .day-slot:hover { border-color: #0F6DB6; box-shadow: 0 4px 14px rgba(15,109,182,0.12); }
+    .day-slot.day-today {
+        background: linear-gradient(135deg, #0F6DB6, #1a90d4);
+        border-color: transparent;
+        box-shadow: 0 6px 20px rgba(15,109,182,0.30);
+        color: #fff;
+    }
+    .day-slot.day-off { background: #f8f9fa; border-color: #dee2e6; }
+    .day-slot.day-today .slot-day-name, .day-slot.day-today .slot-time { color: #fff; }
+    .day-slot.day-off .slot-day-name { color: #adb5bd; }
+    .day-slot.day-off .slot-time { color: #ced4da; }
+
+    .slot-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-bottom: 7px;
+    }
+    .slot-dot-active { background: #28a745; }
+    .slot-dot-off    { background: #adb5bd; }
+    .slot-dot-today  { background: rgba(255,255,255,0.85); }
+
+    .slot-day-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .slot-time {
+        font-size: 11px;
+        color: #64748b;
+        display: block;
+        line-height: 1.5;
+    }
+
+    /* ---------- Empty States ---------- */
+    .empty-state {
+        text-align: center;
+        padding: 36px 20px;
+        color: #94a3b8;
+    }
+    .empty-state i { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.4; }
+    .empty-state p { font-size: 14px; margin: 0; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1200px) {
+        .schedule-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .welcome-card { padding: 22px 22px; }
+        .welcome-card h3 { font-size: 20px; }
+        .stat-value { font-size: 30px; }
+        .schedule-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 480px) {
+        .schedule-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+
+<div class="container-fluid p-0">
+
+    <!-- ① Welcome Section -->
+    <div class="welcome-card">
+        <div>
+            <h3 class="text-white"><i class="fa-solid fa-hand-wave me-2" style="opacity:0.8;"></i>Welcome, {{ doctor.displayName }}</h3>
+            <p class="welcome-date mb-2">
+                <i class="fa-regular fa-calendar me-1"></i>{% now "l, F j, Y" %}
+            </p>
+            <p class="mb-3" style="opacity:0.8; font-size:14px;">Manage your appointments and patients from this dashboard.</p>
+            <span class="welcome-spec-badge">
+                <i class="fa-solid fa-stethoscope"></i>
+                {{ doctor.subcategoryID.subcategoryName|default:"General Practitioner" }}
+            </span>
+        </div>
+    </div>
+
+    <!-- ② Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+            <div class="stat-card stat-card-blue">
+                <div>
+                    <p class="stat-label mb-2">Today's Appointments</p>
+                    <div class="stat-value">{{ todays_appointments_count }}</div>
+                </div>
+                <div class="stat-icon-circle"><i class="fa-solid fa-clock"></i></div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <a href="{% url 'doctorTotalPatients' %}" style="text-decoration:none; display:block; height:100%;">
+                <div class="stat-card stat-card-teal">
+                    <div>
+                        <p class="stat-label mb-2">Total Patients</p>
+                        <div class="stat-value">{{ total_patients_count }}</div>
+                    </div>
+                    <div class="stat-icon-circle"><i class="fa-solid fa-users"></i></div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-xl-3">
+            <div class="stat-card stat-card-purple">
+                <div>
+                    <p class="stat-label mb-2">Upcoming</p>
+                    <div class="stat-value">{{ upcoming_appointments_count }}</div>
+                </div>
+                <div class="stat-icon-circle"><i class="fa-regular fa-calendar-check"></i></div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card stat-card-green">
+                <div>
+                    <p class="stat-label mb-2">Completed</p>
+                    <div class="stat-value">{{ completed_appointments_count }}</div>
+                </div>
+                <div class="stat-icon-circle"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ③ Today's Appointments + Notifications -->
+    <div class="row">
+        <!-- Today's Appointments Table -->
+        <div class="col-xl-8 mb-4">
+            <div class="dashboard-box">
+                <div class="box-header">
+                    <h3><i class="fa-solid fa-clipboard-list"></i> Today's Appointments</h3>
+                    <a href="{% url 'doctorAppointments' %}" class="view-all-link">View All</a>
+                </div>
+                <div class="dash-table-container">
+                    <table class="dash-table">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Time</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in today_appointments %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="patient-ring ring-blue">{{ appointment.clientID.name|first|upper }}</div>
+                                        <strong>{{ appointment.clientID.name }}</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <i class="fa-regular fa-clock me-1 text-muted"></i>{{ appointment.appointmentTime }}
+                                </td>
+                                <td>{{ appointment.clientID.description|truncatechars:28|default:"—" }}</td>
+                                <td>
+                                    {% if appointment.isAccepted %}
+                                    <span class="status-badge badge-accepted"><i class="fa-solid fa-circle-check"></i>Accepted</span>
+                                    {% elif appointment.isRejected %}
+                                    <span class="status-badge badge-rejected"><i class="fa-solid fa-circle-xmark"></i>Rejected</span>
+                                    {% else %}
+                                    <span class="status-badge badge-pending"><i class="fa-regular fa-clock"></i>Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'doctorAppointments' %}" class="tbl-action tbl-action-primary" title="View"><i class="fa-regular fa-eye"></i></a>
+                                    {% if not appointment.isAccepted and not appointment.isRejected %}
+                                    <a href="{% url 'acceptAppointment' appointment.appointmentID %}" class="tbl-action tbl-action-success" title="Accept"><i class="fa-solid fa-check"></i></a>
+                                    <a href="{% url 'rejectAppointment' appointment.appointmentID %}" class="tbl-action tbl-action-danger" title="Reject"><i class="fa-solid fa-xmark"></i></a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i class="fa-regular fa-calendar-xmark"></i>
+                                        <p>No appointments scheduled for today.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Panel -->
+        <div class="col-xl-4 mb-4">
+            <div class="dashboard-box h-100 d-flex flex-column">
+                <div class="box-header">
+                    <h3><i class="fa-regular fa-bell"></i> Notifications</h3>
+                    {% if notifications %}
+                    <span class="badge rounded-pill" style="background:rgba(15,109,182,0.1);color:#0F6DB6;font-size:11px;">{{ notifications|length }} new</span>
+                    {% endif %}
+                </div>
+                <div class="notif-scroll flex-grow-1">
+                    {% for notification in notifications %}
+                    <div class="notif-item">
+                        <div class="notif-icon notif-icon-blue">
+                            <i class="fa-regular fa-bell"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="notif-msg">{{ notification.message }}</div>
+                            <div class="notif-time">
+                                <i class="fa-regular fa-clock me-1"></i>{{ notification.createdDT|timesince }} ago
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state py-5">
+                        <i class="fa-regular fa-bell-slash"></i>
+                        <p>No new notifications.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ④ Upcoming Appointments + Recent Patients -->
+    <div class="row">
+        <!-- Upcoming Appointments -->
+        <div class="col-xl-6 mb-4">
+            <div class="dashboard-box">
+                <div class="box-header">
+                    <h3><i class="fa-regular fa-calendar-days"></i> Upcoming Appointments</h3>
+                    <a href="{% url 'doctorAppointments' %}" class="view-all-link">View All</a>
+                </div>
+                <div class="dash-table-container">
+                    <table class="dash-table">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Date &amp; Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            {% for appointment in upcoming_appointments %}
+                                {% if appointment.isAccepted == True %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="patient-ring ring-purple">{{ appointment.clientID.name|first|upper }}</div>
+                                                <strong>{{ appointment.clientID.name }}</strong>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span style="font-size:13px;">
+                                                <i class="fa-regular fa-calendar me-1 text-muted"></i>{{ appointment.appointmentDate|date:"M d, Y" }}
+                                                <span class="text-muted ms-1">{{ appointment.appointmentTime }}</span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge badge-upcoming">Accepted</span>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="3">
+                                    <div class="empty-state">
+                                        <i class="fa-regular fa-calendar-check"></i>
+                                        <p>No upcoming appointments found.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Patients -->
+        <div class="col-xl-6 mb-4">
+            <div class="dashboard-box h-100">
+                <div class="box-header">
+                    <h3><i class="fa-solid fa-hospital-user"></i> Recent Patients</h3>
+                </div>
+                {% for patient in recent_patients %}
+                <div class="patient-item">
+                    <div class="patient-ring ring-teal">{{ patient.name|first|upper }}</div>
+                    <div class="patient-item-info">
+                        <div class="patient-item-name">{{ patient.name }}</div>
+                        <div class="patient-item-meta">
+                            <span><i class="fa-solid fa-venus-mars me-1"></i>{{ patient.gender|default:"N/A" }}</span>
+                            <span><i class="fa-solid fa-droplet me-1"></i>{{ patient.bloodGroup|default:"N/A" }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'doctorAppointments' %}" class="view-all-link">View</a>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <p>No recent patients found.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑤ Quick Actions + Weekly Schedule -->
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-xl-4 mb-4">
+            <div class="dashboard-box h-100">
+                <div class="box-header">
+                    <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
+                </div>
+                <div class="p-4">
+                    <a href="{% url 'doctorAppointments' %}" class="quick-action-btn" style="background:linear-gradient(135deg,#0F6DB6,#1a90d4);">
+                        <div class="qa-label">
+                            <div class="qa-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                            All Appointments
+                        </div>
+                        <i class="fa-solid fa-arrow-right qa-arrow"></i>
+                    </a>
+                    <a href="{% url 'doctorManageBlogs' %}" class="quick-action-btn" style="background:linear-gradient(135deg,#23B6B3,#0fa8a5);">
+                        <div class="qa-label">
+                            <div class="qa-icon"><i class="fa-solid fa-newspaper"></i></div>
+                            Manage Blogs
+                        </div>
+                        <i class="fa-solid fa-arrow-right qa-arrow"></i>
+                    </a>
+                    <a href="{% url 'doctorUpdateProfile' %}" class="quick-action-btn" style="background:linear-gradient(135deg,#6f42c1,#9561e2);">
+                        <div class="qa-label">
+                            <div class="qa-icon"><i class="fa-solid fa-user-doctor"></i></div>
+                            Update Profile
+                        </div>
+                        <i class="fa-solid fa-arrow-right qa-arrow"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Schedule -->
+        <div class="col-xl-8 mb-4">
+            <div class="dashboard-box h-100">
+                <div class="box-header">
+                    <h3><i class="fa-solid fa-business-time"></i> Weekly Schedule</h3>
+                </div>
+                {% if weekly_schedule %}
+                <div class="schedule-grid">
+                    {% for slot in weekly_schedule %}
+                    <div class="day-slot {% if not slot.is_available %}day-off{% elif slot.day_of_week == today_weekday %}day-today{% endif %}">
+                        <span class="slot-dot {% if not slot.is_available %}slot-dot-off{% elif slot.day_of_week == today_weekday %}slot-dot-today{% else %}slot-dot-active{% endif %}"></span>
+                        <span class="slot-day-name">{{ slot.get_day_of_week_display|slice:":3" }}</span>
+                        {% if slot.is_available %}
+                        <span class="slot-time">{{ slot.start_time|time:"g A" }}<br>to {{ slot.end_time|time:"g A" }}</span>
+                        {% else %}
+                        <span class="slot-time">Day Off</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state py-5">
+                    <i class="fa-regular fa-calendar fa-2x" style="opacity:0.3;"></i>
+                    <p class="mb-1">No schedule configured yet.</p>
+                    <small class="text-muted d-block" style="font-size:12px;">Add your availability from the admin panel or settings.</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

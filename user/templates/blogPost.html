@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+{% block content %}
+<style>
+	/* Premium UI Improvements */
+	.blog-post.single-post {
+		box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+		border-radius: 20px;
+		overflow: hidden;
+		background: #fff;
+		border: none;
+		margin-bottom: 40px;
+	}
+	.blog-post-thumbnail img {
+		width: 100%;
+		border-radius: 20px 20px 0 0;
+	}
+	.blog-post-content {
+		padding: 40px;
+	}
+	.blog-item-tag {
+		border-radius: 20px !important;
+		padding: 6px 16px !important;
+		font-weight: 600 !important;
+		box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+	}
+	.sidebar-widget {
+		background: #fff;
+		border-radius: 20px;
+		padding: 30px;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+		border: 1px solid #f2f2f2;
+		margin-bottom: 30px;
+	}
+	.widget-content {
+		border-radius: 12px;
+		transition: background-color 0.3s, transform 0.2s;
+	}
+	.widget-content:hover {
+		background-color: #f8f9fa !important;
+		transform: translateX(5px);
+	}
+	.blog-compact-item {
+		border-radius: 20px !important;
+		box-shadow: 0 8px 25px rgba(0,0,0,0.06) !important;
+		overflow: hidden;
+		transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+		border: none !important;
+	}
+	.blog-compact-item:hover {
+		transform: translateY(-5px) !important;
+		box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+	}
+	.comments ul { list-style: none; padding: 0; margin: 0; }
+	.comment-node {
+		background: transparent;
+		border-radius: 0;
+		padding: 0;
+		margin-bottom: 40px;
+		box-shadow: none;
+		border: none;
+        position: relative;
+	}
+    ul.replies > li.comment-node {
+        margin-bottom: 30px;
+    }
+    ul.replies > li.comment-node:last-child {
+        margin-bottom: 0;
+    }
+    .comment-wrap {
+        display: flex;
+        gap: 25px;
+    }
+    .avatar-col {
+        width: 70px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+	.comments .avatar { 
+		width: 70px; 
+		height: 70px; 
+		border-radius: 50%; 
+		overflow: hidden; 
+        flex-shrink: 0;
+        background: #f4f4f4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+	}
+	.comments .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-line {
+        flex-grow: 1;
+        width: 1px;
+        background: #e0e0e0;
+        margin-top: 5px;
+    }
+	.content-col { 
+        flex-grow: 1; 
+        padding-top: 5px; 
+        min-width: 0;
+    }
+	.comments .comment-by { 
+		font-size: 16px; 
+		margin-bottom: 12px;
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		font-weight: 600;
+		color: #333;
+	}
+	.comments .comment-by .date { color: #888; font-weight: 400; margin-top: 5px; font-size: 14px; }
+	.comments .comment-by .reply {
+		position: absolute;
+		right: 0;
+		top: 0;
+		background: #f4f4f4;
+		color: #777;
+		padding: 6px 16px;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: 500;
+		text-decoration: none;
+        transition: background 0.2s;
+	}
+	.comments .comment-by .reply:hover { background: #e9e9e9; color: #555; }
+	.comments .comment-by .reply i { display: none; }
+	.comments .comment-text p { color: #666; font-size: 15px; line-height: 1.6; margin: 0; }
+
+    /* Nested */
+    ul.replies {
+        margin-top: 30px;
+        padding-left: 35px; /* Offset to align with center of parent avatar */
+    }
+    /* Horizontal connection */
+    ul.replies > li.comment-node::before {
+        content: '';
+        position: absolute;
+        left: -35px; /* Adjust left to match the parent's line */
+        top: 35px; /* center of child avatar */
+        width: 35px;
+        height: 1px;
+        background: #e0e0e0;
+    }
+    /* Vertical line extending down from the parent avatar */
+    .avatar-col {
+        position: relative;
+    }
+    .avatar-col .avatar-line {
+        position: absolute;
+        top: 70px;
+        bottom: -30px; /* extends down past the current node wrap */
+        left: 35px; /* center of 70px avatar */
+        width: 1px;
+        background: #e0e0e0;
+        margin: 0;
+        z-index: -1;
+    }
+    
+    /* We don't need avatar-line div height stretching since absolute handles it, 
+       but we want it to reach down across all children in the UI. 
+       Actually, a common trick is that `.comment-node` has a left green vertical border 
+       or its `.replies` has a left border.
+    */
+    ul.replies {
+        border-left: 1px solid #e0e0e0;
+        margin-left: 35px;
+        padding-left: 45px;
+    }
+    ul.replies > li.comment-node::before {
+        left: -45px;
+        width: 45px;
+    }
+    
+    .avatar-line {
+        display: none; /* replaced by ul.replies border-left approach */
+    }
+	.button, input[type="submit"] {
+		border-radius: 14px !important;
+		font-weight: 600 !important;
+		box-shadow: 0 6px 15px rgba(42, 65, 232, 0.2) !important;
+		transition: transform 0.2s, box-shadow 0.2s !important;
+		padding: 12px 30px !important;
+	}
+	.button:hover, input[type="submit"]:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 20px rgba(42, 65, 232, 0.3) !important;
+	}
+	textarea, input[type="text"] {
+		border-radius: 14px !important;
+		background-color: #f8f9fa !important;
+		border: 1.5px solid #e9ecef !important;
+		transition: all 0.3s ease !important;
+	}
+	textarea:focus, input[type="text"]:focus {
+		background-color: #fff !important;
+		border-color: #2a41e8 !important;
+		box-shadow: 0 0 0 4px rgba(42, 65, 232, 0.1) !important;
+	}
+	#titlebar {
+		border-bottom-left-radius: 30px;
+		border-bottom-right-radius: 30px;
+		box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+		margin-bottom: 40px;
+	}
+</style>
+<div id="titlebar" class="gradient">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<h2>Blog</h2>
+				<span>Blog Post Page</span>
+
+				<!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="#">Home</a></li>
+						<li><a href="#">Blog</a></li>
+						<li>Blog Post</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class="row">
+		
+		<!-- Inner Content -->
+		<div class="col-xl-8 col-lg-8">
+			<!-- Blog Post -->
+			<div class="blog-post single-post">
+				{% for blog in blogs %}
+				<!-- Blog Post Thumbnail -->
+				<div class="blog-post-thumbnail">
+					<div class="blog-post-thumbnail-inner">
+						<span class="blog-item-tag">{{blog.title}}</span>
+						<img src="{{blog.thumbnail.url}}" alt="">
+					</div>
+				</div>
+				<!-- Blog Post Content -->
+				<div class="blog-post-content">
+					<h3 class="margin-bottom-10">{{blog.title}}</h3>
+
+					<div class="blog-post-info-list margin-bottom-20">
+						<a href="#" class="blog-post-info">{{blog.createDT}}</a>
+						<a href="#"  class="blog-post-info">5 Comments</a>
+					</div>
+					<p>{{blog.description}}</p>
+					<!-- Share Buttons -->
+					<div class="share-buttons margin-top-25">
+						<div class="share-buttons-trigger"><i class="icon-feather-share-2"></i></div>
+						<div class="share-buttons-content">
+							<span>Interesting? <strong>Share It!</strong></span>
+							<ul class="share-buttons-icons">
+								<li><a href="#" data-button-color="#3b5998" title="Share on Facebook" data-tippy-placement="top"><i class="icon-brand-facebook-f"></i></a></li>
+								<li><a href="#" data-button-color="#1da1f2" title="Share on Twitter" data-tippy-placement="top"><i class="icon-brand-twitter"></i></a></li>
+								<li><a href="#" data-button-color="#dd4b39" title="Share on Google Plus" data-tippy-placement="top"><i class="icon-brand-google-plus-g"></i></a></li>
+								<li><a href="#" data-button-color="#0077b5" title="Share on LinkedIn" data-tippy-placement="top"><i class="icon-brand-linkedin-in"></i></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+			<!-- Blog Post Content / End -->
+			
+			<!-- Blog Nav -->
+			<ul id="posts-nav" class="margin-top-0 margin-bottom-40">
+				<li class="next-post">
+					<a href="#">
+						<span>Next Post</span>
+						<strong>16 Ridiculously Easy Ways to Find & Keep a Remote Job</strong>
+					</a>
+				</li>
+				<li class="prev-post">
+					<a href="#">
+						<span>Previous Post</span>
+						<strong>11 Tips to Help You Get New Clients Through Cold Calling</strong>
+					</a>
+				</li>
+			</ul>
+			
+			<!-- Related Posts -->
+			<div class="row">
+				
+				<!-- Headline -->
+				<div class="col-xl-12">
+					<h3 class="margin-top-40 margin-bottom-35">Related Posts</h3>
+				</div>
+
+				<!-- Blog Post Item -->
+				<div class="col-xl-6">
+					<a href="pages-blog-post.html" class="blog-compact-item-container">
+						<div class="blog-compact-item">
+							<img src="static/images/blog-02a.jpg" alt="">
+							<span class="blog-item-tag">Recruiting</span>
+							<div class="blog-compact-item-content">
+								<ul class="blog-post-tags">
+									<li>29 June 2019</li>
+								</ul>
+								<h3>How to "Woo" a Recruiter and Land Your Dream Job</h3>
+								<p>Appropriately empower dynamic leadership skills after business portals. Globally myocardinate interactive.</p>
+							</div>
+						</div>
+					</a>
+				</div>
+				<!-- Blog post Item / End -->
+
+				<!-- Blog Post Item -->
+				<div class="col-xl-6">
+					<a href="pages-blog-post.html" class="blog-compact-item-container">
+						<div class="blog-compact-item">
+							<img src="images/blog-03a.jpg" alt="">
+							<span class="blog-item-tag">Marketing</span>
+							<div class="blog-compact-item-content">
+								<ul class="blog-post-tags">
+									<li>10 June 2019</li>
+								</ul>
+								<h3>11 Tips to Help You Get New Clients Through Cold Calling</h3>
+								<p>Compellingly embrace empowered e-business after user friendly intellectual capital. Interactively front-end.</p>
+							</div>
+						</div>
+					</a>
+				</div>
+				<!-- Blog post Item / End -->
+			</div>
+			<!-- Related Posts / End -->
+				
+
+			<!-- Comments -->
+			<div class="row">
+				<div class="col-xl-12">
+					<section class="comments">
+						<h3 class="margin-top-45 margin-bottom-40">Comments <span class="comments-amount">({{comments.count}})</span></h3>
+
+						<ul>
+							{% include "comment_node.html" %}
+						 </ul>
+
+					</section>
+				</div>
+			</div>
+			<!-- Comments / End -->
+
+
+			<!-- Leava a Comment -->
+			<div class="row">
+				<div class="col-xl-12">
+					
+					<h3 class="margin-top-35 margin-bottom-30">Add Comment</h3>
+					
+					<div id="replying-to" style="display:none; margin-bottom: 20px; background: #f8f9fa; padding: 12px 18px; border-radius: 8px; font-size: 14px; border-left: 4px solid #2a41e8; color: #555;">
+						Replying to <strong id="reply-user" style="color: #333;"></strong> 
+						<a href="javascript:void(0)" onclick="document.getElementById('parent_id').value=''; document.getElementById('replying-to').style.display='none';" style="float: right; color: #dc3545; font-weight: 600; font-size: 13px;">Cancel Reply</a>
+					</div>
+
+					<!-- Form -->
+					<form method="post" id="add-comment">{% csrf_token %}
+						<input type="hidden" name="parent_id" id="parent_id" value="">
+						<textarea name="comment" id="comment-text" cols="30" rows="5" placeholder="Comment" required></textarea>
+						<input type="submit" class="button button-sliding-icon ripple-effect margin-bottom-40" form="add-comment" name="btnComment" value="Submit Comment">
+					</form>
+					
+					<!-- Button -->
+					
+				</div>
+			</div>
+			<!-- Leava a Comment / End -->
+
+		</div>
+		<!-- Inner Content / End -->
+
+
+		<div class="col-xl-4 col-lg-4 content-left-offset">
+			<div class="sidebar-container">
+				
+				<!-- Location -->
+				<div class="sidebar-widget margin-bottom-40">
+					<div class="input-with-icon">
+						<input id="autocomplete-input" type="text" placeholder="Search">
+						<i class="icon-material-outline-search"></i>
+					</div>
+				</div>
+
+				<!-- Widget -->
+				<div class="sidebar-widget">
+
+					<h3>Trending Posts</h3>
+					<ul class="widget-tabs">
+
+						<!-- Post #1 -->
+						<li>
+							<a href="#" class="widget-content active">
+								<img src="images/blog-02a.jpg" alt="">
+								<div class="widget-text">
+									<h5>How to "Woo" a Recruiter and Land Your Dream Job</h5>
+									<span>29 June 2019</span>
+								</div>
+							</a>
+						</li>
+
+						<!-- Post #2 -->
+						<li>
+							<a href="#" class="widget-content">
+								<img src="images/blog-07a.jpg" alt="">
+								<div class="widget-text">
+									<h5>What It Really Takes to Make $100k Before You Turn 30</h5>
+									<span>3 June 2019</span>
+								</div>
+							</a>
+						</li>
+						<!-- Post #3 -->
+						<li>
+							<a href="#" class="widget-content">
+								<img src="images/blog-04a.jpg" alt="">
+								<div class="widget-text">
+									<h5>5 Myths That Prevent Job Seekers from Overcoming Failure</h5>
+									<span>5 June 2019</span>
+								</div>
+							</a>
+						</li>
+					</ul>
+
+				</div>
+				<!-- Widget / End-->
+
+
+				<!-- Widget -->
+				{% comment %} <div class="sidebar-widget">
+					<h3>Social Profiles</h3>
+					<div class="freelancer-socials margin-top-25">
+						<ul>
+							<li><a href="#" title="Dribbble" data-tippy-placement="top"><i class="icon-brand-dribbble"></i></a></li>
+							<li><a href="#" title="Twitter" data-tippy-placement="top"><i class="icon-brand-twitter"></i></a></li>
+							<li><a href="#" title="Behance" data-tippy-placement="top"><i class="icon-brand-behance"></i></a></li>
+							<li><a href="#" title="GitHub" data-tippy-placement="top"><i class="icon-brand-github"></i></a></li>
+						</ul>
+					</div>
+				</div> {% endcomment %}
+
+				<!-- Widget -->
+				{% comment %} <div class="sidebar-widget">
+					<h3>Tags</h3>
+					<div class="task-tags">
+						<a href="#"><span>employer</span></a>
+						<a href="#"><span>recruiting</span></a>
+						<a href="#"><span>work</span></a>
+						<a href="#"><span>salary</span></a>
+						<a href="#"><span>tips</span></a>
+						<a href="#"><span>income</span></a>
+						<a href="#"><span>application</span></a>
+					</div>
+				</div> {% endcomment %}
+
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<script>
+function toggleReplies(repliesId, linkElement) {
+	var repliesElement = document.getElementById(repliesId);
+	if (repliesElement.style.display === "none") {
+		repliesElement.style.display = "block";
+		linkElement.innerHTML = '<i class="icon-feather-chevron-up" style="margin-right: 5px;"></i>Hide replies';
+	} else {
+		repliesElement.style.display = "none";
+		// Re-fetch count dynamically or reset to original text
+		var count = repliesElement.children.length;
+		linkElement.innerHTML = '<i class="icon-feather-chevron-down" style="margin-right: 5px;"></i>View ' + count + ' replies';
+	}
+}
+</script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'customadmin/admin_base.html' %}
+
+{% block page_title %}Locations Setup{% endblock %}
+{% block page_subtitle %}Manage operable states and cities. Total: {{ states|length }} States, {{ total_cities }} Cities{% endblock %}
+
+{% block header_actions %}
+<span class="badge badge-admin success p-2 px-3 fs-6">
+    <i class="fa-solid fa-map-location-dot me-1"></i> Location management
+</span>
+{% endblock %}
+
+{% block content %}
+
+<div class="two-col-grid animate-in">
+    <!-- States List -->
+    <div class="admin-card border-success">
+        <div class="admin-card-header bg-light">
+            <h3 class="mb-0 text-success"><i class="fa-solid fa-map me-2"></i> States / Regions</h3>
+            <span class="badge bg-success">{{ states|length }}</span>
+        </div>
+        <div class="admin-card-body p-0">
+            <!-- Add Form -->
+            <div style="padding: 16px; border-bottom: 1px solid var(--admin-border); background: #fafbfc;">
+                <form method="POST" action="{% url 'customadmin:admin_state_add' %}" class="add-form-inline">
+                    {% csrf_token %}
+                    <input type="text" name="state_name" placeholder="New state name..." required style="flex: 1;">
+                    <button type="submit" class="add-btn" style="background: var(--admin-accent);">
+                        <i class="fa-solid fa-plus me-1"></i> Add
+                    </button>
+                </form>
+            </div>
+            
+            <!-- List -->
+            <div style="max-height: 480px; overflow-y: auto;">
+                <ul class="item-list px-3">
+                    {% for state in states %}
+                    <li>
+                        <div class="item-name fw-semibold">
+                            <i class="fa-solid fa-location-dot text-success me-2"></i> {{ state.stateName }}
+                        </div>
+                        <button type="button" class="action-btn delete btn-sm" onclick="showDeleteModal('{% url 'customadmin:admin_state_delete' state.stateID %}', 'state {{ state.stateName|escapejs }}')" title="Delete">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </li>
+                    {% empty %}
+                    <li class="justify-content-center text-muted py-4">
+                        <i class="fa-solid fa-map-location me-2"></i> No states found.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cities List -->
+    <div class="admin-card border-primary">
+        <div class="admin-card-header bg-light">
+            <h3 class="mb-0 text-primary"><i class="fa-solid fa-city me-2"></i> Cities</h3>
+            <span class="badge bg-primary">{{ total_cities }}</span>
+        </div>
+        <div class="admin-card-body p-0">
+            <!-- Add Form -->
+            <div style="padding: 16px; border-bottom: 1px solid var(--admin-border); background: #fafbfc;">
+                <form method="POST" action="{% url 'customadmin:admin_city_add' %}" class="add-form-inline">
+                    {% csrf_token %}
+                    <input type="text" name="city_name" placeholder="New city name..." required style="flex: 1;">
+                    <select name="state_id" required>
+                        <option value="">Select Parent State...</option>
+                        {% for state in states %}
+                            <option value="{{ state.stateID }}">{{ state.stateName }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="add-btn">
+                        <i class="fa-solid fa-plus me-1"></i> Add
+                    </button>
+                </form>
+            </div>
+            
+            <!-- List -->
+            <div style="max-height: 480px; overflow-y: auto;">
+                <ul class="item-list px-3">
+                    {% for city in cities %}
+                    <li>
+                        <div>
+                            <div class="item-name fw-semibold">
+                                <i class="fa-solid fa-building text-primary me-2"></i> {{ city.cityName }}
+                            </div>
+                            <div class="item-parent text-muted ps-4 my-1">
+                                <i class="fa-solid fa-location-arrow me-1"></i> {{ city.stateID.stateName }}
+                            </div>
+                        </div>
+                        <button type="button" class="action-btn delete btn-sm" onclick="showDeleteModal('{% url 'customadmin:admin_city_delete' city.cityID %}', 'city {{ city.cityName|escapejs }}')" title="Delete">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </li>
+                    {% empty %}
+                    <li class="justify-content-center text-muted py-4">
+                        <i class="fa-solid fa-tree-city me-2"></i> No cities found.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

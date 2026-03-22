@@ -1,0 +1,661 @@
+patient_blogs.html
+
+{% extends base_template %}
+
+{% block title %}Patient Blogs{% endblock %}
+
+{% block content %}
+
+<!-- Customizer & Premium Styling -->
+<style>
+  :root {
+    /* Premium Minimalist Blog Palette */
+    --dash-primary: #1e293b;       /* Slate 800 */
+    --dash-primary-hover: #0f172a; /* Slate 900 */
+    --dash-surface: #ffffff;
+    --dash-bg: #f8fafc;            /* Light gray-blue background */
+    --dash-text-main: #0f172a;
+    --dash-text-muted: #475569;    /* Slate 600 */
+    --dash-text-light: #94a3b8;    /* Slate 400 */
+    --dash-border: #e2e8f0;        /* Slate 200 */
+    --dash-accent: #3b82f6;        /* Blue 500 */
+    
+    /* Shadows & Radii */
+    --dash-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --dash-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --dash-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+  }
+
+  body {
+    background-color: var(--dash-bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* ----------------------
+     Layout Wrappers
+     ---------------------- */
+  .blog-container {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 50px 20px;
+  }
+  
+  .section-spacing {
+    margin-bottom: 50px;
+  }
+
+  /* ----------------------
+     Typography & Section Titles
+     ---------------------- */
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--dash-text-main);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ----------------------
+     1. Search Section (Top)
+     ---------------------- */
+  .search-section {
+    max-width: 700px;
+    margin: 0 auto 50px auto;
+    text-align: center;
+  }
+  .search-section h1 {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--dash-text-main);
+    margin-bottom: 16px;
+  }
+  .search-section p {
+    font-size: 16px;
+    color: var(--dash-text-muted);
+    margin-bottom: 30px;
+  }
+
+  .premium-search-container {
+    position: relative;
+    display: flex;
+    width: 100%;
+    box-shadow: var(--dash-shadow-md);
+    border-radius: var(--radius-full);
+    background: var(--dash-surface);
+    padding: 8px;
+    transition: box-shadow 0.3s ease;
+  }
+  .premium-search-container:focus-within {
+    box-shadow: var(--dash-shadow-lg), 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+  
+  .premium-search-input {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: var(--dash-text-main);
+    outline: none;
+    border-radius: var(--radius-full);
+  }
+  .premium-search-btn {
+    background: var(--dash-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 0 30px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .premium-search-btn:hover {
+    background: var(--dash-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--dash-shadow-sm);
+  }
+
+  /* ----------------------
+     2. Trending Now Section
+     ---------------------- */
+  .trending-scroll {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
+  }
+  .trending-card {
+    background: var(--dash-surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    gap: 16px;
+    box-shadow: var(--dash-shadow-sm);
+    border: 1px solid var(--dash-border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none !important;
+  }
+  .trending-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--dash-shadow-md);
+  }
+  .trending-img {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .trending-info {
+    flex-grow: 1;
+  }
+  .trending-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dash-text-main);
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+  }
+  .trending-card:hover .trending-title {
+    color: var(--dash-accent);
+  }
+  .trending-meta {
+    font-size: 13px;
+    color: var(--dash-text-muted);
+  }
+
+  /* ----------------------
+     3. Popular Topics
+     ---------------------- */
+  .topics-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .topic-chip {
+    background: var(--dash-surface);
+    border: 1px solid var(--dash-border);
+    color: var(--dash-text-muted);
+    padding: 10px 20px;
+    border-radius: var(--radius-full);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--dash-shadow-sm);
+  }
+  .topic-chip:hover {
+    background: var(--dash-primary);
+    color: #fff;
+    border-color: var(--dash-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--dash-shadow-md);
+  }
+
+  /* ----------------------
+     4. Recent Articles (Main Section Grid)
+     ---------------------- */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+  }
+
+  .dash-blog-card {
+    background: var(--dash-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--dash-border);
+    box-shadow: var(--dash-shadow-sm);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .dash-blog-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--dash-shadow-lg);
+  }
+
+  .dash-blog-img-wrapper {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: var(--dash-bg);
+    position: relative;
+  }
+  .dash-blog-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .dash-blog-card:hover .dash-blog-img-wrapper img {
+    transform: scale(1.05);
+  }
+
+  .dash-blog-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .dash-blog-meta {
+    font-size: 13px;
+    color: var(--dash-text-light);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+  }
+
+  .dash-blog-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dash-text-main);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+    transition: color 0.2s;
+  }
+  .dash-blog-card:hover .dash-blog-title {
+    color: var(--dash-accent);
+  }
+
+  .dash-blog-desc {
+    font-size: 14px;
+    color: var(--dash-text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .dash-blog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--dash-border);
+    padding-top: 16px;
+  }
+
+  .dash-author-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .dash-author-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--dash-bg);
+    color: var(--dash-text-muted);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .dash-author-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dash-text-main);
+  }
+
+  .dash-btn-read {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dash-text-main);
+    background: var(--dash-bg);
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+  .dash-blog-card:hover .dash-btn-read {
+    background: var(--dash-primary);
+    color: #fff;
+  }
+
+  /* ----------------------
+     5. Connect With Us Section
+     ---------------------- */
+  .connect-section {
+    background: var(--dash-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--dash-border);
+    padding: 40px;
+    text-align: center;
+    box-shadow: var(--dash-shadow-sm);
+  }
+  .connect-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dash-text-main);
+    margin-bottom: 12px;
+  }
+  .connect-desc {
+    font-size: 15px;
+    color: var(--dash-text-muted);
+    margin-bottom: 24px;
+  }
+  .connect-socials {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  .social-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--dash-bg);
+    color: var(--dash-text-muted);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .social-icon:hover {
+    background: var(--dash-primary);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: var(--dash-shadow-md);
+  }
+
+  /* ----------------------
+     Empty State
+     ---------------------- */
+  .dash-empty-state {
+    background: var(--dash-surface);
+    border: 1px dashed #cbd5e1;
+    border-radius: var(--radius-lg);
+    padding: 80px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .dash-empty-icon {
+    font-size: 48px;
+    color: var(--dash-border);
+    margin-bottom: 20px;
+  }
+  .dash-empty-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--dash-text-main);
+    margin: 0 0 10px 0;
+  }
+  .dash-empty-desc {
+    font-size: 15px;
+    color: var(--dash-text-muted);
+    margin: 0 0 30px 0;
+    max-width: 400px;
+  }
+  .dash-btn-primary {
+    background: var(--dash-primary);
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .dash-btn-primary:hover {
+    background: var(--dash-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--dash-shadow-md);
+    color: #fff;
+  }
+
+  /* Responsive fixes */
+  @media (max-width: 768px) {
+    .premium-search-container {
+      flex-direction: column;
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      gap: 12px;
+    }
+    .premium-search-btn {
+      width: 100%;
+      padding: 14px 24px;
+      justify-content: center;
+    }
+    .search-section h1 {
+      font-size: 28px;
+    }
+    .blog-container {
+      padding: 30px 15px;
+    }
+  }
+</style>
+
+<div class="blog-container">
+
+  <!-- ==============================================
+       1. SEARCH SECTION (TOP)
+       ============================================== -->
+  <div class="search-section">
+    {% if is_following_anyone %}
+      <h1>Your Personalized Feed</h1>
+      <p>Premium insights and health tips from the doctors you follow.</p>
+    {% else %}
+      <h1>Explore Health Articles</h1>
+      <p>Discover featured health tips and medical insights from top doctors.</p>
+    {% endif %}
+    
+    <form method="GET">
+      <div class="premium-search-container">
+        <input id="autocomplete-input" name="search" class="premium-search-input" type="text" placeholder="Search articles..." value="{{ search_query|default_if_none:'' }}" />
+        <button type="submit" class="premium-search-btn">
+          <i class="fa-solid fa-magnifying-glass"></i> Search
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div id="dynamic-content">
+  {% if not search_query %}
+  <!-- ==============================================
+       2. TRENDING NOW SECTION
+       ============================================== -->
+  <div class="section-spacing">
+    <h2 class="section-title">🔥 Trending Now</h2>
+    <div class="trending-scroll">
+      {% for blog in trending_blogs %}
+      <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="trending-card">
+        {% if blog.thumbnail %}
+        <img src="{{ blog.thumbnail.url }}" onerror="this.src = '/static/images/blog-placeholder.jpg';" class="trending-img" alt="{{ blog.title }}" />
+        {% else %}
+        <img src="/static/images/blog-placeholder.jpg" class="trending-img" alt="{{ blog.title }}" />
+        {% endif %}
+        <div class="trending-info">
+          <h3 class="trending-title">{{ blog.title }}</h3>
+          <span class="trending-meta">{{ blog.createDT|date:"d F Y" }}</span>
+        </div>
+      </a>
+      {% empty %}
+      <p class="text-muted" style="grid-column: 1 / -1;">No trending blogs available at the moment.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ==============================================
+       3. POPULAR TOPICS
+       ============================================== -->
+  <div class="section-spacing">
+    <h2 class="section-title">🏷️ Popular Topics</h2>
+    <div class="topics-container">
+      <a href="#" class="topic-chip">Healthcare</a>
+      <a href="#" class="topic-chip">Mental Health</a>
+      <a href="#" class="topic-chip">Nutrition</a>
+      <a href="#" class="topic-chip">Wellness</a>
+      <a href="#" class="topic-chip">Cardiology</a>
+      <a href="#" class="topic-chip">Pediatrics</a>
+      <a href="#" class="topic-chip">Fitness</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ==============================================
+       4. RECENT ARTICLES (MAIN FEED)
+       ============================================== -->
+  <div class="section-spacing">
+    <h2 class="section-title">📰 Recent Articles</h2>
+    
+    {% if blogs %}
+      <div class="dashboard-grid">
+        {% for blog in blogs %}
+          <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="dash-blog-card">
+            <!-- Thumbnail -->
+            <div class="dash-blog-img-wrapper">
+              {% if blog.thumbnail %}
+                <img src="{{blog.thumbnail.url}}" alt="{{blog.title}}" />
+              {% else %}
+                <img src="/static/images/blog-placeholder.jpg" alt="Placeholder" onerror="this.src='/static/images/blog-01a.jpg';" />
+              {% endif %}
+            </div>
+            
+            <!-- Content -->
+            <div class="dash-blog-content">
+              <div class="dash-blog-meta">
+                <i class="fa-regular fa-calendar"></i> {{blog.createDT|date:"d M Y"}}
+              </div>
+              <h3 class="dash-blog-title">{{blog.title}}</h3>
+              <p class="dash-blog-desc">{{blog.description}}</p>
+              
+              <!-- Footer & Actions (Avatar + Read More) -->
+              <div class="dash-blog-footer">
+                <div class="dash-author-info">
+                  <div class="dash-author-avatar">
+                    {{blog.doctorID.displayName|make_list|first|upper}}
+                  </div>
+                  <div class="dash-author-name">{{blog.doctorID.displayName}}</div>
+                </div>
+                <div class="dash-btn-read">
+                  Read More
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- EMPTY STATE -->
+      <div class="dash-empty-state">
+        <i class="fa-solid fa-inbox dash-empty-icon"></i>
+        {% if search_query %}
+          <h3 class="dash-empty-title">No articles found</h3>
+          <p class="dash-empty-desc">We couldn't find any articles matching "<strong>{{ search_query }}</strong>".</p>
+          <a href="?" class="dash-btn-primary">
+            Clear Search
+          </a>
+        {% else %}
+          <h3 class="dash-empty-title">No articles available yet</h3>
+          {% if is_patient and not is_following_anyone %}
+            <p class="dash-empty-desc">You are not following any doctors right now. Follow a doctor to see their blog posts here.</p>
+          {% else %}
+            <p class="dash-empty-desc">The doctors you follow haven't posted any recent articles.</p>
+          {% endif %}
+          <a href="{% url 'patientDoctorsList' %}" class="dash-btn-primary">
+            <i class="fa-solid fa-users"></i> Discover Doctors
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  </div>
+  <!-- ==============================================
+       5. CONNECT WITH US SECTION
+       ============================================== -->
+  <div class="connect-section">
+    <h3 class="connect-title">Stay Connected</h3>
+    <p class="connect-desc">Get the latest health tips and updates from our community directly to your feed.</p>
+    <div class="connect-socials">
+      <a href="#" class="social-icon" title="Twitter"><i class="fa-brands fa-twitter"></i></a>
+      <a href="#" class="social-icon" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+      <a href="#" class="social-icon" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#" class="social-icon" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('autocomplete-input');
+    const dynamicContent = document.getElementById('dynamic-content');
+    let timeout = null;
+
+    if (searchInput && dynamicContent) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            const query = searchInput.value.trim();
+
+            timeout = setTimeout(() => {
+                const url = new URL(window.location.href);
+                if (query) {
+                    url.searchParams.set('search', query);
+                } else {
+                    url.searchParams.delete('search');
+                }
+
+                // Show a subtle loading state
+                dynamicContent.style.opacity = '0.5';
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newContent = doc.getElementById('dynamic-content');
+                        
+                        if (newContent) {
+                            dynamicContent.innerHTML = newContent.innerHTML;
+                            dynamicContent.style.opacity = '1';
+                            
+                            // Update browser URL without reload
+                            window.history.replaceState({}, '', url);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        dynamicContent.style.opacity = '1';
+                    });
+            }, 300); // 300ms debounce
+        });
+    }
+});
+</script>
+{% endblock %}

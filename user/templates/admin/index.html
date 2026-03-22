@@ -1,0 +1,75 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% load admin_dashboard_tags %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+{% get_admin_stats as stats %}
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-user-doctor"></i></div>
+        <div class="stat-info">
+            <h3>Total Doctors</h3>
+            <div class="value">{{ stats.total_doctors }}</div>
+        </div>
+    </div>
+    <div class="stat-card" style="border-left-color: var(--secondary-color);">
+        <div class="stat-icon" style="color: var(--secondary-color);"><i class="fa-solid fa-users"></i></div>
+        <div class="stat-info">
+            <h3>Total Patients</h3>
+            <div class="value">{{ stats.total_patients }}</div>
+        </div>
+    </div>
+    <div class="stat-card" style="border-left-color: #f39c12;">
+        <div class="stat-icon" style="color: #f39c12;"><i class="fa-solid fa-calendar-check"></i></div>
+        <div class="stat-info">
+            <h3>Total Appointments</h3>
+            <div class="value">{{ stats.total_appointments }}</div>
+        </div>
+    </div>
+    <div class="stat-card" style="border-left-color: #2bbbad;">
+        <div class="stat-icon" style="color: #2bbbad;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div class="stat-info">
+            <h3>Active Appointments</h3>
+            <div class="value">{{ stats.active_appointments }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-layout">
+    <div class="dashboard-main">
+    </div>
+    <div class="dashboard-sidebar">
+        <div class="module" id="recent-actions-module">
+            <h2>{% translate 'Recent actions' %}</h2>
+            <h3>{% translate 'My actions' %}</h3>
+            {% load log %}
+            {% get_admin_log 10 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p>{% translate 'None available' %}</p>
+            {% else %}
+            <ul class="actionlist">
+                {% for entry in admin_log %}
+                <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                    {% if entry.is_deletion or not entry.url %}
+                        {{ entry.object_repr }}
+                    {% else %}
+                        <a href="{{ entry.url }}">{{ entry.object_repr }}</a>
+                    {% endif %}
+                    <br>
+                    {% if entry.content_type %}
+                        <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                    {% else %}
+                        <span class="mini quiet">{% translate 'Unknown content' %}</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Secure Admin Portal{% endblock %} - CareSpot</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'customadmin/css/admin_panel.css' %}">
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-card animate-in">
+            <div class="login-logo">
+                <div class="login-logo-icon">
+                    <i class="fa-solid fa-notes-medical"></i>
+                </div>
+                <h2>CareSpot</h2>
+                <p>Secure Admin Portal</p>
+            </div>
+
+            {% if error %}
+            <div class="login-error animate-in">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" class="login-form animate-in">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="email">Admin Email</label>
+                    <input type="email" id="email" name="email" value="admin@carespot.com" required autocomplete="email" autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" value="admin@123" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="login-btn">
+                    Secure Login <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

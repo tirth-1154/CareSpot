@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %} | CareSpot Admin</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'customadmin/css/admin_panel.css' %}?v=1.1">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="admin-body">
+
+    <!-- Mobile Overlay -->
+    <div class="admin-modal-overlay sidebar-mobile-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <!-- Brand -->
+        <a href="{% url 'customadmin:admin_dashboard' %}" class="sidebar-brand">
+            <div class="sidebar-brand-icon">
+                <i class="fa-solid fa-notes-medical"></i>
+            </div>
+            <div class="sidebar-brand-text">
+                <span class="brand-name">CareSpot</span>
+                <span class="brand-sub">Admin Portal</span>
+            </div>
+        </a>
+
+        <!-- Navigation -->
+        <div class="sidebar-section-title">Overview</div>
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_dashboard' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-section-title">Users & Doctors</div>
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_users' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
+                    <i class="fa-solid fa-users"></i> All Users
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_doctors' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_doctors' %}active{% endif %}">
+                    <i class="fa-solid fa-user-doctor"></i> Doctors
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_patients' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_patients' %}active{% endif %}">
+                    <i class="fa-solid fa-bed-pulse"></i> Patients
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-section-title">Operations</div>
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_appointments' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_appointments' %}active{% endif %}">
+                    <i class="fa-solid fa-calendar-check"></i> Appointments
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_reviews' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_reviews' %}active{% endif %}">
+                    <i class="fa-solid fa-star-half-stroke"></i> Reviews
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_blogs' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_blogs' %}active{% endif %}">
+                    <i class="fa-solid fa-newspaper"></i> Blogs
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-section-title">Configuration</div>
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_categories' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_categories' %}active{% endif %}">
+                    <i class="fa-solid fa-layer-group"></i> Categories
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_locations' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_locations' %}active{% endif %}">
+                    <i class="fa-solid fa-map-location-dot"></i> Locations
+                </a>
+            </li>
+        </ul>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <a href="{% url 'customadmin:admin_logout' %}" class="sidebar-footer-link">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Topbar -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="topbar-right">
+                <a href="{% url 'home' %}" target="_blank" class="topbar-icon-btn" title="View Site">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+                
+                <div class="admin-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0ea5e9&color=fff&size=100" alt="Admin">
+                    <div class="admin-avatar-info">
+                        <span class="name">Super Admin</span>
+                        <span class="role">{{ request.session.admin_email }}</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="admin-content">
+            <!-- Header -->
+            <div class="page-header animate-in">
+                <div>
+                    <div class="breadcrumb-custom">
+                        <a href="{% url 'customadmin:admin_dashboard' %}"><i class="fa-solid fa-house mb-1"></i> Dashboard</a>
+                        {% block breadcrumb %}{% endblock %}
+                    </div>
+                    <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                    <p>{% block page_subtitle %}Overview and statistics.{% endblock %}</p>
+                </div>
+                <div>
+                    {% block header_actions %}{% endblock %}
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            {% block content %}{% endblock %}
+
+            <!-- Footer -->
+            <footer class="admin-footer">
+                <div class="copyright">
+                    &copy; {% now "Y" %} <strong>CareSpot</strong>. All rights reserved.
+                </div>
+                <div class="links">
+                    <a href="/admin/" target="_blank">Django Super Admin</a>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <!-- Global Delete Confirmation Modal -->
+    <div class="admin-modal-overlay" id="deleteModal">
+        <div class="admin-modal">
+            <div class="modal-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h4>Confirm Deletion</h4>
+            <p>Are you sure you want to delete <strong id="deleteItemName">this item</strong>? This action cannot be undone and all associated data will be removed.</p>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-confirm-delete" id="confirmDeleteBtn">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static 'customadmin/js/admin_panel.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

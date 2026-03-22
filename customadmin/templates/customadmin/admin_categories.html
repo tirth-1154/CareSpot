@@ -1,0 +1,107 @@
+{% extends 'customadmin/admin_base.html' %}
+
+{% block page_title %}Categories & Subcategories{% endblock %}
+{% block page_subtitle %}Manage specializations available for doctors. Total: {{ categories|length }} Categories, {{ total_subcategories }} Subcategories{% endblock %}
+
+{% block header_actions %}
+<span class="badge badge-admin warning p-2 px-3 fs-6">
+    <i class="fa-solid fa-layer-group me-1"></i> Specializations setup
+</span>
+{% endblock %}
+
+{% block content %}
+
+<div class="two-col-grid animate-in">
+    <!-- Categories List -->
+    <div class="admin-card">
+        <div class="admin-card-header bg-light">
+            <h3 class="mb-0">Main Categories</h3>
+            <span class="badge bg-secondary">{{ categories|length }}</span>
+        </div>
+        <div class="admin-card-body p-0">
+            <!-- Add Form -->
+            <div style="padding: 16px; border-bottom: 1px solid var(--admin-border); background: #fafbfc;">
+                <form method="POST" action="{% url 'customadmin:admin_category_add' %}" class="add-form-inline">
+                    {% csrf_token %}
+                    <input type="text" name="category_name" placeholder="New category name..." required style="flex: 1;">
+                    <button type="submit" class="add-btn">
+                        <i class="fa-solid fa-plus me-1"></i> Add
+                    </button>
+                </form>
+            </div>
+            
+            <!-- List -->
+            <div style="max-height: 480px; overflow-y: auto;">
+                <ul class="item-list px-3">
+                    {% for cat in categories %}
+                    <li>
+                        <div class="item-name fw-semibold">
+                            <i class="fa-solid fa-folder text-warning me-2"></i> {{ cat.categoryName }}
+                        </div>
+                        <button type="button" class="action-btn delete btn-sm" onclick="showDeleteModal('{% url 'customadmin:admin_category_delete' cat.categoryID %}', 'category {{ cat.categoryName|escapejs }}')" title="Delete">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </li>
+                    {% empty %}
+                    <li class="justify-content-center text-muted py-4">
+                        <i class="fa-solid fa-boxes-stacked me-2"></i> No categories found.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subcategories List -->
+    <div class="admin-card">
+        <div class="admin-card-header bg-light">
+            <h3 class="mb-0">Subcategories</h3>
+            <span class="badge bg-secondary">{{ total_subcategories }}</span>
+        </div>
+        <div class="admin-card-body p-0">
+            <!-- Add Form -->
+            <div style="padding: 16px; border-bottom: 1px solid var(--admin-border); background: #fafbfc;">
+                <form method="POST" action="{% url 'customadmin:admin_subcategory_add' %}" class="add-form-inline">
+                    {% csrf_token %}
+                    <input type="text" name="subcategory_name" placeholder="New specialization..." required style="flex: 1;">
+                    <select name="category_id" required>
+                        <option value="">Select Parent Category...</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.categoryID }}">{{ cat.categoryName }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="add-btn">
+                        <i class="fa-solid fa-plus me-1"></i> Add
+                    </button>
+                </form>
+            </div>
+            
+            <!-- List -->
+            <div style="max-height: 480px; overflow-y: auto;">
+                <ul class="item-list px-3">
+                    {% for sub in subcategories %}
+                    <li>
+                        <div>
+                            <div class="item-name fw-semibold">
+                                <i class="fa-solid fa-stethoscope text-info me-2"></i> {{ sub.subcategoryName }}
+                            </div>
+                            <div class="item-parent text-muted ps-4 my-1">
+                                <i class="fa-solid fa-level-up-alt fa-rotate-90 me-1"></i> {{ sub.categoryID.categoryName }}
+                            </div>
+                        </div>
+                        <button type="button" class="action-btn delete btn-sm" onclick="showDeleteModal('{% url 'customadmin:admin_subcategory_delete' sub.subcategoryID %}', 'subcategory {{ sub.subcategoryName|escapejs }}')" title="Delete">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </li>
+                    {% empty %}
+                    <li class="justify-content-center text-muted py-4">
+                        <i class="fa-solid fa-code-merge me-2"></i> No subcategories found.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

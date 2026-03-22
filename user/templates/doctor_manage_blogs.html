@@ -1,0 +1,472 @@
+{% extends 'base.html' %}
+{% block title %}Manage My Blogs{% endblock %}
+
+{% block css %}
+<style>
+    /* Modern Medical Dashboard UI */
+    .page-header-box {
+        background: linear-gradient(135deg, var(--primary-color, #0F6DB6), var(--primary-dark, #0b558f));
+        border-radius: 12px;
+        padding: 30px 40px;
+        color: #fff;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(15, 109, 182, 0.15);
+    }
+    .page-header-box h2 {
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+    .page-header-box p {
+        font-size: 15px;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .dashboard-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        border: 1px solid #eef2f5;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+    
+    /* Filters */
+    .filter-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .filter-bar .search-box {
+        position: relative;
+        flex: 1;
+        min-width: 250px;
+    }
+    .filter-bar .search-box input {
+        width: 100%;
+        padding: 10px 40px 10px 40px;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+        background: #f8fafc;
+        transition: all 0.2s;
+    }
+    .filter-bar .search-box input:focus {
+        background: #fff;
+        border-color: var(--primary-color, #10b981);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        outline: none;
+    }
+    .filter-bar .search-box i.fa-magnifying-glass {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8c98a4;
+        pointer-events: none;
+    }
+    .clear-search {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8c98a4;
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+        text-decoration: none !important;
+    }
+    .clear-search:hover {
+        color: #dc3545;
+        background: rgba(220, 53, 69, 0.1);
+    }
+    .filter-bar select {
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+        background: #f8fafc;
+        min-width: 150px;
+    }
+    
+    /* Table */
+    .blog-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+    .blog-table th {
+        color: #8c98a4;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        padding: 0 15px 10px;
+        border-bottom: 2px solid #eef2f5;
+    }
+    .blog-table td {
+        background: #fdfdfd;
+        padding: 20px 15px;
+        vertical-align: middle;
+        border-top: 1px solid #eef2f5;
+        border-bottom: 1px solid #eef2f5;
+    }
+    .blog-table tr td:first-child {
+        border-left: 1px solid #eef2f5;
+        border-radius: 10px 0 0 10px;
+    }
+    .blog-table tr td:last-child {
+        border-right: 1px solid #eef2f5;
+        border-radius: 0 10px 10px 0;
+    }
+    .blog-thumbnail {
+        width: 80px;
+        height: 60px;
+        border-radius: 6px;
+        object-fit: cover;
+    }
+    
+    /* Title and Badges */
+    .blog-title-td {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+    .blog-title-main {
+        font-size: 15px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 4px;
+        display: block;
+        text-decoration: none;
+    }
+    .blog-excerpt {
+        font-size: 13px;
+        color: #6c757d;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .status-published {
+        background: rgba(35, 182, 179, 0.1);
+        color: #23B6B3;
+    }
+    .status-draft {
+        background: rgba(140, 152, 164, 0.1);
+        color: #8c98a4;
+    }
+    
+    /* Action Buttons */
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        text-decoration: none;
+        transition: transform 0.2s;
+        border: none;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    .btn-edit { background: var(--primary-color, #0F6DB6); }
+    .btn-delete { background: #dc3545; }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+    .empty-icon {
+        font-size: 60px;
+        color: #d1d5db;
+        margin-bottom: 15px;
+    }
+    .empty-state h4 {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 25px;
+    }
+    .btn-create-new {
+        background: var(--primary-color, #0F6DB6);
+        color: #fff;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-create-new:hover {
+        color: #fff;
+        opacity: 0.9;
+    }
+    
+    /* Modals */
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    .modal-header {
+        border-bottom: 1px solid #eef2f5;
+        padding: 20px 25px;
+    }
+    .modal-body {
+        padding: 25px;
+    }
+    .modal-footer {
+        border-top: 1px solid #eef2f5;
+        padding: 20px 25px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    
+    <!-- Page Header -->
+    <div class="page-header-box">
+        <h2 class="fw-bold text-white">Manage My Blogs</h2>
+        <p>Update or delete the blogs you have posted for patients.</p>
+    </div>
+
+    <!-- Main Content Box -->
+    <div class="dashboard-card">
+        
+        <!-- Filters & Search -->
+        <div class="filter-bar">
+            <form method="GET" action="{% url 'doctorManageBlogs' %}" class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="search" id="blogSearch" placeholder="Search blogs by title..." value="{{ search_query }}">
+                <a href="{% url 'doctorManageBlogs' %}" class="clear-search" title="Clear search" style="{% if not search_query %}display:none;{% endif %}">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
+            </form>
+            <a href="{% url 'doctorPostAdd' %}" class="btn-create-new ms-auto">
+                <i class="fa-solid fa-plus"></i> Create New Blog
+            </a>
+        </div>
+
+        {% if blogs %}
+            <div class="table-responsive">
+                <table class="blog-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Blog Details</th>
+                            <th style="width: 25%;">Publish Date</th>
+                            <th style="width: 25%; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for blog in blogs %}
+                        <tr>
+                            <td>
+                                <div class="blog-title-td">
+                                    {% if blog.thumbnail %}
+                                        <img src="{{ blog.thumbnail.url }}" class="blog-thumbnail" alt="Blog Image">
+                                    {% else %}
+                                        <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&q=80&w=150" class="blog-thumbnail" alt="Thumbnail">
+                                    {% endif %}
+                                    <div style="max-width: 300px;">
+                                        <span class="blog-title-main">{{ blog.title }}</span>
+                                        <span class="blog-excerpt">{{ blog.description|truncatewords:15 }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            {% comment %} <td>{{ blog.category|default:"Health & Medical" }}</td> {% endcomment %}
+                            <td>{{ blog.createDT|date:"M d, Y" }}</td>
+                        
+                            <td style="text-align: center;">
+                                <button class="action-btn btn-edit" data-bs-toggle="modal" data-bs-target="#editBlogModal-{{ blog.doctorPostID }}" title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="action-btn btn-delete" data-bs-toggle="modal" data-bs-target="#deleteBlogModal-{{ blog.doctorPostID }}" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Edit Modal for this Blog -->
+                        <div class="modal fade" id="editBlogModal-{{ blog.doctorPostID }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold">Edit Blog</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="POST" action="{% url 'doctorManageBlogs' %}" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="blog_id" value="{{ blog.doctorPostID }}">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Blog Title</label>
+                                                <input type="text" class="form-control" name="title" value="{{ blog.title }}" required>
+                                            </div>
+                                            
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Featured Image</label>
+                                                <input type="file" class="form-control" name="image" accept="image/*">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Blog Content</label>
+                                                <textarea class="form-control" rows="8" name="content" required>{{ blog.description }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-primary" style="background-color: var(--primary-color);">Update Blog</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Modal for this Blog -->
+                        <div class="modal fade" id="deleteBlogModal-{{ blog.doctorPostID }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header border-0 pb-0">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center pb-4">
+                                        <i class="fa-solid fa-circle-exclamation text-danger mb-3" style="font-size: 60px;"></i>
+                                        <h4 class="fw-bold mb-2">Delete Blog?</h4>
+                                        <p class="text-muted mb-4">Are you sure you want to delete this blog? This action cannot be undone.</p>
+                                        <form method="POST" action="{% url 'doctorManageBlogs' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="delete_blog_id" value="{{ blog.doctorPostID }}">
+                                            <button type="button" class="btn btn-light me-2 px-4" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-danger px-4">Yes, Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="fa-regular fa-folder-open empty-icon"></i>
+                <h4>You have not posted any blogs yet.</h4>
+                <p>Start sharing your medical expertise with patients by writing your first blog.</p>
+                <a href="{% url 'doctorPostAdd' %}" class="btn-create-new mt-2">
+                    <i class="fa-solid fa-plus"></i> Create New Blog
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('blogSearch');
+    const blogTable = document.querySelector('.blog-table');
+    if (!searchInput || !blogTable) return;
+
+    const tbody = blogTable.querySelector('tbody');
+    const rows = tbody ? tbody.querySelectorAll('tr') : [];
+    const emptyState = document.querySelector('.empty-state');
+    const tableWrapper = document.querySelector('.table-responsive');
+
+    // Prevent form submit on Enter — we handle it live
+    searchInput.closest('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+    });
+
+    // Create a "no results" message element
+    const noResults = document.createElement('div');
+    noResults.className = 'empty-state';
+    noResults.innerHTML = `
+        <i class="fa-solid fa-magnifying-glass empty-icon"></i>
+        <h4>No blogs found</h4>
+        <p>No blogs match your search. Try a different keyword.</p>
+    `;
+    noResults.style.display = 'none';
+    if (tableWrapper) {
+        tableWrapper.parentNode.insertBefore(noResults, tableWrapper.nextSibling);
+    }
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        rows.forEach(function(row) {
+            // Skip rows that are actually modal containers
+            if (row.querySelector('.modal')) return;
+
+            const titleEl = row.querySelector('.blog-title-main');
+            const excerptEl = row.querySelector('.blog-excerpt');
+            const title = titleEl ? titleEl.textContent.toLowerCase() : '';
+            const excerpt = excerptEl ? excerptEl.textContent.toLowerCase() : '';
+
+            if (query === '' || title.includes(query) || excerpt.includes(query)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Also hide/show related modals (they are siblings after tr in the for loop)
+        // Show/hide the no results message
+        if (visibleCount === 0 && query !== '') {
+            noResults.style.display = 'block';
+            if (tableWrapper) tableWrapper.style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            if (tableWrapper) tableWrapper.style.display = '';
+        }
+
+        // Update clear button visibility
+        const clearBtn = searchInput.parentElement.querySelector('.clear-search');
+        if (clearBtn) {
+            clearBtn.style.display = query ? 'flex' : 'none';
+        }
+    });
+
+    // Clear search functionality
+    const clearBtn = searchInput.parentElement.querySelector('.clear-search');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+        });
+    }
+
+    // Show clear button if there's already a value
+    if (searchInput.value.trim()) {
+        searchInput.dispatchEvent(new Event('input'));
+    }
+});
+</script>
+{% endblock %}

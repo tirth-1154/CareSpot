@@ -1,0 +1,337 @@
+{% extends 'patient_base.html' %}
+
+{% block title %}Book Appointment | CareSpot{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --secondary-color: #198754;
+        --bg-light: #f4f7f6;
+        --sidebar-width: 260px;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-light);
+        overflow-x: hidden;
+    }
+
+    /* --- Standalone Layout Styles (Synced with Dashboard) --- */
+    .main-content {
+        padding: 85px 30px 30px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* --- Booking Page Specific Styles --- */
+    .premium-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .doctor-info-hero {
+        background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .doctor-avatar-lg {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        padding: 0.75rem 1.25rem;
+        border: 1px solid #e9ecef;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.05);
+    }
+
+    .time-slot-pill {
+        border: 1px solid #e9ecef;
+        border-radius: 30px;
+        padding: 10px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: white;
+        color: #495057;
+        display: block;
+        width: 100%;
+        border: 1px solid #dee2e6;
+    }
+
+    .time-slot-pill:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        background: #f8fbff;
+    }
+
+    .time-slot-radio:checked+.time-slot-pill {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+    }
+
+    .time-slot-radio {
+        display: none;
+    }
+
+    .summary-card {
+        background: #f8fbff;
+        border-radius: 12px;
+        border: 1px dashed #0d6efd;
+    }
+
+    .availability-alert {
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .main-content {
+            padding-top: 80px;
+        }
+    }
+</style>
+
+    <!-- MAIN CONTENT -->
+        <div class="container-fluid">
+
+            <!-- Page Header -->
+            <div class="mb-4">
+                <h2 class="fw-bold mb-1" style="color:#0F6DB6;">Book Appointment</h2>
+                <p class="text-muted">Schedule an appointment with your preferred doctor.</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Left Column: Form -->
+                <div class="col-lg-8">
+
+                    <!-- Booking Form -->
+                    <div class="premium-card p-4 p-md-5 mb-5">
+                        <form method="POST" class="needs-validation" novalidate id="bookingForm">
+                            {% csrf_token %}
+
+                            {% if msg %}
+                            <div class="alert alert-danger">{{ msg }}</div>
+                            {% endif %}
+
+                            <h5 class="fw-bold mb-4 border-bottom pb-2">Select Doctor</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-12">
+                                    <label class="form-label">Choose Doctor *</label>
+                                    <select class="form-select" name="doctor" id="doctorSelect" required>
+                                        <option value="" disabled selected>-- Select a Doctor --</option>
+                                        {% for doc in doctor %}
+                                            <option value="{{ doc.doctorID }}" {% if request.GET.doctor_id == doc.doctorID|stringformat:"i" %}selected{% endif %}>{{ doc.displayName }} — {{ doc.subcategoryID.subcategoryName }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% comment %} <select class="form-select" name="doctor" id="doctorSelect" required>
+                                        <option value="" disabled selected>-- Select a Doctor --</option>
+                                        {% for doc in doctor %}
+                                            <option value="{{ doc.doctorID }}">{{ doc.displayName }} — {{ doc.subcategoryID.subcategoryName }}</option>
+                                        {% endfor %}
+                                    </select> {% endcomment %}
+                                    <div class="invalid-feedback">Please select a doctor.</div>
+                                </div>
+                            </div>
+
+                            <h5 class="fw-bold mb-4 border-bottom pb-2">Schedule</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Appointment Date *</label>
+                                    <input type="date" class="form-control" name="app_date" id="app_date" required>
+                                    <div class="invalid-feedback">Please select a date.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Select Time Slot *</label>
+                                    <select class="form-select" name="time_slot" id="time_slot" required>
+                                        <option value="" disabled selected>-- Select a Date First --</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a time slot.</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-3">
+                                <input type="submit" name="btnBook"
+                                    class="btn btn-primary px-5 py-3 rounded-pill fw-bold shadow-sm">
+                                <a href="{% url 'patientDoctorsList' %}"
+                                    class="btn btn-outline-secondary px-4 py-3 rounded-pill fw-bold border-0 bg-light">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Column: Summary -->
+                <div class="col-lg-4">
+                    <div class="position-sticky" style="top: 85px;">
+                        <div class="premium-card p-4">
+                            <h5 class="fw-bold mb-4">Appointment Summary</h5>
+                            <div class="summary-card p-3 mb-4">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted">Doctor:</span>
+                                    <span class="fw-bold" id="summDoctor">Not Selected</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3 border-top pt-3">
+                                    <span class="text-muted">Date:</span>
+                                    <span class="fw-bold" id="summDate">-- / -- / ----</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted">Time:</span>
+                                    <span class="fw-bold" id="summTime">-- : -- --</span>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-primary border-0 small">
+                                <i class="fa-solid fa-circle-info me-2"></i> Payment will be handled at the clinic during your visit.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- UI Logic Scripts -->
+    <script>
+        // Validation logic
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+
+        // Sync Summary
+        const dateInput = document.getElementById('app_date');
+        const summDate = document.getElementById('summDate');
+        const summTime = document.getElementById('summTime');
+        const summDoctor = document.getElementById('summDoctor');
+        const doctorSelect = document.getElementById('doctorSelect');
+        const timeSlot = document.getElementById('time_slot');
+
+        // Set min date to today so past dates can't be selected
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+        function fetchAvailableSlots() {
+            const doctorId = doctorSelect.value;
+            const selectedDate = dateInput.value;
+
+            // Reset time slot
+            timeSlot.innerHTML = '<option value="" disabled selected>-- Select a Date & Doctor First --</option>';
+            summTime.textContent = '-- : -- --';
+
+            if (!doctorId || !selectedDate) return;
+
+            timeSlot.innerHTML = '<option value="" disabled selected>Loading slots...</option>';
+
+            fetch(`/ajax/get_available_slots/?doctor_id=${doctorId}&date=${selectedDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    timeSlot.innerHTML = '';
+
+                    if (!data.available) {
+                        const opt = document.createElement('option');
+                        opt.value = '';
+                        opt.textContent = data.message || 'Doctor is not available on this day.';
+                        opt.disabled = true;
+                        opt.selected = true;
+                        timeSlot.appendChild(opt);
+                        return;
+                    }
+
+                    if (data.slots.length === 0) {
+                        const opt = document.createElement('option');
+                        opt.value = '';
+                        opt.textContent = data.message || 'No slots available.';
+                        opt.disabled = true;
+                        opt.selected = true;
+                        timeSlot.appendChild(opt);
+                        return;
+                    }
+
+                    const defaultOpt = document.createElement('option');
+                    defaultOpt.value = '';
+                    defaultOpt.textContent = '-- Select Time --';
+                    defaultOpt.disabled = true;
+                    defaultOpt.selected = true;
+                    timeSlot.appendChild(defaultOpt);
+
+                    data.slots.forEach(slot => {
+                        const opt = document.createElement('option');
+                        opt.value = slot.value;
+                        opt.textContent = slot.label;
+                        timeSlot.appendChild(opt);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching slots:', error);
+                    timeSlot.innerHTML = '<option value="" disabled selected>Error loading slots</option>';
+                });
+        }
+
+        // Fetch slots when doctor or date changes
+        dateInput.addEventListener('change', (e) => {
+            summDate.textContent = e.target.value || '-- / -- / ----';
+            fetchAvailableSlots();
+        });
+
+        doctorSelect.addEventListener('change', (e) => {
+            summDoctor.textContent = e.target.options[e.target.selectedIndex].text || 'Not Selected';
+            fetchAvailableSlots();
+        });
+
+        timeSlot.addEventListener('change', (e) => {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            summTime.textContent = selectedOption ? selectedOption.text : '-- : -- --';
+        });
+
+        // Auto-select doctor from URL parameter (e.g. ?doctor_id=5)
+        const urlParams = new URLSearchParams(window.location.search);
+        const preselectedDoctorId = urlParams.get('doctor_id');
+        if (preselectedDoctorId && doctorSelect) {
+            for (let i = 0; i < doctorSelect.options.length; i++) {
+                if (doctorSelect.options[i].value === preselectedDoctorId) {
+                    doctorSelect.selectedIndex = i;
+                    summDoctor.textContent = doctorSelect.options[i].text;
+                    break;
+                }
+            }
+        }
+    </script>
+{% endblock %}

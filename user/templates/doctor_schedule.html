@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}My Schedule | CareSpot{% endblock %}
+{% block sidebar_nav_schedule %}active{% endblock %}
+
+{% block content %}
+<style>
+    .schedule-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        padding: 35px;
+        border: 1px solid #e2e8f0;
+    }
+    .schedule-header {
+        margin-bottom: 30px;
+    }
+    .schedule-header h2 {
+        font-weight: 800;
+        color: #0F6DB6;
+        margin-bottom: 5px;
+    }
+    .schedule-header p {
+        color: #64748b;
+        font-size: 15px;
+    }
+    .day-row {
+        display: flex;
+        align-items: center;
+        padding: 18px 20px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+        border: 1px solid #f1f5f9;
+        background: #fafbfc;
+    }
+    .day-row:hover {
+        background: #f8fafc;
+        border-color: #e2e8f0;
+    }
+    .day-row.available {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+    }
+    .day-name {
+        font-weight: 700;
+        font-size: 16px;
+        color: #1e293b;
+        min-width: 120px;
+    }
+    .day-toggle {
+        margin: 0 20px;
+    }
+    .day-toggle .form-check-input {
+        width: 48px;
+        height: 24px;
+        cursor: pointer;
+    }
+    .day-toggle .form-check-input:checked {
+        background-color: #22c55e;
+        border-color: #22c55e;
+    }
+    .time-inputs {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+    }
+    .time-inputs input {
+        border-radius: 10px;
+        padding: 8px 14px;
+        border: 1px solid #e2e8f0;
+        font-size: 15px;
+        width: 140px;
+        font-weight: 500;
+    }
+    .time-inputs input:focus {
+        border-color: #0F6DB6;
+        box-shadow: 0 0 0 3px rgba(15, 109, 182, 0.08);
+        outline: none;
+    }
+    .time-inputs .separator {
+        font-weight: 600;
+        color: #94a3b8;
+    }
+    .time-inputs.disabled input {
+        background: #f1f5f9;
+        color: #94a3b8;
+        pointer-events: none;
+    }
+    .save-btn {
+        background: linear-gradient(135deg, #0F6DB6, #23B6B3);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 40px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(15, 109, 182, 0.2);
+    }
+    .save-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(15, 109, 182, 0.3);
+    }
+    .status-badge {
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-left: 15px;
+    }
+    .status-badge.available-badge {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    .status-badge.unavailable-badge {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    @media (max-width: 768px) {
+        .day-row {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .time-inputs {
+            margin-left: 0;
+            width: 100%;
+        }
+        .time-inputs input {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="schedule-card">
+        <div class="schedule-header">
+            <h2><i class="fa-solid fa-calendar-days me-2"></i>My Weekly Schedule</h2>
+            <p>Set your availability for each day of the week. Patients will only be able to book during your available hours.</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% for day in schedule_data %}
+            <div class="day-row {% if day.is_available %}available{% endif %}" id="dayRow_{{ day.day_index }}">
+                <span class="day-name">{{ day.day_name }}</span>
+                
+                <div class="day-toggle">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="available_{{ day.day_index }}" 
+                               id="toggle_{{ day.day_index }}" {% if day.is_available %}checked{% endif %}
+                               onchange="toggleDay({{ day.day_index }}, this.checked)">
+                    </div>
+                </div>
+
+                <span class="status-badge {% if day.is_available %}available-badge{% else %}unavailable-badge{% endif %}" id="badge_{{ day.day_index }}">
+                    {% if day.is_available %}Available{% else %}Off{% endif %}
+                </span>
+
+                <div class="time-inputs {% if not day.is_available %}disabled{% endif %}" id="times_{{ day.day_index }}">
+                    <input type="time" name="start_time_{{ day.day_index }}" value="{{ day.start_time }}" id="start_{{ day.day_index }}">
+                    <span class="separator">to</span>
+                    <input type="time" name="end_time_{{ day.day_index }}" value="{{ day.end_time }}" id="end_{{ day.day_index }}">
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="mt-4 text-end">
+                <button type="submit" class="save-btn">
+                    <i class="fa-solid fa-check me-2"></i>Save Schedule
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleDay(dayIndex, isChecked) {
+        const row = document.getElementById(`dayRow_${dayIndex}`);
+        const times = document.getElementById(`times_${dayIndex}`);
+        const badge = document.getElementById(`badge_${dayIndex}`);
+
+        if (isChecked) {
+            row.classList.add('available');
+            times.classList.remove('disabled');
+            badge.className = 'status-badge available-badge';
+            badge.textContent = 'Available';
+        } else {
+            row.classList.remove('available');
+            times.classList.add('disabled');
+            badge.className = 'status-badge unavailable-badge';
+            badge.textContent = 'Off';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,657 @@
+{% extends 'base.html' %}
+
+{% block title %}Doctor Profile - {{ doctor.displayName }}{% endblock %}
+{% block content %}
+<style>
+	/* Premium UI Improvements & Fixes */
+	.content-right-offset { padding-right: 30px; }
+	.single-page-section {
+		background: #fff;
+		border-radius: 20px;
+		padding: 40px;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+		margin-bottom: 40px;
+	}
+	.boxed-list {
+		background: #fff;
+		border-radius: 20px !important;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important;
+		overflow: hidden;
+		border: none !important;
+        margin-bottom: 40px;
+	}
+	.boxed-list-headline {
+		padding: 25px 35px;
+		background: #fdfdfd;
+		border-bottom: 1px solid #f0f0f0;
+	}
+	.boxed-list-item {
+		padding: 30px;
+		transition: all 0.3s ease;
+	}
+	.boxed-list-ul li:hover .boxed-list-item {
+		background-color: #fcfcfd;
+        transform: translateX(5px);
+	}
+	.item-description p {
+		/* CRITICAL FIX FOR TEXT OVERFLOW */
+		word-wrap: break-word !important;
+		overflow-wrap: break-word !important;
+        word-break: break-all !important; 
+        white-space: normal !important;
+		color: #555;
+		font-size: 15px;
+		line-height: 1.7;
+	}
+    .profile-overview {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 1px solid #f2f2f2;
+    }
+    .sidebar-widget {
+		background: #fff;
+		border-radius: 20px;
+		padding: 30px;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+		border: 1px solid #f2f2f2;
+		margin-bottom: 30px;
+	}
+    .apply-now-button {
+        border-radius: 14px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 6px 15px rgba(42, 65, 232, 0.2) !important;
+        transition: transform 0.2s, box-shadow 0.2s !important;
+    }
+    .apply-now-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(42, 65, 232, 0.3) !important;
+    }
+    .follow-btn {
+        display: block;
+        width: 100%;
+        padding: 13px 20px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 15px;
+        text-align: center;
+        margin-bottom: 15px;
+        cursor: pointer;
+        border: 2px solid #2a41e8;
+        transition: all 0.25s ease;
+    }
+    .follow-btn.follow {
+        background: #2a41e8;
+        color: #fff;
+        box-shadow: 0 6px 15px rgba(42,65,232,0.25);
+    }
+    .follow-btn.follow:hover {
+        background: #1c2fc0;
+        transform: translateY(-2px);
+    }
+    .follow-btn.unfollow {
+        background: #fff;
+        color: #2a41e8;
+    }
+    .follow-btn.unfollow:hover {
+        background: #f0f3ff;
+        transform: translateY(-2px);
+    }
+    .single-page-header {
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        margin-bottom: 40px;
+        background-color: #f7f9fc;
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+    .freelancer-avatar {
+        display: inline-block;
+        margin-right: 20px;
+    }
+    .freelancer-avatar img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .header-details {
+        display: inline-block;
+        vertical-align: top;
+        padding-top: 15px;
+    }
+    .header-details h3 {
+        margin-bottom: 5px;
+    }
+    .header-details span {
+        color: #888;
+        font-size: 16px;
+        display: block;
+        margin-bottom: 10px;
+    }
+    .header-details ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        gap: 15px;
+        color: #666;
+    }
+</style>
+
+<div class="single-page-header freelancer-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="single-page-header-inner">
+                    <div class="left-side" style="display: flex; align-items: center;">
+                        <div class="header-image freelancer-avatar">
+                            {% if doctor.userID.profilePic %}
+                            <img src="{{ doctor.userID.profilePic.url }}" alt="{{ doctor.displayName }}">
+                            {% else %}
+                            <img src="/static/images/avatar.png" alt="Avatar">
+                            {% endif %}
+                        </div>
+                        <div class="header-details">
+                            <h3>{{ doctor.displayName }}</h3>
+                            <span>{{ doctor.subcategoryID.subcategoryName }}</span>
+                            <div class="margin-top-10 margin-bottom-15">
+                                <div class="star-rating" data-rating="{{ avg_rating|floatformat:1 }}" style="display: inline-block;"></div>
+                                <span style="font-size: 14px; color: #888; font-weight: 500; margin-left: 5px; vertical-align: top;">({{ avg_rating|floatformat:1 }} / 5.0 - {{ review_count }} Reviews)</span>
+                            </div>
+                            <ul>
+                                <li><i class="icon-material-outline-location-on"></i> {{ doctor.displayAddress }}</li>
+                                <li><i class="icon-feather-phone"></i> {{ doctor.displayContact }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page Content -->
+<div class="container">
+	<div class="row">
+		
+		<!-- Content -->
+		<div class="col-xl-8 col-lg-8 content-right-offset">
+			
+			<!-- About Section -->
+			<div class="single-page-section">
+				<h3 class="margin-bottom-25">About</h3>
+				<p>{{ doctor.bio }}</p>
+			</div>
+
+			<!-- Doctor's Blog Posts -->
+			<div class="boxed-list margin-bottom-60">
+				<div class="boxed-list-headline">
+					<h3><i class="icon-material-outline-description"></i> Blog Posts ({{ blog_count }})</h3>
+				</div>
+				<ul class="boxed-list-ul">
+					{% for blog in blogs %}
+                        <li>
+                            <div class="boxed-list-item">
+                                <!-- Thumbnail -->
+                                {% if blog.thumbnail %}
+                                <div class="item-image" style="width: 100px; padding-right: 20px;">
+                                    <img src="{{ blog.thumbnail.url }}" alt="{{ blog.title }}" style="width: 100%; border-radius: 10px;">
+                                </div>
+                                {% endif %}
+                                <!-- Content -->
+                                <div class="item-content">
+                                    <h4><a href="{% url 'blogPost' blog.doctorPostID %}">{{ blog.title }}</a></h4>
+                                    <div class="item-details margin-top-10">
+                                        <div class="detail-item"><i class="icon-material-outline-date-range"></i> {{ blog.createDT|date:"d M Y" }}</div>
+                                    </div>
+                                    <div class="item-description">
+                                        <p>{{ blog.description|truncatechars:150 }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+					{% empty %}
+                        <li>
+                            <div class="boxed-list-item">
+                                <div class="item-content">
+                                    <h4>No blog posts yet.</h4>
+                                </div>
+                            </div>
+                        </li>
+					{% endfor %}
+				</ul>
+			</div>
+			<!-- Boxed List / End -->
+
+			<!-- Reviews Section -->
+			<div class="boxed-list margin-bottom-60">
+				<div class="boxed-list-headline">
+					<h3><i class="icon-material-outline-thumb-up"></i> Patient Reviews</h3>
+				</div>
+				<ul class="boxed-list-ul">
+					{% for rev in reviews %}
+                        <li>
+                            <div class="boxed-list-item">
+                                <!-- Avatar -->
+                                <div class="item-image" style="width: 60px; padding-right: 15px;">
+                                    {% if rev.userID.profilePic %}
+                                    <img src="{{ rev.userID.profilePic.url }}" alt="" style="width: 100%; border-radius: 50%;">
+                                    {% else %}
+                                    <img src="/static/images/avatar.png" alt="" style="width: 100%; border-radius: 50%;">
+                                    {% endif %}
+                                </div>
+                                <!-- Content -->
+                                <div class="item-content">
+                                    <h4>{{ rev.userID.userName }}</h4>
+                                    <div class="item-details margin-top-10">
+                                        <div class="star-rating" data-rating="{{ rev.rating|floatformat:1 }}"></div>
+                                        <div class="detail-item"><i class="icon-material-outline-date-range"></i> {{ rev.createdDT|date:"d M Y" }}</div>
+                                    </div>
+                                    <div class="item-description">
+                                        <p>{{ rev.review }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+					{% empty %}
+                        <li>
+                            <div class="boxed-list-item">
+                                <div class="item-content">
+                                    <h4>No reviews yet.</h4>
+                                </div>
+                            </div>
+                        </li>
+					{% endfor %}
+				</ul>
+			</div>
+
+			
+
+		</div>
+		
+
+		<!-- Sidebar -->
+		<div class="col-xl-4 col-lg-4">
+			<div class="sidebar-container">
+				
+				<!-- Profile Overview -->
+				<div class="profile-overview text-center">
+					<div class="overview-item"><strong>{{ blog_count }}</strong><span>Total Posts</span></div>
+					<div class="overview-item" style="margin-top: 10px;"><strong>{{ follower_count }}</strong><span>Followers</span></div>
+					<div class="overview-item" style="margin-top: 10px;"><strong>{{ review_count }}</strong><span>Reviews</span></div>
+				</div>
+
+				<!-- Follow / Unfollow Button -->
+				{% if not is_own_profile %}
+					{% if is_followed %}
+						<a href="{% url 'followDoctor' doctor.doctorID %}" class="follow-btn unfollow">
+							<i class="icon-feather-user-minus"></i> Unfollow
+						</a>
+					{% else %}
+						<a href="{% url 'followDoctor' doctor.doctorID %}" class="follow-btn follow">
+							<i class="icon-feather-user-plus"></i> Follow
+						</a>
+					{% endif %}
+				{% endif %}
+				{% if request.session.user_id %}
+
+            <div class="sidebar-widget">
+                    <h3>Attachments</h3>
+                    <div class="attachments-container">
+                        {% for img in doctor_images %}
+                        <a href="{{img.imageURL.url}}" class="attachment-box ripple-effect">
+                            <span>Attachment</span>
+                            <i>
+                                {% if '.pdf' in img.imageURL.url|lower %}
+                                <span
+                                    style="font-size: 10px; font-weight: bold; background: #f44336; color: white; padding: 2px 4px; border-radius: 3px;">PDF</span>
+                                {% else %}
+                                <img src="{{img.imageURL.url}}"
+                                    style="width:20px;height:20px;object-fit:cover;border-radius:3px;">
+                                {% endif %}
+                            </i>
+                        </a>
+                        {% empty %}
+                        <p style="color: #888;">No attachments or certifications available.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+			<!-- Leave a Review -->
+			<div class="boxed-list margin-bottom-60">
+				<div class="boxed-list-headline">
+					<h3><i class="icon-material-outline-rate-review"></i> Leave a Review</h3>
+				</div>
+				<div class="boxed-list-item">
+                {% if has_reviewed %}
+                        <div class="notification notice margin-bottom-0">
+                            <p>You have already submitted a review for this doctor. Thank you for your feedback!</p>
+                        </div>
+                    {% elif msg %}
+                        <h1>{{msg}}</h1>
+                    {% else %}
+                        <form method="post" id="leave-company-review-form">{% csrf_token %}
+
+                                <!-- Leave Rating -->
+                                <div class="clearfix"></div>
+                                <div class="leave-rating-container">
+                                    <div class="leave-rating margin-bottom-5">
+                                        <input type="radio" name="rating" id="rating-1" value="5" required>
+                                        <label for="rating-1" class="icon-material-outline-star"></label>
+                                        <input type="radio" name="rating" id="rating-2" value="4" required>
+                                        <label for="rating-2" class="icon-material-outline-star"></label>
+                                        <input type="radio" name="rating" id="rating-3" value="3" required>
+                                        <label for="rating-3" class="icon-material-outline-star"></label>
+                                        <input type="radio" name="rating" id="rating-4" value="2" required>
+                                        <label for="rating-4" class="icon-material-outline-star"></label>
+                                        <input type="radio" name="rating" id="rating-5" value="1" required>
+                                        <label for="rating-5" class="icon-material-outline-star"></label>
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                                        <!-- Leave Rating / End-->
+                                
+                              
+                                        <textarea class="with-border" placeholder="Review" name="message" id="message" cols="7"
+                                    required></textarea>
+                                <!-- Button -->
+                                <input class="button margin-top-35 full-width button-sliding-icon ripple-effect" name="btnReview"
+                                    type="submit" form="leave-company-review-form">
+                        </form>
+                    {% endif %}
+				</div>
+			</div>
+			{% endif %}
+            </div>
+		</div>
+
+	</div>
+</div>
+<style>
+    .attachment-lightbox {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        padding-top: 50px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(5px);
+    }
+
+    .lightbox-content-wrapper {
+        position: relative;
+        margin: auto;
+        width: 90%;
+        max-width: 1000px;
+        height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .lightbox-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        display: none;
+        animation: fadeIn 0.3s;
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        color: #fff;
+        font-size: 35px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        background: rgba(0, 0, 0, 0.5);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    .lightbox-close:hover {
+        color: #f44336;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .lightbox-prev,
+    .lightbox-next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        color: white;
+        font-weight: bold;
+        font-size: 24px;
+        transition: 0.3s ease;
+        border-radius: 50%;
+        user-select: none;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .lightbox-prev:hover,
+    .lightbox-next:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .lightbox-prev {
+        left: -60px;
+    }
+
+    .lightbox-next {
+        right: -60px;
+    }
+
+    .lightbox-counter {
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        font-size: 16px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 5px 15px;
+        border-radius: 20px;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .lightbox-prev {
+            left: 10px;
+        }
+
+        .lightbox-next {
+            right: 10px;
+        }
+
+        .lightbox-close {
+            top: -60px;
+            right: 10px;
+        }
+    }
+</style>
+<div id="attachmentsLightbox" class="attachment-lightbox">
+    <div class="lightbox-content-wrapper">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+
+        <!-- Next/Previous controls -->
+        <a class="lightbox-prev" onclick="changeSlide(-1)">&#10094;</a>
+
+        <div id="lightbox-images-container"
+            style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+            <!-- Images will be cloned here via JS -->
+        </div>
+
+        <a class="lightbox-next" onclick="changeSlide(1)">&#10095;</a>
+
+        <div class="lightbox-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">1</span>
+        </div>
+    </div>
+</div>
+<script>
+    let currentSlideIndex = 0;
+    const lightbox = document.getElementById('attachmentsLightbox');
+    const container = document.getElementById('lightbox-images-container');
+    let images = [];
+
+    // Initialize the gallery
+    document.addEventListener('DOMContentLoaded', function () {
+        // Find all attachment links
+        const attachmentLinks = document.querySelectorAll('.attachments-container > a');
+
+        let imageCounter = 0;
+
+        if (attachmentLinks.length > 0) {
+            attachmentLinks.forEach((link, index) => {
+                let slideIndex = imageCounter;
+                imageCounter++;
+
+                // Prevent default navigation to keep the user on the page
+                link.onclick = function (e) {
+                    e.preventDefault();
+                    if (images.length > 0) {
+                        openLightbox(slideIndex);
+                    }
+                };
+
+                // If it's a PDF, create an object tag instead of an img
+                if (link.href.toLowerCase().includes('.pdf')) {
+                    const embed = document.createElement('object');
+                    embed.data = link.href;
+                    embed.type = 'application/pdf';
+                    embed.className = 'lightbox-image';
+                    embed.style.width = '100%';
+                    embed.style.height = '100%';
+                    embed.style.backgroundColor = 'white';
+
+                    // Fallback for browsers that can't render the PDF
+                    const fallback = document.createElement('p');
+                    fallback.innerHTML = `It appears you don't have a PDF plugin for this browser. <a href="${link.href}" target="_blank">Click here to download the PDF file.</a>`;
+                    embed.appendChild(fallback);
+
+                    container.appendChild(embed);
+                    images.push(embed);
+                } else {
+                    // Create an img element for the lightbox
+                    const img = document.createElement('img');
+                    img.src = link.href;
+                    img.className = 'lightbox-image';
+                    container.appendChild(img);
+                    images.push(img);
+                }
+            });
+
+            if (images.length > 0) {
+                document.getElementById('total-slides').innerText = images.length;
+            } else {
+                document.querySelector('.lightbox-counter').style.display = 'none';
+            }
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "Escape" && lightbox.style.display === "block") {
+                closeLightbox();
+            } else if (event.key === "ArrowLeft" && lightbox.style.display === "block") {
+                changeSlide(-1);
+            } else if (event.key === "ArrowRight" && lightbox.style.display === "block") {
+                changeSlide(1);
+            }
+        });
+
+        // Close modal when clicking outside the content (wrapper or overlay)
+        lightbox.addEventListener('click', function (event) {
+            if (event.target === lightbox || event.target === container || event.target.className === 'lightbox-content-wrapper') {
+                closeLightbox();
+            }
+        });
+    });
+
+    function openLightbox(index) {
+        if (images.length === 0) return;
+        lightbox.style.display = "block";
+        document.body.style.overflow = "hidden"; // Prevent background scrolling
+        showSlide(index);
+    }
+
+    function closeLightbox() {
+        lightbox.style.display = "none";
+        document.body.style.overflow = "auto";
+
+        // Stop videos/pdfs inside tags from continuing to play/load
+        images.forEach(el => {
+            if (el.tagName.toLowerCase() === 'iframe') {
+                let src = el.src;
+                el.src = src; // reload iframe
+            } else if (el.tagName.toLowerCase() === 'object') {
+                let data = el.data;
+                el.data = data;
+            }
+        });
+    }
+
+    function changeSlide(n) {
+        if (images.length > 0) {
+            showSlide(currentSlideIndex + n);
+        }
+    }
+
+    function showSlide(index) {
+        if (images.length === 0) return;
+
+        // Handle wrapping around
+        if (index >= images.length) {
+            currentSlideIndex = 0;
+        } else if (index < 0) {
+            currentSlideIndex = images.length - 1;
+        } else {
+            currentSlideIndex = index;
+        }
+
+        // Hide all images
+        for (let i = 0; i < images.length; i++) {
+            images[i].style.display = "none";
+        }
+
+        // Show the current image
+        images[currentSlideIndex].style.display = "block";
+
+        // Update counter
+        document.getElementById('current-slide').innerText = currentSlideIndex + 1;
+    }
+</script>
+
+{% endblock %}

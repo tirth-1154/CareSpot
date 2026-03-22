@@ -1,0 +1,123 @@
+{% extends 'customadmin/admin_base.html' %}
+
+{% block page_title %}Patients List{% endblock %}
+{% block page_subtitle %}Manage patient profiles and accounts. Total: {{ total_count }}{% endblock %}
+
+{% block header_actions %}
+<span class="badge badge-admin warning p-2 px-3 fs-6" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;">
+    <i class="fa-solid fa-bed-pulse me-1"></i> {{ total_count }} Patients
+</span>
+{% endblock %}
+
+{% block content %}
+
+<!-- Filter Bar -->
+<form method="GET" class="filter-bar animate-in">
+    <div class="search-input">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" name="q" placeholder="Search patient name or email..." value="{{ query }}">
+    </div>
+    
+    <select name="gender" class="filter-select">
+        <option value="">Gender (All)</option>
+        <option value="Male" {% if gender_filter == 'Male' %}selected{% endif %}>Male</option>
+        <option value="Female" {% if gender_filter == 'Female' %}selected{% endif %}>Female</option>
+        <option value="Other" {% if gender_filter == 'Other' %}selected{% endif %}>Other</option>
+    </select>
+
+    <select name="blood" class="filter-select">
+        <option value="">Blood Group (All)</option>
+        <option value="A+" {% if blood_filter == 'A+' %}selected{% endif %}>A+</option>
+        <option value="A-" {% if blood_filter == 'A-' %}selected{% endif %}>A-</option>
+        <option value="B+" {% if blood_filter == 'B+' %}selected{% endif %}>B+</option>
+        <option value="B-" {% if blood_filter == 'B-' %}selected{% endif %}>B-</option>
+        <option value="AB+" {% if blood_filter == 'AB+' %}selected{% endif %}>AB+</option>
+        <option value="AB-" {% if blood_filter == 'AB-' %}selected{% endif %}>AB-</option>
+        <option value="O+" {% if blood_filter == 'O+' %}selected{% endif %}>O+</option>
+        <option value="O-" {% if blood_filter == 'O-' %}selected{% endif %}>O-</option>
+    </select>
+    
+    <button type="submit" class="filter-btn">Filter Patients</button>
+    {% if query or gender_filter or blood_filter %}
+        <a href="{% url 'customadmin:admin_patients' %}" class="filter-reset">Clear</a>
+    {% endif %}
+</form>
+
+<!-- Patients Table -->
+<div class="admin-card animate-in">
+    <div class="admin-card-body p-0">
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient Info</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Blood Group</th>
+                        <th>Address</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>#{{ patient.clientID }}</td>
+                        <td>
+                            <div class="user-cell">
+                                {% if patient.userID.profilePic %}
+                                    <img src="{{ patient.userID.profilePic.url }}" alt="{{ patient.name }}">
+                                {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ patient.name }}&background=f43f5e&color=fff" alt="{{ patient.name }}">
+                                {% endif %}
+                                <div class="user-cell-info">
+                                    <div class="name">{{ patient.name }}</div>
+                                    <div class="email">{{ patient.userID.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ patient.dob|date:"M d, Y" }}</td>
+                        <td>
+                            {% if patient.gender == 'Male' %}
+                                <i class="fa-solid fa-mars text-primary me-1"></i>
+                            {% elif patient.gender == 'Female' %}
+                                <i class="fa-solid fa-venus text-danger me-1"></i>
+                            {% endif %}
+                            {{ patient.gender }}
+                        </td>
+                        <td>
+                            {% if patient.bloodGroup %}
+                                <span class="badge-admin danger" style="padding: 2px 8px;"><i class="fa-solid fa-droplet me-1"></i> {{ patient.bloodGroup }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ patient.address }}">
+                                {{ patient.address|default:"-" }}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="action-btn delete" onclick="showDeleteModal('{% url 'customadmin:admin_patient_delete' patient.clientID %}', 'patient {{ patient.name }}')" title="Delete Patient">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-bed-pulse"></i>
+                                <h4>No patients found</h4>
+                                <p>Try adjusting your search or filters.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'customadmin/admin_base.html' %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+{% block page_subtitle %}Real-time statistics and activity for CareSpot platform.{% endblock %}
+
+{% block content %}
+
+<!-- API URL for charts -->
+<input type="hidden" id="chartDataUrl" value="{% url 'customadmin:admin_chart_data' %}">
+
+<!-- Stat Cards -->
+<div class="stat-cards animate-in">
+    <div class="stat-card primary">
+        <div class="stat-info">
+            <div class="label">Total Doctors</div>
+            <div class="value counter-value" data-target="{{ total_doctors }}">0</div>
+            <div class="trend up"><i class="fa-solid fa-arrow-trend-up"></i> + Active this week</div>
+        </div>
+        <div class="stat-icon"><i class="fa-solid fa-user-doctor"></i></div>
+    </div>
+
+    <div class="stat-card success">
+        <div class="stat-info">
+            <div class="label">Total Patients</div>
+            <div class="value counter-value" data-target="{{ total_patients }}">0</div>
+            <div class="trend up"><i class="fa-solid fa-arrow-trend-up"></i> + New registrations</div>
+        </div>
+        <div class="stat-icon"><i class="fa-solid fa-bed-pulse"></i></div>
+    </div>
+
+    <div class="stat-card warning">
+        <div class="stat-info">
+            <div class="label">Total Appointments</div>
+            <div class="value counter-value" data-target="{{ total_appointments }}">0</div>
+            <div class="trend"><i class="fa-regular fa-clock"></i> {{ today_appointments }} today</div>
+        </div>
+        <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+    </div>
+
+    <div class="stat-card violet">
+        <div class="stat-info">
+            <div class="label">Average Rating</div>
+            <div class="value counter-value" data-target="{{ avg_rating }}">0</div>
+            <div class="trend"><i class="fa-solid fa-star text-warning"></i> From {{ total_reviews }} reviews</div>
+        </div>
+        <div class="stat-icon"><i class="fa-solid fa-star-half-stroke"></i></div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="charts-grid animate-in">
+    <!-- Line Chart -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h3>Appointments Trend (Last 7 Days)</h3>
+        </div>
+        <div class="admin-card-body">
+            <div class="chart-container">
+                <canvas id="appointmentsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doughnut Chart -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h3>Appointment Status</h3>
+        </div>
+        <div class="admin-card-body">
+            <div class="chart-container">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bar Chart -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h3>User Registrations (Last 7 Days)</h3>
+        </div>
+        <div class="admin-card-body">
+            <div class="chart-container">
+                <canvas id="usersChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Horizontal Bar Chart -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h3>Top Specializations</h3>
+        </div>
+        <div class="admin-card-body">
+            <div class="chart-container">
+                <canvas id="specChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Two Columns -->
+<div class="two-col-grid animate-in">
+    <!-- Top Doctors -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h3>Top Rated Doctors</h3>
+            <a href="{% url 'customadmin:admin_doctors' %}" class="btn-link text-primary text-decoration-none" style="font-size: 0.85rem; font-weight: 500;">View All</a>
+        </div>
+        <div class="admin-card-body p-0">
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <tbody>
+                        {% for doc in top_doctors %}
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <img src="{{ doc.userID.profilePic.url|default:'https://ui-avatars.com/api/?name=Dr&background=0D8ABC&color=fff' }}" alt="">
+                                    <div class="user-cell-info">
+                                        <div class="name">{{ doc.displayName }}</div>
+                                        <div class="email">{{ doc.subcategoryID.subcategoryName }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-right" style="text-align: right;">
+                                <div class="star-rating">
+                                    <i class="fa-solid fa-star"></i> {{ doc.avg_rating|floatformat:1|default:"0.0" }}
+                                    <div style="font-size: 0.7rem; color: #94a3b8;">{{ doc.review_count }} reviews</div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center py-4 text-muted">No doctors found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h3>Quick Links</h3>
+        </div>
+        <div class="admin-card-body">
+            <div class="quick-actions">
+                <a href="{% url 'customadmin:admin_categories' %}" class="quick-action-btn">
+                    <i class="fa-solid fa-layer-group"></i>
+                    Categories
+                </a>
+                <a href="{% url 'customadmin:admin_locations' %}" class="quick-action-btn">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    Locations
+                </a>
+                <a href="{% url 'customadmin:admin_reviews' %}" class="quick-action-btn">
+                    <i class="fa-solid fa-comments"></i>
+                    Reviews
+                </a>
+                <a href="/admin/" target="_blank" class="quick-action-btn" style="border-color: rgba(139, 92, 246, 0.3); color: var(--admin-accent-violet);">
+                    <i class="fa-brands fa-python"></i>
+                    Django Admin
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

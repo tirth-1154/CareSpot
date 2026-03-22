@@ -1,0 +1,99 @@
+{% extends 'customadmin/admin_base.html' %}
+
+{% block page_title %}Total Users{% endblock %}
+{% block page_subtitle %}Manage all registered users on the platform. Total: {{ total_count }}{% endblock %}
+
+{% block header_actions %}
+<span class="badge badge-admin info p-2 px-3 fs-6">
+    <i class="fa-solid fa-users me-1"></i> {{ total_count }} Total
+</span>
+{% endblock %}
+
+{% block content %}
+
+<!-- Filter Bar -->
+<form method="GET" class="filter-bar animate-in">
+    <div class="search-input">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" name="q" placeholder="Search by name, email, or phone..." value="{{ query }}">
+    </div>
+    
+    <select name="role" class="filter-select">
+        <option value="">All Roles</option>
+        <option value="patient" {% if role_filter == 'patient' %}selected{% endif %}>Patients Only</option>
+        <option value="doctor" {% if role_filter == 'doctor' %}selected{% endif %}>Doctors Only</option>
+    </select>
+    
+    <button type="submit" class="filter-btn">Filter Users</button>
+    {% if query or role_filter %}
+        <a href="{% url 'customadmin:admin_users' %}" class="filter-reset">Clear</a>
+    {% endif %}
+</form>
+
+<!-- Users Table -->
+<div class="admin-card animate-in">
+    <div class="admin-card-body p-0">
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User Profile</th>
+                        <th>Mobile</th>
+                        <th>City</th>
+                        <th>Role</th>
+                        <th>Registered On</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>#{{ user.userID }}</td>
+                        <td>
+                            <div class="user-cell">
+                                {% if user.profilePic %}
+                                    <img src="{{ user.profilePic.url }}" alt="{{ user.userName }}">
+                                {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ user.userName }}&background=0ea5e9&color=fff" alt="{{ user.userName }}">
+                                {% endif %}
+                                <div class="user-cell-info">
+                                    <div class="name">{{ user.userName }}</div>
+                                    <div class="email">{{ user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ user.mobileNumber|default:"-" }}</td>
+                        <td>{{ user.cityID.cityName|default:"-" }}</td>
+                        <td>
+                            {% if user.IsDoctor %}
+                                <span class="badge-admin success"><i class="fa-solid fa-user-doctor me-1"></i> Doctor</span>
+                            {% else %}
+                                <span class="badge-admin info"><i class="fa-solid fa-user me-1"></i> Patient</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.registrationDT|date:"M d, Y" }}</td>
+                        <td class="text-center">
+                            <button type="button" class="action-btn delete" onclick="showDeleteModal('{% url 'customadmin:admin_user_delete' user.userID %}', 'user {{ user.userName }}')" title="Delete User">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-users-slash"></i>
+                                <h4>No users found</h4>
+                                <p>Try adjusting your search or filters.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

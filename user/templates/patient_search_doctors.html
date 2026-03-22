@@ -1,0 +1,464 @@
+{% extends 'patient_base.html' %}
+{% block nav_doctors_sidebar %}active{% endblock %}
+
+{% block title %}Find a Doctor | CareSpot{% endblock %}
+
+{% block content %} 
+    <!-- Custom CSS Styling -->
+    <style>
+        :root {
+            --primary-color: #0d6efd; /* Medical Blue */
+            --secondary-color: #198754; /* Success Green */
+            --bg-light: #f4f7f6;
+            --sidebar-width: 260px;
+            
+            /* Search Page specifics */
+            --primary-blue: #0d6efd;
+            --soft-green: #198754;
+            --card-radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            padding: 85px 30px 30px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Search Page Specific Elements --- */
+        .search-container {
+            border-radius: var(--card-radius);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .filter-panel {
+            background: #fff;
+            border-radius: var(--card-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid #f0f2f5;
+        }
+
+        .filter-panel h6 {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+
+        .filter-checkbox {
+            accent-color: var(--primary-blue);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .doctor-card {
+            border: none;
+            border-radius: var(--card-radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .doctor-img-wrapper {
+            position: relative;
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .doctor-img-wrapper img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #e7f1ff;
+        }
+
+        .doctor-rating {
+            color: #ffd700;
+            font-size: 14px;
+        }
+        
+        .fee-badge {
+            background-color: #e8f5e9;
+            color: var(--soft-green);
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* Override bootstrap focus rings for a cleaner look */
+        .form-control:focus, .form-select:focus {
+            border-color: #8dbbf8;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding-top: 80px;
+            }
+        }
+
+        /* Clear Search Button */
+        .clear-search-btn {
+            background-color: white !important;
+            color: #6c757d !important;
+            border: 1px solid #dee2e6 !important;
+            transition: none !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 48px !important;
+            height: 48px !important;
+            padding: 0 !important;
+        }
+
+        .clear-search-btn:hover {
+            background-color: white !important;
+            color: #6c757d !important;
+            transform: none !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+        }
+    </style>
+
+
+        
+        <div class="container-fluid py-0 px-0">
+
+            <!-- 1. Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-stethoscope text-primary me-2"></i>Find a Doctor</h2>
+                    <p class="text-muted mb-0">Search doctors by specialization, department, or name to book your next appointment.</p>
+                </div>
+            </div>
+
+            <!-- 2. Main Search Bar Section -->
+            <div class="search-container bg-white p-3 mb-4">
+                <form method="GET" action="{% url 'patientDoctorsList' %}">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-9 position-relative">
+                            <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                            <input type="text" name="search_query" id="liveSearchInput" class="form-control form-control-lg ps-5 border-0 bg-light rounded-pill" placeholder="Search by Doctor Name, Specialization, or City..." value="{{ search_query }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill flex-grow-1 fw-medium shadow-sm">Search</button>
+                            <a href="{% url 'patientDoctorsList' %}" class="btn btn-lg rounded-pill clear-search-btn shadow-sm" title="Clear Search">
+                                <i class="fa-solid fa-xmark"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row g-4">
+                
+                <!-- 3. Filter Panel (Left Side) -->
+                <div class="col-lg-3">
+                    <div class="filter-panel p-4 position-sticky" style="top: 100px;">
+                        <form method="GET" action="{% url 'patientDoctorsList' %}">
+                            
+                            <!-- Keep search query on filter apply -->
+                            {% if search_query %}
+                            <input type="hidden" name="search_query" value="{{ search_query }}">
+                            {% endif %}
+
+                            <!-- Specialization (Subcategory) Filter -->
+                            <div class="mb-4">
+                                <h6>Specialization</h6>
+                                <select class="form-select text-muted" name="subcategory">
+                                    <option value="">All Specializations</option>
+                                    {% for sc in subcategories %}
+                                    <option value="{{ sc.subcategoryID }}" {% if selected_subcategory == sc.subcategoryID|stringformat:"d" %}selected{% endif %}>{{ sc.subcategoryName }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <hr class="text-muted opacity-25">
+
+                            <!-- City Filter -->
+                            <div class="mb-4">
+                                <h6>City</h6>
+                                <select class="form-select text-muted" name="city">
+                                    <option value="">All Cities</option>
+                                    {% for city in cities %}
+                                    <option value="{{ city.cityID }}" {% if selected_city == city.cityID|stringformat:"d" %}selected{% endif %}>{{ city.cityName }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <hr class="text-muted opacity-25">
+
+                            <!-- Experience Filter -->
+                            <div class="mb-4">
+                                <h6>Experience</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="experience" value="" id="exp_all" {% if not selected_experience %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="exp_all">All</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="experience" value="1-5" id="exp_1" {% if selected_experience == '1-5' %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="exp_1">1 - 5 Years</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="experience" value="5-10" id="exp_5" {% if selected_experience == '5-10' %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="exp_5">5 - 10 Years</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="experience" value="10+" id="exp_10" {% if selected_experience == '10+' %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="exp_10">10+ Years</label>
+                                </div>
+                            </div>
+
+                            <hr class="text-muted opacity-25">
+
+                            <!-- Rating Filter -->
+                            <div class="mb-4">
+                                <h6>Rating</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="rating" value="" id="rating_all" {% if not selected_rating %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="rating_all">All Ratings</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="rating" value="4.5" id="rating_45" {% if selected_rating == '4.5' %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="rating_45"><span class="doctor-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></span> 4.5 & up</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="rating" value="4" id="rating_4" {% if selected_rating == '4' %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="rating_4"><span class="doctor-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></span> 4.0 & up</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="rating" value="3" id="rating_3" {% if selected_rating == '3' %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="rating_3"><span class="doctor-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></span> 3.0 & up</label>
+                                </div>
+                            </div>
+
+                            <hr class="text-muted opacity-25">
+
+                            <!-- Consultation Mode Filter -->
+                            <div class="mb-4">
+                                <h6>Consultation Mode</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="mode" value="" id="mode_all" {% if not selected_mode %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="mode_all">All Modes</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="mode" value="1" id="mode_online" {% if selected_mode == '1' %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="mode_online"><i class="fa-solid fa-video text-success me-1"></i> Online</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="mode" value="2" id="mode_offline" {% if selected_mode == '2' %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="mode_offline"><i class="fa-solid fa-hospital text-primary me-1"></i> Offline</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input filter-checkbox" type="radio" name="mode" value="3" id="mode_both" {% if selected_mode == '3' %}checked{% endif %}>
+                                    <label class="form-check-label text-muted" for="mode_both"><i class="fa-solid fa-arrows-left-right text-info me-1"></i> Both</label>
+                                </div>
+                            </div>
+
+                            <!-- Filter Actions -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary rounded-pill fw-medium">Apply Filters</button>
+                                <a href="{% url 'patientDoctorsList' %}" class="btn btn-outline-secondary rounded-pill fw-medium border-0 bg-light">Reset Filters</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Side Content -->
+                <div class="col-lg-9">
+                    
+                    <!-- 5. Sorting Options & Result Count -->
+                    <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm border border-light">
+                        <div class="text-muted fw-medium">
+                            Found <span class="text-dark fw-bold" id="doctorCount">{{ doctors|length }}</span> doctors
+                            {% if search_query %}<span class="ms-2">for "<strong>{{ search_query }}</strong>"</span>{% endif %}
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small whitespace-nowrap">Sort by:</span>
+                            <select class="form-select form-select-sm rounded-pill border-0 bg-light fw-medium focus-ring-none" style="width: auto;" id="sortSelect" onchange="applySort(this.value)">
+                                <option value="recommended" {% if selected_sort == 'recommended' or not selected_sort %}selected{% endif %}>Recommended</option>
+                                <option value="rating" {% if selected_sort == 'rating' %}selected{% endif %}>Highest Rating</option>
+                                <option value="experience" {% if selected_sort == 'experience' %}selected{% endif %}>Most Experience</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 4. Doctor Results Grid -->
+                    <div class="row g-4" id="doctorGrid">
+                        
+                        {% for doctor in doctors %}
+                        <div class="col-md-6 col-xl-4 doctor-card-wrapper" data-name="{{ doctor.displayName|lower }}" data-specialization="{{ doctor.subcategoryID.subcategoryName|lower }}" data-city="{{ doctor.userID.cityID.cityName|lower }}" data-address="{{ doctor.displayAddress|lower }}">
+                            <div class="card doctor-card h-100 p-3">
+                                <!-- Profile Image -->
+                                <div class="doctor-img-wrapper">
+                                    {% if doctor.userID.profilePic %}
+                                    <img src="{{ doctor.userID.profilePic.url }}" alt="{{ doctor.displayName }}">
+                                    {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ doctor.displayName }}&background=random" alt="{{ doctor.displayName }}">
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="card-body text-center px-1 pb-1">
+                                    <h5 class="card-title fw-bold text-dark mb-1">{{ doctor.displayName }}</h5>
+                                    <p class="text-primary fw-medium small mb-2">{{ doctor.subcategoryID.subcategoryName }}</p>
+                                    
+                                    <!-- Rating -->
+                                    <div class="doctor-rating mb-2">
+                                        {% if doctor.avg_rating %}
+                                            {% with rating=doctor.avg_rating %}
+                                                {% if rating >= 1 %}<i class="fa-solid fa-star"></i>{% elif rating >= 0.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
+                                                {% if rating >= 2 %}<i class="fa-solid fa-star"></i>{% elif rating >= 1.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
+                                                {% if rating >= 3 %}<i class="fa-solid fa-star"></i>{% elif rating >= 2.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
+                                                {% if rating >= 4 %}<i class="fa-solid fa-star"></i>{% elif rating >= 3.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
+                                                {% if rating >= 5 %}<i class="fa-solid fa-star"></i>{% elif rating >= 4.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
+                                            {% endwith %}
+                                            <span class="text-muted ms-1 small fw-medium">({{ doctor.avg_rating|floatformat:1 }})</span>
+                                        {% else %}
+                                            <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+                                            <span class="text-muted ms-1 small fw-medium">(No ratings)</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Meta info list -->
+                                    <ul class="list-unstyled text-muted small text-start mb-4 mt-3 bg-light rounded-3 p-3">
+                                        <li class="mb-2"><i class="fa-regular fa-hospital mt-1 me-2 text-primary w-15px text-center"></i> {{ doctor.displayAddress }}</li>
+                                        <li class="mb-2"><i class="fa-solid fa-briefcase-medical mt-1 me-2 text-warning w-15px text-center"></i> {{ doctor.yearOfExperience }} Years Experience</li>
+                                        <li class="mb-2"><i class="fa-solid fa-phone mt-1 me-2 text-info w-15px text-center"></i> {{ doctor.displayContact }}</li>
+                                        <li class="mb-2"><i class="fa-solid fa-stethoscope mt-1 me-2 text-success w-15px text-center"></i> Mode: {% if doctor.mode == 1 %}Online{% elif doctor.mode == 2 %}Offline{% else %}Both{% endif %}</li>
+                                    </ul>
+                                    
+                                    <!-- Action Buttons -->
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'viewDoctorProfile' doctor.doctorID %}" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-medium">View Profile</a>
+                                        <a href="{% url 'patientAppointments' %}?doctor_id={{ doctor.doctorID }}" class="btn btn-primary btn-sm rounded-pill flex-grow-1 fw-medium shadow-sm">Book</a>
+                                        <a href="{% url 'patientMessages' %}?partner={{ doctor.userID.userID }}" class="btn btn-success btn-sm rounded-pill px-3 fw-medium shadow-sm" title="Message Doctor"><i class="fa-solid fa-comment"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        
+                        <!-- No Result UI (server-side) -->
+                        <div class="col-12 text-center py-5 my-5" id="serverNoResult">
+                            <div class="mb-4">
+                                <i class="fa-solid fa-user-doctor text-muted opacity-25" style="font-size: 80px;"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark">No doctors found{% if search_query %} matching "{{ search_query }}"{% endif %}.</h4>
+                            <p class="text-muted fs-5">Try adjusting your filters or clearing your search query.</p>
+                            <a href="{% url 'patientAppointments' %}?doctor_id={{ doctor.doctorID }}" class="btn btn-primary btn-sm rounded-pill w-50 fw-medium shadow-sm">Book Appt.</a>
+                        </div>
+                        
+                        {% endfor %}
+
+                    </div>
+
+                    <!-- 6. Pagination -->
+                    {% if doctors.has_other_pages or True %} <!-- Added True to show static pagination -->
+                    <nav aria-label="Doctor search pagination" class="mt-5">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link rounded-pill px-3 me-2 border-0 shadow-sm text-secondary" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                            </li>
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link rounded-circle border-0 shadow-sm mx-1" href="#" style="background-color: var(--primary-blue);">1</a>
+                            </li>
+                            <li class="page-item"><a class="page-link rounded-circle border-0 text-dark mx-1 fw-medium bg-white shadow-sm" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link rounded-circle border-0 text-dark mx-1 fw-medium bg-white shadow-sm" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link rounded-pill px-3 ms-2 border-0 text-primary shadow-sm bg-white fw-medium" href="#">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+    <!-- No Result (JS live search) - hidden by default -->
+    <div class="col-12 text-center py-5 my-5 d-none" id="liveNoResult">
+        <div class="mb-4">
+            <i class="fa-solid fa-user-doctor text-muted opacity-25" style="font-size: 80px;"></i>
+        </div>
+        <h4 class="fw-bold text-dark">No doctors match your search.</h4>
+        <p class="text-muted fs-5">Try a different keyword.</p>
+    </div>
+
+    <!-- Sort & Live Search JS -->
+    <script>
+        function applySort(sortVal) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('sort', sortVal);
+            window.location.href = url.toString();
+        }
+
+        // Live search as you type
+        const searchInput = document.getElementById('liveSearchInput');
+        const doctorCards = document.querySelectorAll('.doctor-card-wrapper');
+        const doctorCount = document.getElementById('doctorCount');
+        const liveNoResult = document.getElementById('liveNoResult');
+        const doctorGrid = document.getElementById('doctorGrid');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const words = query.split(/\s+/).filter(w => w.length > 0);
+            let visibleCount = 0;
+
+            doctorCards.forEach(card => {
+                const name = card.dataset.name || '';
+                const spec = card.dataset.specialization || '';
+                const city = card.dataset.city || '';
+                const address = card.dataset.address || '';
+                const fullText = name + ' ' + spec + ' ' + city + ' ' + address;
+
+                // Every typed word must match somewhere in the card's text
+                const matches = words.length === 0 || words.every(word => fullText.includes(word));
+
+                if (matches) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update count
+            doctorCount.textContent = visibleCount;
+
+            // Show/hide no-result message
+            if (visibleCount === 0 && doctorCards.length > 0) {
+                liveNoResult.classList.remove('d-none');
+                doctorGrid.appendChild(liveNoResult);
+            } else {
+                liveNoResult.classList.add('d-none');
+            }
+        });
+    </script>
+
+{% endblock %}

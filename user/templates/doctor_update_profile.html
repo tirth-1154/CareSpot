@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+{% block title %}Update Profile{% endblock %}
+{% block nav_dashboard %}current{% endblock %}
+{% block sidebar_nav_settings %}active{% endblock %}
+{% block nav_home %}{% endblock %}
+
+{% block css %}
+<style>
+    /* Profile Update Settings UI */
+    .dashboard-headline {
+        margin-bottom: 30px;
+    }
+    
+    .dashboard-headline h3 {
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+    }
+
+    .subtitle {
+        color: #6c757d;
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 0;
+    }
+
+    /* Form Boxes */
+    .dashboard-box {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin-bottom: 30px;
+        border: none;
+        overflow: hidden;
+    }
+
+    .dashboard-box .headline {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eef2f5;
+        background-color: #fdfdfd;
+    }
+    
+    .dashboard-box .headline h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+    }
+
+    .dashboard-box .headline h3 i {
+        color: var(--primary-color);
+        margin-right: 12px;
+        font-size: 20px;
+    }
+
+    .dashboard-box .content {
+        padding: 30px;
+    }
+
+    /* Input Fields Modernization */
+    .submit-field {
+        margin-bottom: 25px;
+    }
+
+    .submit-field h5 {
+        font-size: 14.5px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .with-border {
+        width: 100%;
+        padding: 12px 18px;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+        background-color: #f8fafc;
+        font-size: 15px;
+        color: #495057;
+        transition: all 0.2s ease-in-out;
+        box-shadow: none;
+        box-sizing: border-box;
+    }
+
+    .with-border:focus {
+        background-color: #fff;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(15, 109, 182, 0.1);
+        outline: none;
+    }
+    
+    textarea.with-border {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    /* Avatar Upload Styling */
+    .avatar-wrapper {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        margin: 0 auto 30px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border: 4px solid #fff;
+        overflow: hidden;
+        background: #f8fafc;
+    }
+
+    .profile-pic {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .upload-button {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,0.6);
+        padding: 6px 0;
+        text-align: center;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        opacity: 0.8;
+    }
+    
+    .avatar-wrapper:hover .upload-button {
+        opacity: 1;
+        padding: 10px 0;
+    }
+
+    .upload-button::before {
+        content: "\f030";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        margin-right: 5px;
+    }
+
+    .file-upload {
+        display: none;
+    }
+    
+    /* Layout Helpers */
+    .flex-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    /* Range Slider Styling */
+    .range-wrap {
+        position: relative;
+        width: 100%;
+        padding-top: 20px;
+    }
+    
+    .range-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        color: #6c757d;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    
+    input[type=range] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: #e0e6ed;
+        outline: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #fff;
+        border: 3px solid var(--primary-color);
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.2s;
+    }
+    
+    input[type=range]::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    
+    output {
+        position: absolute;
+        bottom: 40px;
+        left: 0;
+        background: var(--primary-color);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        transform: translateX(-50%);
+    }
+    
+    output::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px 5px 0;
+        border-style: solid;
+        border-color: var(--primary-color) transparent transparent transparent;
+    }
+
+    /* Save Button */
+    .save-btn-container {
+        margin-top: 20px;
+        margin-bottom: 50px;
+    }
+    
+    .btn-save {
+        padding: 14px 45px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(15, 109, 182, 0.2);
+        transition: all 0.3s;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(15, 109, 182, 0.3);
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid p-0">
+    <!-- Dashboard Headline -->
+    <div class="dashboard-headline">
+        <h3>Update Profile</h3>
+        <p class="subtitle mt-2">Manage your public information and account settings.</p>
+    </div>
+
+    <!-- Main Update Form -->
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="row">
+
+            <!-- Section 1: My Account -->
+            <div class="col-xl-12">
+                <div class="dashboard-box">
+                    <!-- Headline -->
+                    <div class="headline">
+                        <h3><i class="fa-regular fa-id-badge"></i> Personal Details</h3>
+                    </div>
+                    
+                    <div class="content p-4">
+                        <div class="row align-items-center">
+                            
+                            <!-- Avatar Upload -->
+                            <div class="col-xl-3 col-lg-4 text-center">
+                                <div class="avatar-wrapper" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Change Avatar">
+                                    <img class="profile-pic" src="{{ user.profilePic.url }}" alt="Profile Picture" />
+                                    <div class="upload-button" onclick="document.querySelector('.file-upload').click()">Update Photo</div>
+                                    <input class="file-upload" name="profile" type="file" accept="image/*" onchange="previewImage(this)"/>
+                                </div>
+                                <p class="text-muted small mt-2">Allowed formats: JPG, PNG. Max size 2MB.</p>
+                            </div>
+
+                            <!-- Core Details Fields -->
+                            <div class="col-xl-9 col-lg-8">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="submit-field">
+                                            <h5>Display Name</h5>
+                                            <input type="text" name="displayName" class="with-border" value="{{ doctor.displayName }}" placeholder="e.g. Dr. John Doe" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="submit-field">
+                                            <h5>Email Address</h5>
+                                            <input type="email" name="email" class="with-border" value="{{ doctor.userID.email }}" placeholder="doctor@example.com" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="submit-field">
+                                            <h5>Contact Number</h5>
+                                            <input type="tel" name="contact" class="with-border" value="{{ doctor.displayContact }}" placeholder="+1 234 567 8900">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="submit-field">
+                                            <h5>Clinic / Hospital Address</h5>
+                                            <input type="text" name="address" class="with-border" value="{{ doctor.displayAddress }}" placeholder="123 Medical Center Blvd">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Professional Profile -->
+            <div class="col-xl-12">
+                <div class="dashboard-box">
+                    <!-- Headline -->
+                    <div class="headline">
+                        <h3><i class="fa-solid fa-user-doctor"></i> Professional Profile</h3>
+                    </div>
+
+                    <div class="content p-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="submit-field">
+                                    <h5>Medical Specialty (Sub Category)</h5>
+                                    <select name="subcategory" class="with-border form-select">
+                                        <option value="" disabled>Select your specialty</option>
+                                        {% for sc in subcategories %}
+                                            <option value="{{ sc.subcategoryID }}" {% if sc.subcategoryID == doctor.subcategoryID.subcategoryID %}selected{% endif %}>{{ sc.subcategoryName }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            {% comment %} <div class="col-md-6">
+                                <div class="submit-field">
+                                    <h5>Experience Level (1 = Beginner, 5 = Expert)</h5>
+                                    <div class="range-wrap">
+                                        <input type="range" class="range" name="mode" min="1" max="5" value="{{ doctor.mode|default:1 }}" step="1" oninput="document.getElementById('modeOutput').value = this.value; setOutputPos(this)">
+                                        <output id="modeOutput">{{ doctor.mode|default:1 }}</output>
+                                        <div class="range-labels">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> {% endcomment %}
+
+                            <div class="col-xl-12 mt-3">
+                                <div class="submit-field">
+                                    <h5>Professional Biography</h5>
+                                    <p class="text-muted small mb-2">Write a brief summary of your background, experience, and medical philosophy to help patients know you better.</p>
+                                    <textarea name="bio" class="with-border" placeholder="I am a dedicated medical professional with 10+ years of experience in...">{{ doctor.bio }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Changes Button -->
+            <div class="col-xl-12 save-btn-container text-end">
+                <button type="submit" name="btnUpdate" value="btnUpdate" class="btn btn-primary btn-save">
+                    <i class="fa-solid fa-floppy-disk me-2"></i> Save Profile Changes
+                </button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    // Simple script to handle real-time image preview upon selection
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.querySelector('.profile-pic').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    // Script to handle custom range slider output positioning
+    function setOutputPos(rangeInput) {
+        const output = document.getElementById('modeOutput');
+        const min = rangeInput.min || 0;
+        const max = rangeInput.max || 100;
+        const value = rangeInput.value;
+        const percent = ((value - min) / (max - min)) * 100;
+        // Adjust exact positioning logic
+        output.style.left = `calc(${percent}% + (${8 - percent * 0.15}px))`;
+    }
+    
+    // Initialize slider position onload
+    document.addEventListener('DOMContentLoaded', function() {
+        const slider = document.querySelector('.range');
+        if (slider) setOutputPos(slider);
+        
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+{% endblock %}

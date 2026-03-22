@@ -1,0 +1,161 @@
+{% extends 'base.html' %} 
+{% block title %}My Appointments{% endblock %}
+{% block nav_dashboard %}current{% endblock %}
+{% block sidebar_nav_appointments %}active{% endblock %}
+{% block nav_home %}{% endblock %}
+{% block css %}
+<style>
+    /* Premium Status Badge */
+    .status-accepted-premium {
+        background-color: #e6fffa !important;
+        color: #0b7a70 !important;
+        border: 1px solid #b2f5ea !important;
+        box-shadow: 0 4px 12px rgba(11, 122, 112, 0.1) !important;
+        cursor: default !important;
+        font-weight: 600 !important;
+        animation: fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .status-rejected-premium {
+        background-color: #fff5f5 !important;
+        color: #c53030 !important;
+        border: 1px solid #feb2b2 !important;
+        box-shadow: 0 4px 12px rgba(197, 48, 48, 0.1) !important;
+        cursor: default !important;
+        font-weight: 600 !important;
+        animation: fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .status-accepted-premium i, .status-rejected-premium i {
+        margin-right: 4px;
+    }
+
+    .status-accepted-premium i { color: #0b7a70 !important; }
+    .status-rejected-premium i { color: #c53030 !important; }
+
+    @keyframes fadeInScale {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+
+					<!-- Dashboard Headline -->
+					<div class="dashboard-headline">
+						<h3>Manage Appointments</h3>
+						<span class="margin-top-7">Appointments for {{doctor.displayName}}<a href="#"></a></span>
+
+						<!-- Breadcrumbs -->
+						<nav id="breadcrumbs" class="dark">
+							<ul>
+								<li><a href="#">Home</a></li>
+								<li><a href="#">Dashboard</a></li>
+								<li>Manage Appointments</li>
+							</ul>
+						</nav>
+					</div>
+			
+					<!-- Row -->
+					<div class="row">
+
+						<!-- Dashboard Box -->
+						<div class="col-xl-12">
+							<div class="dashboard-box margin-top-0">
+
+								<!-- Headline -->
+								<div class="headline">
+									{% comment %} <h3><i class="icon-material-outline-supervisor-account"></i>Total {{}} Appointments</h3> {% endcomment %}
+								</div>
+								
+								<div class="content">
+									{% for a in Appointments %}
+									<ul class="dashboard-box-list">
+										<li>
+											<!-- Overview -->
+											<div class="freelancer-overview manage-candidates">
+												<div class="freelancer-overview-inner">
+													
+													<!-- Avatar -->
+													<div class="freelancer-avatar">
+														<div class="verified-badge"></div>
+														<a href="#"><img src="{{a.clientID.userID.profilePic.url}}" alt=""></a>
+													</div>
+
+													<!-- Name -->
+													<div class="freelancer-name">
+														<h4><a href="#">{{a.clientID.name}} <img class="flag" src="images/flags/au.svg" alt="" title="Australia" data-tippy-placement="top"></a></h4>
+
+														<!-- Details -->
+														<span class="freelancer-detail-item"><a href="#"><i class="icon-feather-mail"></i> {{a.clientID.userID.email}}</a></span>
+														<span class="freelancer-detail-item"><i class="icon-feather-clock"></i> {{a.appointmentTime}}</span>
+														<span class="freelancer-detail-item"><i class="icon-feather-phone"></i> {{a.appointmentDate}}</span>
+														
+														
+														<!-- Buttons -->
+														<div class="buttons-to-right always-visible margin-top-25 margin-bottom-5">
+															{% if a.isAccepted %}
+																<span class="button status-accepted-premium">
+																	<i class="icon-feather-check-circle"></i> Accepted
+																</span>
+                                                            {% elif a.isRejected %}
+                                                                <span class="button status-rejected-premium">
+                                                                    <i class="icon-feather-x-circle"></i> Rejected
+                                                                </span>
+															{% else %}
+																<a href="{% url 'acceptAppointment' a.appointmentID %}" class="button ripple-effect"><i class="icon-feather-file-text"></i> Accept</a>
+                                                                <a href="{% url 'rejectAppointment' a.appointmentID %}" class="button gray ripple-effect" title="Reject Appointment" data-tippy-placement="top"><i class="icon-feather-trash-2"></i> Reject</a>
+															{% endif %}
+															<a href="#small-dialog" class="popup-with-zoom-anim button dark ripple-effect"><i class="icon-feather-mail"></i> Send Message</a>
+														</div>
+													</div>
+												</div>
+											</div>
+										</li>
+									</ul>
+									{% endfor %}
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<!-- Row / End -->
+
+					<!-- Footer -->
+					<div class="dashboard-footer-spacer"></div>
+					<div class="small-footer margin-top-15">
+						<div class="small-footer-copyrights">
+							© 2019 <strong>Hireo</strong>. All Rights Reserved.
+						</div>
+						<ul class="footer-social-links">
+							<li>
+								<a href="#" title="Facebook" data-tippy-placement="top">
+									<i class="icon-brand-facebook-f"></i>
+								</a>
+							</li>
+							<li>
+								<a href="#" title="Twitter" data-tippy-placement="top">
+									<i class="icon-brand-twitter"></i>
+								</a>
+							</li>
+							<li>
+								<a href="#" title="Google Plus" data-tippy-placement="top">
+									<i class="icon-brand-google-plus-g"></i>
+								</a>
+							</li>
+							<li>
+								<a href="#" title="LinkedIn" data-tippy-placement="top">
+									<i class="icon-brand-linkedin-in"></i>
+								</a>
+							</li>
+						</ul>
+						<div class="clearfix"></div>
+					</div>
+					<!-- Footer / End -->
+
+				</div>
+			</div>
+
+{% endblock %}

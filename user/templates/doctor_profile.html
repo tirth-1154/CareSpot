@@ -1,0 +1,689 @@
+{% extends 'base.html' %} 
+{% block title %}Doctor Profile{% endblock %}
+{% block nav_dashboard %}{% endblock %}
+{% block sidebar_nav_profile %}active{% endblock %}
+
+{% block css %}
+<style>
+  /* Premium UI Improvements & Fixes for new Theme */
+  .profile-header-card {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: 12px;
+    padding: 40px;
+    color: #fff;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(15, 109, 182, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-header-card::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: url('images/single-freelancer.jpg') center/cover no-repeat;
+    opacity: 0.15;
+    mix-blend-mode: overlay;
+  }
+
+  .profile-avatar-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #fff;
+  }
+
+  .profile-avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-header-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .profile-name {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  .profile-specialty {
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
+  }
+
+  .profile-badges {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .verified-badge-custom {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    backdrop-filter: blur(5px);
+  }
+
+  .rating-display {
+    display: flex;
+    align-items: center;
+    color: #ffd700;
+    font-weight: 600;
+  }
+
+  .rating-display i { margin-right: 5px; }
+  .rating-text { color: rgba(255, 255, 255, 0.8); font-size: 13px; font-weight: normal; margin-left: 5px; }
+
+  /* Content Cards */
+  .dashboard-box {
+    background: var(--card-color);
+    border-radius: 12px;
+    padding: 35px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    margin-bottom: 30px;
+    border: none;
+  }
+
+  .dashboard-box h3.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f1f3f5;
+  }
+
+  .dashboard-box h3.section-title i {
+    color: var(--primary-color);
+    margin-right: 10px;
+  }
+
+  .about-text {
+    color: #555;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  /* Lists */
+  .timeline-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 20px;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    border-bottom: 1px dashed #eef2f5;
+  }
+
+  .timeline-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  .timeline-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    background: rgba(35, 182, 179, 0.1);
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .timeline-icon.blog-img {
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  .timeline-icon.blog-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .timeline-content h4 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 5px;
+  }
+
+  .timeline-content h4 a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .timeline-content h4 a:hover {
+    color: var(--primary-color);
+  }
+
+  .timeline-meta {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .timeline-meta i { margin-right: 5px; color: var(--primary-color); }
+
+  .timeline-desc {
+    font-size: 14px;
+    color: #6c757d;
+    line-height: 1.6;
+    margin: 0;
+    word-break: break-word;
+  }
+
+  /* Sidebar widgets */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-item strong {
+    display: block;
+    font-size: 22px;
+    color: var(--primary-color);
+    font-weight: 700;
+  }
+
+  .stat-item span {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .btn-custom-outline {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .btn-custom-outline:hover {
+    background: var(--primary-color);
+    color: #fff;
+  }
+
+  /* File Uploader */
+  .uploader-box {
+    border: 2px dashed #e0e6ed;
+    border-radius: 10px;
+    padding: 25px 20px;
+    text-align: center;
+    background: #fdfdfd;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    margin-bottom: 15px;
+  }
+
+  .uploader-box:hover {
+    border-color: var(--primary-color);
+    background: rgba(15, 109, 182, 0.02);
+  }
+
+  .uploader-box i {
+    font-size: 30px;
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+  }
+
+  .uploader-box span {
+    display: block;
+    font-size: 13px;
+    color: #6c757d;
+    font-weight: 500;
+  }
+  
+  .uploader-box input[type="file"] {
+    display: none;
+  }
+
+  .btn-submit-upload {
+    width: 100%;
+    background: var(--secondary-color);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .btn-submit-upload:hover {
+    background: #1e9d9b;
+  }
+
+  /* Attachments Grid */
+  .attachments-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .attachment-thumb {
+    width:calc(50% - 5px);
+    height: 80px;
+    border-radius: 8px;
+    background: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid #eef2f5;
+    position: relative;
+  }
+
+  .attachment-thumb:hover {
+    transform: scale(1.05);
+  }
+
+  .attachment-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .attachment-thumb .pdf-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #dc3545;
+  }
+
+  /* Progress Bars */
+  .skill-item {
+    margin-bottom: 15px;
+  }
+
+  .skill-item:last-child { margin-bottom: 0; }
+
+  .skill-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 5px;
+  }
+
+  .progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #eef2f5;
+  }
+
+  .progress-bar {
+    background-color: var(--primary-color);
+    border-radius: 4px;
+  }
+
+  /* Responsive fixes */
+  @media (max-width: 768px) {
+    .profile-header-content {
+      flex-direction: column;
+      text-align: center;
+    }
+    .profile-badges {
+      justify-content: center;
+    }
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+
+  <!-- Header Section -->
+  <div class="profile-header-card">
+    <div class="profile-header-content">
+      <div class="profile-avatar-wrapper">
+        <img src="{{request.session.profilePic|default:'images/avatar.png'}}" alt="Doctor Profile" />
+      </div>
+      <div>
+        <h1 class="profile-name text-white">{{request.session.displayName}}</h1>
+        <div class="profile-specialty">{{request.session.subcategory|default:"Medical Specialist"}}</div>
+        <div class="profile-badges">
+          <div class="rating-display">
+            <i class="fa-solid fa-star"></i> {{ avg_rating|floatformat:1 }}
+            <span class="rating-text">({{ review_count }} Reviews)</span>
+          </div>
+          <div class="verified-badge-custom"><i class="fa-solid fa-check-circle me-1"></i> Verified</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Left Main Content -->
+    <div class="col-xl-8 col-lg-8">
+      
+      <!-- About Section -->
+      <div class="dashboard-box">
+        <h3 class="section-title"><i class="fa-regular fa-id-card"></i> About Me</h3>
+        <div class="about-text">
+          <p>
+            An experienced medical professional focused on providing holistic, patient-centered care. 
+            Leveraging evidence-based frameworks to provide a robust synopsis for high level
+            overviews. Dedicated to continuous learning, disruptive innovation, and applying 
+            the latest clinical advancements to improve patient outcomes safely and reliably.
+          </p>
+        </div>
+      </div>
+
+      <!-- Employment History -->
+      <div class="dashboard-box">
+        <h3 class="section-title"><i class="fa-solid fa-building-user"></i> Professional Experience</h3>
+        <ul class="timeline-list">
+          <li class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fa-solid fa-hospital"></i>
+            </div>
+            <div class="timeline-content w-100">
+              <h4>Senior Consultant</h4>
+              <div class="timeline-meta">
+                <span><i class="fa-regular fa-building"></i> General Hospital</span>
+                <span><i class="fa-regular fa-calendar-days"></i> May 2019 - Present</span>
+              </div>
+              <p class="timeline-desc">Leading the inpatient care team, managing critical cases, and mentoring junior medical staff to ensure top-tier healthcare delivery.</p>
+            </div>
+          </li>
+          <li class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fa-solid fa-stethoscope"></i>
+            </div>
+            <div class="timeline-content w-100">
+              <h4>Attending Physician</h4>
+              <div class="timeline-meta">
+                <span><i class="fa-regular fa-building"></i> City Care Clinic</span>
+                <span><i class="fa-regular fa-calendar-days"></i> April 2014 - May 2019</span>
+              </div>
+              <p class="timeline-desc">Handled outpatient diagnostics, specialized treatments, and patient recovery plans with a focus on holistic wellness.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Blog Posts -->
+      <div class="dashboard-box">
+        <h3 class="section-title">
+          <i class="fa-regular fa-newspaper"></i> My Blog Posts ({{blog_count}})
+        </h3>
+        <ul class="timeline-list">
+          {% for blog in blogs %}
+          <li class="timeline-item">
+            {% if blog.thumbnail %}
+            <div class="timeline-icon blog-img">
+              <img src="{{blog.thumbnail.url}}" alt="{{blog.title}}" />
+            </div>
+            {% else %}
+            <div class="timeline-icon">
+              <i class="fa-solid fa-blog"></i>
+            </div>
+            {% endif %}
+            <div class="timeline-content w-100">
+              <h4><a href="{% url 'doctorPostDetails' blog.doctorPostID %}">{{blog.title}}</a></h4>
+              <div class="timeline-meta">
+                <span><i class="fa-regular fa-calendar"></i> {{blog.createDT|date:"M d, Y"}}</span>
+              </div>
+              <p class="timeline-desc">{{blog.description|truncatechars:120}}</p>
+            </div>
+          </li>
+          {% empty %}
+          <li class="timeline-item border-0">
+            <div class="w-100 text-center text-muted py-4">
+              <i class="fa-solid fa-pen-fancy fa-3x mb-3 text-light"></i>
+              <p>You haven't published any blog posts yet.</p>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Right Sidebar Content -->
+    <div class="col-xl-4 col-lg-4">
+      
+      <!-- Quick Stats -->
+      <div class="dashboard-box p-4">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <strong>{{blog_count}}</strong>
+            <span>Posts</span>
+          </div>
+          <div class="stat-item">
+            <strong>{{follower_count}}</strong>
+            <span>Followers</span>
+          </div>
+          <div class="stat-item">
+            <strong>{{review_count}}</strong>
+            <span>Reviews</span>
+          </div>
+        </div>
+        <a href="{% url 'doctorPostAdd' %}" class="btn-custom-outline">
+          <i class="fa-solid fa-pen-to-square me-2"></i> Write New Blog
+        </a>
+      </div>
+
+      <!-- Performance Indicators -->
+      <div class="dashboard-box">
+        <h3 class="section-title" style="font-size:16px;"><i class="fa-solid fa-chart-pie"></i> Performance Metrics</h3>
+        
+        <div class="skill-item">
+          <div class="skill-header">
+            <span>Patient Satisfaction</span>
+            <span>95%</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+
+        <div class="skill-item mt-3">
+          <div class="skill-header">
+            <span>Successful Diagnoses</span>
+            <span>98%</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" style="width: 98%; background-color: var(--secondary-color);" role="progressbar" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+
+        <div class="skill-item mt-3">
+          <div class="skill-header">
+            <span>On-Time Appointments</span>
+            <span>88%</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" style="width: 88%; background-color: #6f42c1;" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- File Upload / Attachments -->
+      <div class="dashboard-box">
+        <h3 class="section-title" style="font-size:16px;"><i class="fa-solid fa-file-contract"></i> Certifications</h3>
+        
+        <form method="POST" enctype="multipart/form-data" action="{% url 'doctorProfile' %}">
+          {% csrf_token %}
+          <label class="uploader-box d-block w-100" for="custom-file-upload">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span id="file-chosen-text">Click to upload image or PDF</span>
+            <input id="custom-file-upload" type="file" name="image" required accept="image/*,.pdf" onchange="updateUploadText(this)" />
+          </label>
+          <input type="submit" class="btn-submit-upload" value="Upload Document">
+        </form>
+
+        <div class="attachments-grid mt-4">
+          {% for img in doctor_attachments %}
+            <div class="attachment-thumb" onclick="openDocLightbox({{ forloop.counter0 }})">
+              {% if '.pdf' in img.attachment.url|lower %}
+                <span class="pdf-label">PDF</span>
+              {% else %}
+                <img src="{{img.attachment.url}}" alt="Certification" />
+              {% endif %}
+            </div>
+          {% empty %}
+            <p class="text-muted small w-100 text-center mt-2 mb-0">No documents uploaded yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Social Share -->
+      <div class="dashboard-box mb-5">
+        <h3 class="section-title border-0 mb-3" style="font-size:16px;"><i class="fa-solid fa-share-nodes"></i> Share Profile</h3>
+        <div class="d-flex gap-2 justify-content-center">
+          <a href="#" class="btn btn-outline-secondary" style="color: #3b5998; border-color: #dee2e6;"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="btn btn-outline-secondary" style="color: #1da1f2; border-color: #dee2e6;"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#" class="btn btn-outline-secondary" style="color: #0077b5; border-color: #dee2e6;"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Simple Lightbox Modal logic customized for this layout -->
+<div class="modal fade" id="docLightbox" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-header border-0 pb-0 justify-content-end">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center" id="docLightboxContent">
+        <!-- Content injected via JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+  function updateUploadText(input) {
+    var display = document.getElementById('file-chosen-text');
+    var icon = document.querySelector('.uploader-box i');
+    if (input.files && input.files[0]) {
+        display.textContent = input.files[0].name;
+        display.style.color = "var(--primary-color)";
+        icon.className = "fa-solid fa-file-circle-check";
+        icon.style.color = "var(--primary-color)";
+    }
+  }
+
+  const doctorAttachmentsList = [
+    {% for img in doctor_attachments %}
+      { url: "{{img.attachment.url|escapejs}}", lowerUrl: "{{img.attachment.url|lower|escapejs}}" }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+  let currentDocIndex = 0;
+  let docLightboxModal;
+
+  function openDocLightbox(index) {
+    if (!docLightboxModal) {
+      docLightboxModal = new bootstrap.Modal(document.getElementById('docLightbox'));
+    }
+    currentDocIndex = index;
+    renderDocLightboxContent();
+    docLightboxModal.show();
+    
+    // Cleanup iframe/object when modal closes to stop audio/video
+    document.getElementById('docLightbox').addEventListener('hidden.bs.modal', function () {
+      document.getElementById('docLightboxContent').innerHTML = ''; 
+    }, { once: true });
+  }
+
+  function renderDocLightboxContent() {
+    const content = document.getElementById('docLightboxContent');
+    if (doctorAttachmentsList.length === 0) return;
+    
+    const doc = doctorAttachmentsList[currentDocIndex];
+    let html = `<div class="position-relative d-flex align-items-center justify-content-center" style="min-height: 200px; width: 100%;">`;
+    
+    if (doctorAttachmentsList.length > 1) {
+      html += `<button class="btn btn-dark position-absolute start-0 ms-2" onclick="prevDoc(event)" style="z-index: 1055; border-radius: 50%; width: 50px; height: 50px; background: rgba(0,0,0,0.5); border: none; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-chevron-left fa-lg"></i></button>`;
+    }
+    
+    if (doc.lowerUrl.includes('.pdf')) {
+      html += `<object data="${doc.url}" type="application/pdf" width="100%" height="80vh" style="background:white; border-radius: 8px; min-height: 500px;">
+                 <p>PDF cannot be displayed. <a href="${doc.url}" target="_blank" class="text-white">Click here to download</a></p>
+               </object>`;
+    } else {
+      html += `<img src="${doc.url}" class="img-fluid inline-block" style="max-height: 80vh; border-radius: 8px;" alt="Document">`;
+    }
+    
+    if (doctorAttachmentsList.length > 1) {
+      html += `<button class="btn btn-dark position-absolute end-0 me-2" onclick="nextDoc(event)" style="z-index: 1055; border-radius: 50%; width: 50px; height: 50px; background: rgba(0,0,0,0.5); border: none; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-chevron-right fa-lg"></i></button>`;
+    }
+    
+    html += `</div>`;
+    // Add counter
+    html += `<div class="text-white mt-3 fw-bold">${currentDocIndex + 1} / ${doctorAttachmentsList.length}</div>`;
+    
+    content.innerHTML = html;
+  }
+
+  function prevDoc(event) {
+    if(event) event.stopPropagation();
+    currentDocIndex = (currentDocIndex - 1 + doctorAttachmentsList.length) % doctorAttachmentsList.length;
+    renderDocLightboxContent();
+  }
+
+  function nextDoc(event) {
+    if(event) event.stopPropagation();
+    currentDocIndex = (currentDocIndex + 1) % doctorAttachmentsList.length;
+    renderDocLightboxContent();
+  }
+</script>
+{% endblock %}

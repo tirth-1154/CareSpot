@@ -1,0 +1,422 @@
+{% extends 'base.html' %} 
+{% block title %}Doctor Reviews{% endblock %}
+{% block nav_dashboard %}{% endblock %}
+{% block sidebar_nav_reviews %}active{% endblock %}
+
+{% block css %}
+<style>
+    /* Reviews Dashboard UI Improvements */
+    .dashboard-headline {
+        margin-bottom: 30px;
+    }
+    
+    .dashboard-headline h3 {
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+    }
+
+    .subtitle {
+        color: #6c757d;
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 0;
+    }
+
+    /* Overall Rating Box */
+    .rating-summary-box {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        border-radius: 12px;
+        padding: 30px;
+        color: #fff;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(15, 109, 182, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .rating-number h1 {
+        font-size: 48px;
+        font-weight: 800;
+        margin: 0;
+        color: #fff;
+        line-height: 1;
+    }
+
+    .rating-number span {
+        font-size: 16px;
+        opacity: 0.8;
+        font-weight: 500;
+    }
+
+    .rating-stars {
+        color: #ffd700;
+        font-size: 24px;
+        margin: 10px 0;
+    }
+
+    .rating-text {
+        font-size: 15px;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .rating-bars {
+        flex: 0 0 50%;
+    }
+
+    .rating-bar-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .rating-bar-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .bar-label {
+        width: 40px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .bar-line {
+        flex: 1;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        margin: 0 15px;
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        height: 100%;
+        background: #ffd700;
+        border-radius: 4px;
+    }
+
+    .bar-percent {
+        width: 35px;
+        font-size: 13px;
+        text-align: right;
+        opacity: 0.9;
+    }
+
+    /* Reviews List */
+    .dashboard-box {
+        background: var(--card-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin-bottom: 30px;
+        overflow: hidden;
+        border: none;
+    }
+
+    .dashboard-box .headline {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eef2f5;
+        background-color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .dashboard-box .headline h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+    }
+
+    .dashboard-box .headline h3 i {
+        color: var(--primary-color);
+        margin-right: 12px;
+        font-size: 20px;
+    }
+
+    /* Filters */
+    .review-filters select {
+        padding: 8px 15px;
+        border-radius: 6px;
+        border: 1px solid #eef2f5;
+        background: #f8fafc;
+        color: var(--text-color);
+        font-size: 14px;
+        outline: none;
+        cursor: pointer;
+    }
+    
+    .review-filters select:focus {
+        border-color: var(--primary-color);
+    }
+
+    /* Review Items */
+    .review-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .review-item {
+        padding: 30px 25px;
+        border-bottom: 1px solid #f1f3f5;
+        display: flex;
+        gap: 20px;
+        transition: background-color 0.2s;
+    }
+
+    .review-item:hover {
+        background-color: #f8fafc;
+    }
+
+    .review-item:last-child {
+        border-bottom: none;
+    }
+
+    .reviewer-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 2px solid #fff;
+    }
+
+    .review-content {
+        flex: 1;
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .reviewer-name {
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0 0 5px 0;
+    }
+
+    .review-meta {
+        font-size: 13px;
+        color: #8c98a4;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .item-rating {
+        color: #ffd700;
+        font-size: 14px;
+    }
+
+    .item-rating i { margin-right: 2px; }
+    .item-rating .fa-regular { color: #e0e6ed; }
+
+    .review-text {
+        font-size: 15px;
+        color: #555;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .reply-btn {
+        margin-top: 15px;
+        display: inline-flex;
+        align-items: center;
+        background: rgba(35, 182, 179, 0.1);
+        color: var(--secondary-color);
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .reply-btn:hover {
+        background: var(--secondary-color);
+        color: #fff;
+    }
+
+    .reply-btn i {
+        margin-right: 6px;
+    }
+
+    @media (max-width: 768px) {
+        .rating-summary-box {
+            flex-direction: column;
+            text-align: center;
+            gap: 20px;
+        }
+        .rating-bars {
+            width: 100%;
+        }
+        .review-item {
+            flex-direction: column;
+        }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid p-0">
+    <!-- Dashboard Headline -->
+    <div class="dashboard-headline">
+        <h3>Patient Reviews</h3>
+        <p class="subtitle mt-2">Manage and monitor feedback from your patients.</p>
+    </div>
+
+    <!-- Rating Summary Box -->
+    <div class="rating-summary-box">
+        <div>
+            <div class="rating-number">
+                <h1 class="text-white">{{ avg_rating }} <span class="text-white">/ 5.0</span></h1>
+            </div>
+            <div class="rating-stars">
+                <!-- Using static gold stars for the overall visual -->
+                {% for i in "12345" %}
+                {% if avg_rating >= forloop.counter %}
+                    <i class="fa-solid fa-star"></i>
+                {% elif avg_rating > forloop.counter|add:"-1" %}
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                {% else %}
+                    <i class="fa-regular fa-star"></i>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <p class="rating-text">Based on {{ review_count }} patient reviews</p>
+        </div>
+        
+        <div class="rating-bars">
+
+    <div class="rating-bar-item">
+        <span class="bar-label">5 Star</span>
+        <div class="bar-line">
+            <div class="bar-fill" style="width: {{p5}}%"></div>
+        </div>
+        <span class="bar-percent">{{p5|floatformat:0}}%</span>
+    </div>
+
+    <div class="rating-bar-item">
+        <span class="bar-label">4 Star</span>
+        <div class="bar-line">
+            <div class="bar-fill" style="width: {{p4}}%"></div>
+        </div>
+        <span class="bar-percent">{{p4|floatformat:0}}%</span>
+    </div>
+
+    <div class="rating-bar-item">
+        <span class="bar-label">3 Star</span>
+        <div class="bar-line">
+            <div class="bar-fill" style="width: {{p3}}%"></div>
+        </div>
+        <span class="bar-percent">{{p3|floatformat:0}}%</span>
+    </div>
+
+    <div class="rating-bar-item">
+        <span class="bar-label">2 Star</span>
+        <div class="bar-line">
+            <div class="bar-fill" style="width: {{p2}}%"></div>
+        </div>
+        <span class="bar-percent">{{p2|floatformat:0}}%</span>
+    </div>
+
+    <div class="rating-bar-item">
+        <span class="bar-label">1 Star</span>
+        <div class="bar-line">
+            <div class="bar-fill" style="width: {{p1}}%"></div>
+        </div>
+        <span class="bar-percent">{{p1|floatformat:0}}%</span>
+    </div>
+
+</div>
+    </div>
+
+    <!-- Reviews List Box -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="dashboard-box">
+                <!-- Headline -->
+                <div class="headline">
+                    <h3><i class="fa-regular fa-star"></i> Recent Reviews</h3>
+                    
+                    <div class="review-filters">
+                        <select>
+                            <option>Highest Rated</option>
+                            <option>Lowest Rated</option>
+                            <option>Newest First</option>
+                            <option>Oldest First</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="content p-0">
+                    <ul class="review-list">
+                        {% for review in reviews %}
+                        <li class="review-item">
+                            <!-- Reviewer Avatar -->
+                            {% if review.userID.profilePic %}
+                            <img src="{{ review.userID.profilePic.url }}" alt="{{ review.userID.userName }}" class="reviewer-avatar">
+                            {% else %}
+                            <img src="https://ui-avatars.com/api/?name={{ review.userID.userName }}&background=0D8ABC&color=fff" alt="{{ review.userID.userName }}" class="reviewer-avatar">
+                            {% endif %}
+                            
+                            <!-- Review Content -->
+                            <div class="review-content">
+                                <div class="review-header">
+                                    <div>
+                                        <h4 class="reviewer-name">{{ review.userID.userName|default:"Anonymous Patient" }}</h4>
+                                        <div class="review-meta">
+                                            <span><i class="fa-regular fa-calendar-days"></i> {{ review.createdDT|date:"M d, Y" }}</span>
+                                            <span class="text-success"><i class="fa-solid fa-circle-check"></i> Verified Patient</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Star Display -->
+                                    <div class="item-rating">
+                                        {% with rating=review.rating|floatformat:0|add:"0" %}
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= rating %}
+                                                    <i class="fa-solid fa-star"></i>
+                                                {% else %}
+                                                    <i class="fa-regular fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                                
+                                <p class="review-text">
+                                    "{{ review.review }}"
+                                </p>
+                                
+                                    
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="p-5 text-center">
+                            <i class="fa-regular fa-star fa-3x text-light mb-3"></i>
+                            <h4 class="text-muted">No reviews yet</h4>
+                            <p class="text-muted small">You currently have no patient reviews.</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

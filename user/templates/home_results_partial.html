@@ -1,0 +1,119 @@
+{% if not search_query %}
+  <!-- ==============================================
+       2. TRENDING NOW SECTION
+       ============================================== -->
+  <div class="section-spacing">
+    <h2 class="section-title">🔥 Trending Highlights</h2>
+    <div class="trending-grid">
+      {% for trending in trending_blogs %}
+      <a href="{% url 'doctorPostDetails' trending.doctorPostID %}" class="trending-card-large">
+        <div class="trending-badge">
+          <i class="fa-solid fa-fire-flame-curved"></i> Trending
+        </div>
+        {% if trending.thumbnail %}
+            <img src="{{ trending.thumbnail.url }}" class="trending-img-large" alt="{{ trending.title }}" />
+        {% else %}
+            <img src="/static/images/blog-placeholder.jpg" class="trending-img-large" alt="Placeholder" />
+        {% endif %}
+        <div class="trending-content-large">
+          <span class="trending-meta-large">{{ trending.doctorID.subcategoryID.subcategoryName }}</span>
+          <h3 class="trending-title-large">{{ trending.title }}</h3>
+          <p class="trending-preview">{{ trending.description|truncatewords:20 }}</p>
+        </div>
+      </a>
+      {% empty %}
+        <p>No trending blogs available at the moment.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ==============================================
+       3. POPULAR TOPICS
+       ============================================== -->
+  <div class="section-spacing">
+    <h2 class="section-title">🏷️ Popular Topics</h2>
+    <div class="topics-wrap">
+      <a href="?search=Healthcare" class="topic-pill">Healthcare</a>
+      <a href="?search=Mental Health" class="topic-pill">Mental Health</a>
+      <a href="?search=Nutrition" class="topic-pill">Nutrition</a>
+      <a href="?search=Wellness" class="topic-pill">Wellness</a>
+      <a href="?search=Cardiology" class="topic-pill">Cardiology</a>
+      <a href="?search=Pediatrics" class="topic-pill">Pediatrics</a>
+      <a href="?search=Fitness" class="topic-pill">Fitness</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ==============================================
+       4. RECENT ARTICLES (MAIN FEED)
+       ============================================== -->
+  <div class="section-spacing">
+    <h2 class="section-title">
+        {% if search_query %}
+            🔍 Search Results for "{{ search_query }}"
+        {% else %}
+            📰 All Published Articles
+        {% endif %}
+    </h2>
+    
+    {% if blogs or recent_posts %}
+      <div class="grid-layout">
+        
+        <!-- Render from 'blogs' context variable if present -->
+        {% for blog in blogs %}
+          <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="article-card">
+            <div class="article-img-wrap">
+              {% if blog.thumbnail %}
+                <img src="{{blog.thumbnail.url}}" alt="{{blog.title}}" />
+              {% else %}
+                <img src="/static/images/blog-placeholder.jpg" alt="Placeholder" onerror="this.src='/static/images/blog-01a.jpg';" />
+              {% endif %}
+            </div>
+            
+            <div class="article-content">
+              <div class="article-date">
+                <i class="icon-feather-calendar"></i> {{blog.createDT|date:"d M Y"}}
+              </div>
+              <h3 class="article-title">{{blog.title}}</h3>
+              <p class="article-desc">{{blog.description}}</p>
+              
+              <div class="article-footer">
+                <div class="article-author">
+                  <div class="article-author-avatar">
+                    {{blog.doctorID.displayName|make_list|first|upper}}
+                  </div>
+                  <div class="article-author-name">{{blog.doctorID.displayName}}</div>
+                </div>
+                <div class="article-read-btn">
+                  Read More <i class="icon-feather-arrow-right"></i>
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+
+      </div>
+    {% else %}
+      <!-- EMPTY STATE -->
+      <div class="empty-state-card">
+        <i class="icon-feather-inbox empty-state-icon"></i>
+        {% if search_query %}
+          <h3 class="empty-state-title">No articles found</h3>
+          <p class="empty-state-desc">We couldn't find any articles matching "<strong>{{ search_query }}</strong>". Try different keywords or browse our topics.</p>
+          <a href="{% url 'home' %}" class="empty-state-btn">
+            Clear Search
+          </a>
+        {% else %}
+          <h3 class="empty-state-title">No articles available yet</h3>
+          {% if is_patient and not is_following_anyone %}
+            <p class="empty-state-desc">You are not following any doctors right now. Follow a doctor to see their insightful blog posts here.</p>
+            <a href="{% url 'patientDoctorsList' %}" class="empty-state-btn">
+              <i class="icon-feather-users"></i> Discover Doctors
+            </a>
+          {% else %}
+            <p class="empty-state-desc">Looks like there are no published articles to display right now. Check back later!</p>
+          {% endif %}
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
