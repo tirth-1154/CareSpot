@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-j8vgi^1ojsar-uus%=g-v=egl^+m!=i%bf8w#a1^h_kusv5f+8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'user.middleware.AutoRejectMiddleware',
     'user.middleware.UserActivityMiddleware',
     'user.middleware.NoCacheMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'carespot.urls'
@@ -115,11 +117,12 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+import os
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL="/media/"
 MEDIA_ROOT=BASE_DIR/'media'
