@@ -480,7 +480,7 @@ def doctorSearch(request):
     city_id = request.POST.get('city', '') or request.GET.get('city', '')
     subcategory_id = request.POST.get('subcategory', '') or request.GET.get('subcategory', '')
     rating_filter = request.POST.get('rating', '') or request.GET.get('rating', '')
-    doctors = tblDoctor.objects.all()
+    doctors = tblDoctor.objects.filter(approval_status='approved')
     
     logged_in_user_id = request.session.get('user_id')
     if logged_in_user_id:
@@ -914,7 +914,7 @@ def patientDoctorsList(request):
     mode_filter = request.GET.get('mode', '').strip()
     sort_by = request.GET.get('sort', '').strip()
     
-    doctors = tblDoctor.objects.all()
+    doctors = tblDoctor.objects.filter(approval_status='approved')
     
     # Search query filter — name, specialization, city, bio
     if search_query:
@@ -1020,7 +1020,7 @@ def patientAppointments(request):
             
         return redirect('patientMyAppointments')
     data={
-        "doctor":tblDoctor.objects.all()
+        "doctor":tblDoctor.objects.filter(approval_status='approved')
     }        
     return render(request,'patient_book_appointment.html',data)
 

@@ -52,6 +52,7 @@ class tblDoctor(models.Model):
     licenseNo=models.TextField(max_length=50)
     documents=models.FileField(upload_to='doctor_documents/')
     mode=models.IntegerField(default=1)
+    approval_status = models.CharField(max_length=20, default='pending', choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')])
     def __str__(self):
         return '%d'' %s' % (self.doctorID,self.displayName)
 

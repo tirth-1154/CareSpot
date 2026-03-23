@@ -526,3 +526,44 @@ def admin_city_add(request):
         except tblState.DoesNotExist:
             pass
     return redirect('customadmin:admin_locations')
+
+@admin_login_required
+@require_POST
+def admin_doctor_approve(request, id):
+    try:
+        doctor = tblDoctor.objects.get(doctorID=id)
+        doctor.approval_status = 'approved'
+        doctor.save()
+        return JsonResponse({'status': 'success', 'message': 'Doctor approved successfully.'})
+    except tblDoctor.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Doctor not found.'}, status=404)
+
+@admin_login_required
+@require_POST
+def admin_doctor_reject(request, id):
+    try:
+        doctor = tblDoctor.objects.get(doctorID=id)
+        doctor.approval_status = 'rejected'
+        doctor.save()
+        
+        # Send email to doctor
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        subject = 'Carespot - Doctor Registration Rejected'
+        message = f'Hello Dr. {doctor.displayName},\n\nWe regret to inform you that your registration to Carespot has been rejected by the administration.\n\nPlease contact the administrator for more information.\n\nRegards,\nCarespot Team'
+        
+        try:
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [doctor.userID.email],
+                fail_silently=True,
+            )
+        except Exception as e:
+            print(f'Failed to send rejection email: {e}')
+            
+        return JsonResponse({'status': 'success', 'message': 'Doctor rejected and email sent.'})
+    except tblDoctor.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Doctor not found.'}, status=404)

@@ -25,6 +25,8 @@ urlpatterns = [
     # AJAX Delete Endpoints
     path('delete/user/<int:id>/', views.admin_user_delete, name='admin_user_delete'),
     path('delete/doctor/<int:id>/', views.admin_doctor_delete, name='admin_doctor_delete'),
+    path('approve/doctor/<int:id>/', views.admin_doctor_approve, name='admin_doctor_approve'),
+    path('reject/doctor/<int:id>/', views.admin_doctor_reject, name='admin_doctor_reject'),
     path('delete/patient/<int:id>/', views.admin_patient_delete, name='admin_patient_delete'),
     path('delete/appointment/<int:id>/', views.admin_appointment_delete, name='admin_appointment_delete'),
     path('delete/blog/<int:id>/', views.admin_blog_delete, name='admin_blog_delete'),
