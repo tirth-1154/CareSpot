@@ -399,6 +399,24 @@
         display: none;
       }
     </style>
+
+    <!-- Prevent Back Navigation -->
+    <script type="text/javascript">
+        // Push multiple states to trap double-clicks
+        window.history.pushState(null, null, window.location.href);
+        window.history.pushState(null, null, window.location.href);
+        
+        window.addEventListener('popstate', function (event) {
+            window.history.pushState(null, null, window.location.href);
+        });
+
+        // Prevent BFCache from loading old page
+        window.onpageshow = function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+    </script>
   </head>
   <body>
     <!-- ==========================================
@@ -412,7 +430,7 @@
         <!-- Website Logo / Hospital Name -->
         <a
           class="navbar-brand d-flex align-items-center"
-          href="{% url 'patientDashboard' %}"
+          href="{% url 'patientDoctorsList' %}"
         >
           <img
             src="/media/images/careSpotText.png"

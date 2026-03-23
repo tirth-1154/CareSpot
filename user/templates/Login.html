@@ -806,7 +806,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             document.body.style.transition = "opacity 0.6s ease";
             document.body.style.opacity = "0";
-            setTimeout(() => { window.location.href = redirectUrl; }, 600);
+            setTimeout(() => { window.location.replace(redirectUrl); }, 600);
         }, 4800);
     }
 

@@ -82,6 +82,15 @@ def home(request):
     return render(request, 'home.html', data)# Create your views here.
 
 def Login(request):
+    # Check if a login animation is pending
+    if request.session.pop('show_login_animation', False):
+        return render(request, 'Login.html', {
+            'login_success': True,
+            'role': request.session.pop('login_role', ''),
+            'name': request.session.pop('login_name', ''),
+            'redirect_url': request.session.pop('login_redirect', '')
+        })
+
     # Agar user pehle se login hai toh dashboard par bhejo
     if request.session.get('user_id'):
         if request.session.get('isDoctor'):
@@ -108,12 +117,11 @@ def Login(request):
                 request.session['clientID']=c.clientID  
                 
                 from django.urls import reverse
-                return render(request, 'Login.html', {
-                    'login_success': True,
-                    'role': 'Patient',
-                    'name': c.name,
-                    'redirect_url': reverse('patientDoctorsList')
-                })
+                request.session['show_login_animation'] = True
+                request.session['login_role'] = 'Patient'
+                request.session['login_name'] = c.name
+                request.session['login_redirect'] = reverse('patientDoctorsList')
+                return redirect('Login')
             else:
                 data={"msg":"Client record not found"}
                 return render(request,'Login.html',data)
@@ -129,12 +137,11 @@ def Login(request):
                 # request.session['subcategory']=d.subcategoryID.subcategoryName
                 
                 from django.urls import reverse
-                return render(request, 'Login.html', {
-                    'login_success': True,
-                    'role': 'Doctor',
-                    'name': d.displayName,
-                    'redirect_url': reverse('doctorDashboard')
-                })
+                request.session['show_login_animation'] = True
+                request.session['login_role'] = 'Doctor'
+                request.session['login_name'] = d.displayName
+                request.session['login_redirect'] = reverse('doctorDashboard')
+                return redirect('Login')
             else:               
                 data={"msg":"Doctor record not found"}
                 return render(request,'Login.html',data)
@@ -750,11 +757,89 @@ def acceptAppointment(request, id):
         appointment.isRejected = False
         appointment.save()
         
-        # Create a notification for the patient
+        # Define variables first (needed for both Meet email and notification)
         doctor = appointment.doctorID
         patient_user = appointment.clientID.userID
         app_date = appointment.appointmentDate.strftime("%b %d, %Y")
         app_time = appointment.appointmentTime.strftime("%I:%M %p")
+        
+        # Generate Meet link and send Email if mode is online
+        if appointment.mode == 'online':
+            import string
+            # Generate unique Jitsi Meet room (works instantly - no API needed)
+            def get_random_string(length):
+                return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+            room_id = f"CareSpot-{doctor.displayName.replace(' ', '')}-{appointment.appointmentID}-{get_random_string(6)}"
+            meet_link = f"https://meet.jit.si/{room_id}"
+            appointment.meetLink = meet_link
+            appointment.save()
+
+            # Prepare Email
+            subject = f"Online Appointment Confirmed - CareSpot"
+            
+            # Plain text fallback
+            email_msg = f"Hello,\n\nYour online appointment has been confirmed.\n\n"
+            email_msg += f"Date: {app_date}\nTime: {app_time}\n"
+            email_msg += f"Doctor: Dr. {doctor.displayName}\nPatient: {appointment.clientID.name}\n\n"
+            email_msg += f"Join your video consultation here:\n{meet_link}\n\n"
+            email_msg += f"Please join the meeting at or just before the scheduled time.\nBoth doctor and patient should click the same link to connect.\n\n"
+            email_msg += f"Thank you,\nCareSpot Team"
+            
+            # HTML Email Body
+            html_message = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <div style="background-color: #0d6efd; color: white; padding: 20px; text-align: center;">
+                        <h2 style="margin: 0; font-size: 24px;">CareSpot</h2>
+                        <p style="margin: 5px 0 0; opacity: 0.9;">Online Consultation Confirmed</p>
+                    </div>
+                    
+                    <div style="padding: 30px;">
+                        <p style="font-size: 16px; color: #333;">Hello,</p>
+                        <p style="font-size: 16px; color: #333; line-height: 1.5;">Your online video consultation has been successfully scheduled and confirmed.</p>
+                        
+                        <div style="background-color: #f8fbff; border-left: 4px solid #0d6efd; padding: 15px; margin: 25px 0; border-radius: 4px;">
+                            <p style="margin: 0 0 10px; font-size: 15px;"><strong>Patient:</strong> {appointment.clientID.name}</p>
+                            <p style="margin: 0 0 10px; font-size: 15px;"><strong>Doctor:</strong> {doctor.displayName}</p>
+                            <p style="margin: 0 0 10px; font-size: 15px;"><strong>Date:</strong> {app_date}</p>
+                            <p style="margin: 0; font-size: 15px;"><strong>Time:</strong> {app_time}</p>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 35px 0;">
+                            <a href="{meet_link}" style="background-color: #198754; color: white; padding: 14px 28px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px; display: inline-block;">
+                                Join Video Meeting
+                            </a>
+                            <p style="margin-top: 15px; font-size: 13px; color: #6c757d;">Or copy this link: <br>{meet_link}</p>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #666; line-height: 1.5;"><strong>Instructions:</strong><br>Please join the meeting at or just before the scheduled time. Both the doctor and patient will use the same link to connect.</p>
+                        
+                    </div>
+                    
+                    <div style="background-color: #f8f9fa; padding: 15px; text-align: center; border-top: 1px solid #eee;">
+                        <p style="margin: 0; font-size: 13px; color: #999;">Thank you for using CareSpot.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            try:
+                # Send to both Doctor and Patient
+                recipient_list = [doctor.userID.email, patient_user.email]
+                send_mail(
+                    subject,
+                    email_msg,
+                    settings.EMAIL_HOST_USER,
+                    recipient_list,
+                    fail_silently=True,
+                    html_message=html_message
+                )
+            except Exception as e:
+                print(f"Failed to send email: {e}")
+                
+        # Create a notification for the patient
         message = f"Dr. {doctor.displayName} accepted your appointment on {app_date} at {app_time}."
         
         tblnotification.objects.create(
@@ -907,9 +992,18 @@ def patientAppointments(request):
         doctor_id = request.POST.get('doctor')
         date = request.POST.get('app_date')
         time = request.POST.get('time_slot')
+        mode = request.POST.get('appointment_mode', 'offline')
 
         time_slot=dt.strptime(time, '%H:%M').time()
-        p=tblAppointment(None,c.clientID,doctor_id,date,time_slot,False,False)
+        p=tblAppointment(
+            clientID=c,
+            doctorID=tblDoctor.objects.filter(doctorID=doctor_id).first(),
+            appointmentDate=date,
+            appointmentTime=time_slot,
+            mode=mode,
+            isAccepted=False,
+            isRejected=False
+        )
         p.save()
         
         # Notify the doctor about the new appointment request

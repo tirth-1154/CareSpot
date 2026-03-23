@@ -162,6 +162,27 @@
                                     <div class="invalid-feedback">Please select a doctor.</div>
                                 </div>
                             </div>
+                            
+                            <!-- Mode Selection -->
+                            <h5 class="fw-bold mb-4 border-bottom pb-2 mt-4">Appointment Mode</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-12">
+                                    <div class="d-flex gap-4">
+                                        <div class="form-check custom-radio">
+                                            <input class="form-check-input" type="radio" name="appointment_mode" id="modeOffline" value="offline" checked>
+                                            <label class="form-check-label fw-bold" for="modeOffline">
+                                                <i class="fa-solid fa-hospital-user text-primary me-2"></i> In-Clinic Visit
+                                            </label>
+                                        </div>
+                                        <div class="form-check custom-radio">
+                                            <input class="form-check-input" type="radio" name="appointment_mode" id="modeOnline" value="online">
+                                            <label class="form-check-label fw-bold" for="modeOnline">
+                                                <i class="fa-solid fa-video text-success me-2"></i> Online Video Consult
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <h5 class="fw-bold mb-4 border-bottom pb-2">Schedule</h5>
                             <div class="row g-3 mb-4">
@@ -209,7 +230,13 @@
                                 </div>
                             </div>
 
-                            <div class="alert alert-primary border-0 small">
+                                <div class="d-flex justify-content-between mb-3 border-top pt-3">
+                                    <span class="text-muted">Mode:</span>
+                                    <span class="fw-bold text-primary" id="summMode"><i class="fa-solid fa-hospital-user me-1"></i> In-Clinic</span>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-primary border-0 small" id="paymentAlert">
                                 <i class="fa-solid fa-circle-info me-2"></i> Payment will be handled at the clinic during your visit.
                             </div>
                         </div>
@@ -243,6 +270,24 @@
         const summDoctor = document.getElementById('summDoctor');
         const doctorSelect = document.getElementById('doctorSelect');
         const timeSlot = document.getElementById('time_slot');
+        const modeRadios = document.querySelectorAll('input[name="appointment_mode"]');
+        const summMode = document.getElementById('summMode');
+        const paymentAlert = document.getElementById('paymentAlert');
+
+        // Mode Change Listener
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if(e.target.value === 'online') {
+                    summMode.innerHTML = '<i class="fa-solid fa-video me-1 text-success"></i> <span class="text-success">Online Consult</span>';
+                    paymentAlert.innerHTML = '<i class="fa-solid fa-circle-info me-2"></i> Payment instructions will be sent with your meeting link.';
+                    paymentAlert.className = 'alert alert-success border-0 small';
+                } else {
+                    summMode.innerHTML = '<i class="fa-solid fa-hospital-user me-1"></i> In-Clinic';
+                    paymentAlert.innerHTML = '<i class="fa-solid fa-circle-info me-2"></i> Payment will be handled at the clinic during your visit.';
+                    paymentAlert.className = 'alert alert-primary border-0 small';
+                }
+            });
+        });
 
         // Set min date to today so past dates can't be selected
         const today = new Date().toISOString().split('T')[0];

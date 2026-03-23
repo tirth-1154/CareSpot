@@ -100,6 +100,8 @@ class tblAppointment(models.Model):
     doctorID=models.ForeignKey(tblDoctor,on_delete=models.CASCADE)
     appointmentDate=models.DateField()
     appointmentTime=models.TimeField()
+    mode=models.CharField(max_length=20, default='offline', choices=[('online', 'Online'), ('offline', 'Offline')])
+    meetLink=models.TextField(max_length=500, null=True, blank=True)
     isAccepted=models.BooleanField(default=False)
     isRejected=models.BooleanField(default=False)
     createdDT=models.DateTimeField(auto_now_add=True, null=True)

@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'user.middleware.AutoRejectMiddleware',
     'user.middleware.UserActivityMiddleware',
+    'user.middleware.NoCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'carespot.urls'

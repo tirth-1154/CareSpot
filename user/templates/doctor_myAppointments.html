@@ -376,6 +376,11 @@
                             <span><i class="fa-regular fa-envelope"></i> {{a.clientID.userID.email}}</span>
                             <span><i class="fa-regular fa-calendar-days"></i> {{a.appointmentDate}}</span>
                             <span><i class="fa-regular fa-clock"></i> {{a.appointmentTime}}</span>
+                            {% if a.mode == 'online' %}
+                                <span class="text-success fw-bold"><i class="fa-solid fa-video"></i> Online</span>
+                            {% else %}
+                                <span class="text-primary fw-bold"><i class="fa-solid fa-hospital-user"></i> In-Clinic</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -386,6 +391,11 @@
                         <span class="status-badge status-accepted">
                             <i class="fa-solid fa-circle-check"></i> Accepted
                         </span>
+                        {% if a.mode == 'online' and a.meetLink %}
+                            <a href="{{ a.meetLink }}" target="_blank" class="btn-action bg-success text-white" style="box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">
+                                <i class="fa-solid fa-video"></i> Join Meet
+                            </a>
+                        {% endif %}
                     {% elif a.isRejected %}
                         <span class="status-badge status-rejected">
                             <i class="fa-solid fa-circle-xmark"></i> Rejected
