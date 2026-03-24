@@ -81,7 +81,11 @@ def home(request):
         
     return render(request, 'home.html', data)# Create your views here.
 
+def intro(request):
+    return render(request, 'Intro.html')
+
 def Login(request):
+
     # Check if a login animation is pending
     if request.session.pop('show_login_animation', False):
         return render(request, 'Login.html', {
@@ -480,7 +484,7 @@ def doctorSearch(request):
     city_id = request.POST.get('city', '') or request.GET.get('city', '')
     subcategory_id = request.POST.get('subcategory', '') or request.GET.get('subcategory', '')
     rating_filter = request.POST.get('rating', '') or request.GET.get('rating', '')
-    doctors = tblDoctor.objects.all()
+    doctors = tblDoctor.objects.filter(approval_status='approved')
     
     logged_in_user_id = request.session.get('user_id')
     if logged_in_user_id:
@@ -914,7 +918,7 @@ def patientDoctorsList(request):
     mode_filter = request.GET.get('mode', '').strip()
     sort_by = request.GET.get('sort', '').strip()
     
-    doctors = tblDoctor.objects.all()
+    doctors = tblDoctor.objects.filter(approval_status='approved')
     
     # Search query filter — name, specialization, city, bio
     if search_query:
@@ -1020,7 +1024,7 @@ def patientAppointments(request):
             
         return redirect('patientMyAppointments')
     data={
-        "doctor":tblDoctor.objects.all()
+        "doctor":tblDoctor.objects.filter(approval_status='approved')
     }        
     return render(request,'patient_book_appointment.html',data)
 
@@ -1771,3 +1775,15 @@ def get_available_slots(request):
         return JsonResponse({'available': True, 'slots': [], 'message': 'All slots are booked for this day.'})
     
     return JsonResponse({'available': True, 'slots': slots})
+
+def get_doctors_api(request):
+    doctors = tblDoctor.objects.filter(approval_status='approved')
+    doctor_list = []
+    for doctor in doctors:
+        doctor_list.append({
+            'id': doctor.doctorID,
+            'name': doctor.displayName,
+            'specialization': doctor.subcategoryID.subcategoryName,
+            'profile_image': doctor.userID.profilePic.url if doctor.userID.profilePic else None,
+        })
+    return JsonResponse(doctor_list, safe=False)

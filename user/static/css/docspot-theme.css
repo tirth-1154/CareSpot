@@ -1,0 +1,207 @@
+/* docspot-theme.css */
+
+:root {
+    --primary-color: #0F6DB6;
+    --primary-dark: #0A5FA1;
+    --secondary-color: #23B6B3;
+    --accent-color: #3ED1C8;
+    --background-color: #F4FAFB;
+    --card-color: #FFFFFF;
+    --text-color: #1E2A38;
+}
+
+/* BODY & TYPOGRAPHY */
+body {
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    color: #0F6DB6 !important;
+}
+
+/* NAVBAR & SIDEBAR BACKGROUND */
+.top-navbar,
+.navbar {
+    background-color: var(--card-color) !important;
+}
+
+.sidebar {
+    background-color: var(--card-color) !important;
+}
+
+/* ALL BUTTONS - PRIMARY BLUE BACKGROUND (#0F6DB6) WITH WHITE TEXT */
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-info,
+.button,
+.btn {
+    background-color: #0F6DB6 !important;
+    border-color: #0F6DB6 !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-success:hover,
+.btn-success:focus,
+.btn:hover,
+.button:hover {
+    background-color: #0A5FA1 !important;
+    border-color: #0A5FA1 !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-primary,
+.btn-outline-secondary {
+    color: #0F6DB6 !important;
+    border-color: #0F6DB6 !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover {
+    background-color: #0F6DB6 !important;
+    color: #ffffff !important;
+}
+
+/* BUTTONS / HIGHLIGHTS WITH LOGO GRADIENT */
+.btn-gradient {
+    background: linear-gradient(135deg, #0F6DB6, #23B6B3) !important;
+    border: none !important;
+    color: #ffffff !important;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, #0A5FA1, #3ED1C8) !important;
+}
+
+.logo-gradient-text {
+    background: linear-gradient(135deg, #0F6DB6, #23B6B3);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* LINKS */
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* SIDEBAR TEXT (#23B6B3) AND ICONS (#0F6DB6) */
+.sidebar .nav-link,
+.dashboard-nav ul li a {
+    color: #23B6B3 !important;
+    background-color: transparent !important;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link i,
+.dashboard-nav ul li a i {
+    color: #0F6DB6 !important;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active,
+.sidebar .nav-link:focus,
+.dashboard-nav ul li a:hover,
+.dashboard-nav ul li.active a {
+    color: #0F6DB6 !important;
+    /* Text also turns blue on hover */
+    background-color: rgba(35, 182, 179, 0.05) !important;
+}
+
+.sidebar .nav-link:hover i,
+.sidebar .nav-link.active i,
+.dashboard-nav ul li a:hover i {
+    color: #0A5FA1 !important;
+    /* Darker blue icons on hover */
+}
+
+/* CARDS */
+.card,
+.custom-card,
+.modal-content {
+    background-color: var(--card-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    border: none !important;
+}
+
+/* TABLES */
+.table thead th,
+.table thead td {
+    background-color: var(--primary-color) !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid var(--primary-dark) !important;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+    background-color: rgba(35, 182, 179, 0.1) !important;
+}
+
+/* BASE BOOTSTRAP OVERRIDES FOR THEME COLORS */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-secondary,
+.text-success {
+    color: var(--secondary-color) !important;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.bg-secondary,
+.bg-success {
+    background-color: var(--secondary-color) !important;
+}
+
+.border-primary {
+    border-color: var(--primary-color) !important;
+}
+
+.border-secondary,
+.border-success {
+    border-color: var(--secondary-color) !important;
+}
+
+/* ICON BOXES & BACKGROUND HIGHLIGHTS */
+.bg-light-blue {
+    background-color: rgba(15, 109, 182, 0.1) !important;
+    color: var(--primary-color) !important;
+}
+
+.bg-light-green {
+    background-color: rgba(35, 182, 179, 0.1) !important;
+    color: var(--secondary-color) !important;
+}
+
+/* PAGE CONTENT BACKGROUND */
+.main-content,
+.dashboard-content-container,
+.dashboard-content-inner {
+    background-color: rgba(35, 182, 179, 0.05) !important;
+}

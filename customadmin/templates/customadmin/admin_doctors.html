@@ -43,6 +43,7 @@ searfilter-bar{% extends 'customadmin/admin_base.html' %}
                         <th>Specialization</th>
                         <th>Contact</th>
                         <th>Exp. / Mode</th>
+                        <th>Status</th>
                         <th>Stats</th>
                         <th class="text-center">Actions</th>
                     </tr>
@@ -81,6 +82,15 @@ searfilter-bar{% extends 'customadmin/admin_base.html' %}
                             </div>
                         </td>
                         <td>
+                            {% if doctor.approval_status == 'pending' %}
+                                <span class="badge" style="background:#fff3cd; color:#856404; padding:5px 8px; border-radius:4px; font-weight:600; font-size:12px;">Pending</span>
+                            {% elif doctor.approval_status == 'approved' %}
+                                <span class="badge" style="background:#d4edda; color:#155724; padding:5px 8px; border-radius:4px; font-weight:600; font-size:12px;">Approved</span>
+                            {% else %}
+                                <span class="badge" style="background:#f8d7da; color:#721c24; padding:5px 8px; border-radius:4px; font-weight:600; font-size:12px;">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td>
                             <div class="star-rating mb-1">
                                 <i class="fa-solid fa-star"></i> {{ doctor.avg_rating|floatformat:1|default:"0.0" }}
                                 <span style="font-size: 0.75rem; color: #94a3b8;">({{ doctor.review_count }})</span>
@@ -89,8 +99,16 @@ searfilter-bar{% extends 'customadmin/admin_base.html' %}
                                 <i class="fa-solid fa-bed-pulse me-1"></i> {{ doctor.patient_count }} Patients
                             </div>
                         </td>
-                        <td class="text-center">
-                            <button type="button" class="action-btn delete" onclick="showDeleteModal('{% url 'customadmin:admin_doctor_delete' doctor.doctorID %}', '{{ doctor.displayName }}')" title="Delete Doctor">
+                        <td class="text-center" style="white-space: nowrap;">
+                            {% if doctor.approval_status == 'pending' %}
+                            <button type="button" class="action-btn" style="color: #10b981; background: rgba(16, 185, 129, 0.1); border:none; border-radius:4px; padding:6px; margin:0 2px;" onclick="approveDoctor('{{ doctor.doctorID }}', '{{ doctor.displayName|escapejs }}')" title="Approve Doctor">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button type="button" class="action-btn" style="color: #ef4444; background: rgba(239, 68, 68, 0.1); border:none; border-radius:4px; padding:6px; margin:0 2px;" onclick="rejectDoctor('{{ doctor.doctorID }}', '{{ doctor.displayName|escapejs }}')" title="Reject Doctor">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                            {% endif %}
+                            <button type="button" class="action-btn delete" onclick="showDeleteModal('{% url 'customadmin:admin_doctor_delete' doctor.doctorID %}', '{{ doctor.displayName|escapejs }}')" title="Delete Doctor">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
                         </td>
@@ -111,5 +129,36 @@ searfilter-bar{% extends 'customadmin/admin_base.html' %}
         </div>
     </div>
 </div>
+
+<script>
+function approveDoctor(id, name) {
+    if(confirm(`Are you sure you want to approve Dr. ${name}?`)) {
+        fetch(`/site-admin/approve/doctor/${id}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(data => {
+            if(data.status === 'success') { location.reload(); }
+            else { alert(data.message); }
+        }).catch(err => alert("An error occurred."));
+    }
+}
+function rejectDoctor(id, name) {
+    if(confirm(`Are you sure you want to reject Dr. ${name}? An email will be sent to them.`)) {
+        fetch(`/site-admin/reject/doctor/${id}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(data => {
+            if(data.status === 'success') { location.reload(); }
+            else { alert(data.message); }
+        }).catch(err => alert("An error occurred."));
+    }
+}
+</script>
 
 {% endblock %}

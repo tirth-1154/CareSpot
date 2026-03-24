@@ -5,7 +5,8 @@ from . import views
 urlpatterns = [
     #common urls
     path('home/',views.home , name='home'),
-    path('',views.Login , name='Login'),
+    path('', views.intro, name='intro'),
+    path('login/', views.Login, name='Login'),
     path('logout/',views.logout , name='logout'),
     path('followDoctor/<int:id>/',views.followDoctor , name='followDoctor'),
     
@@ -53,4 +54,6 @@ urlpatterns = [
     path('ajax/send_message/', views.send_message, name='send_message'),
     path('ajax/get_chat_history/', views.get_chat_history, name='get_chat_history'),
     path('ajax/get_available_slots/', views.get_available_slots, name='get_available_slots'),
+    path('api/doctors/', views.get_doctors_api, name='get_doctors_api'),
 ]
+

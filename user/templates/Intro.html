@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocSpot - Find the Best Doctor</title>
+    
+    <!-- React Refresh Preamble -->
+    <script type="module">
+      import RefreshRuntime from 'http://127.0.0.1:5174/@react-refresh'
+      RefreshRuntime.injectIntoGlobalHook(window)
+      window.$RefreshReg$ = () => {}
+      window.$RefreshSig$ = () => (type) => type
+      window.__vite_plugin_react_preamble_installed__ = true
+    </script>
+    <link rel="stylesheet" href="http://127.0.0.1:5174/src/index.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #ffffff;
+            overflow: hidden;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #carousel-root {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: #0288D1;
+            width: 0%;
+            transition: width 15s linear;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="carousel-root"></div>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <script type="module" src="http://127.0.0.1:5174/@vite/client"></script>
+    <script type="module" src="http://127.0.0.1:5174/src/main.tsx"></script>
+
+    <script>
+        let redirectTimeout;
+        const totalDuration = 15; // 15 seconds
+        let secondsLeft = totalDuration;
+
+        function goToLogin() {
+            clearTimeout(redirectTimeout);
+            document.body.style.transition = 'opacity 0.5s ease';
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                window.location.href = "{% url 'Login' %}";
+            }, 500);
+        }
+
+        // Start progress bar animation
+        setTimeout(() => {
+            const pb = document.getElementById('progressBar');
+            if(pb) {
+                pb.style.width = '100%';
+            }
+        }, 50);
+
+        // Countdown timer
+        const timerInterval = setInterval(() => {
+            secondsLeft--;
+            const countEl = document.getElementById('countdown');
+            if(countEl) countEl.innerText = secondsLeft;
+            
+            if(secondsLeft <= 0) {
+                clearInterval(timerInterval);
+            }
+        }, 1000);
+
+        // Auto-redirect after duration
+        redirectTimeout = setTimeout(() => {
+            goToLogin();
+        }, totalDuration * 1000);
+    </script>
+</body>
+</html>
