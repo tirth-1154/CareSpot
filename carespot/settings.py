@@ -117,12 +117,12 @@ USE_I18N = True
 
 USE_TZ = True
 
-import os
+# import os
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL="/media/"
 MEDIA_ROOT=BASE_DIR/'media'
@@ -140,3 +140,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'novacafecenter@gmail.com'
 EMAIL_HOST_PASSWORD = 'htet eprc cprw cbfe'
+
+# Razorpay Payment Gateway Settings
+RAZORPAY_KEY_ID = 'rzp_test_SUej36HOekrltW'  # Replace with your Razorpay Key ID
+RAZORPAY_KEY_SECRET = '4x0RfPXGzFpqiob6lLsrshac'    # Replace with your Razorpay Key Secret
+PLATFORM_FEE = 100  # Platform charge in INR

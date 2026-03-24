@@ -54,6 +54,12 @@ urlpatterns = [
     path('ajax/send_message/', views.send_message, name='send_message'),
     path('ajax/get_chat_history/', views.get_chat_history, name='get_chat_history'),
     path('ajax/get_available_slots/', views.get_available_slots, name='get_available_slots'),
+    path('ajax/get_doctor_fees/', views.get_doctor_fees, name='get_doctor_fees'),
     path('api/doctors/', views.get_doctors_api, name='get_doctors_api'),
+    
+    #payment urls
+    path('payment/<int:appointment_id>/', views.paymentPage, name='paymentPage'),
+    path('ajax/verify_payment/', views.verifyPayment, name='verifyPayment'),
+    path('payment/success/<int:appointment_id>/', views.paymentSuccess, name='paymentSuccess'),
 ]
 
