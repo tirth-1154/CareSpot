@@ -64,5 +64,7 @@ urlpatterns = [
     
     #meeting url
     path('meeting/<int:appointment_id>/', views.videoMeeting, name='videoMeeting'),
+    path('api/blogs/', views.get_blogs_api, name='get_blogs_api'),
+
 ]
 
