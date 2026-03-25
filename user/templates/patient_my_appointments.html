@@ -139,7 +139,8 @@ patient_my_appointments.html
                                 <th>Specialization</th>
                                 <th>Mode</th>
                                 <th>Date &amp; Time</th>
-                                {% comment %} <th>Consultation Fee</th> {% endcomment %}
+                                <th>Fees</th>
+                                <th>Payment</th>
                                 <th>Status</th>
                                 <th class="text-end pe-4">Actions</th>
                             </tr>
@@ -168,7 +169,29 @@ patient_my_appointments.html
                                     <div class="fw-medium text-dark">{{ appointment.appointmentDate|date:"M d, Y" }}</div>
                                     <small class="text-muted"><i class="fa-regular fa-clock me-1"></i> {{ appointment.appointmentTime|time:"h:i A" }}</small>
                                 </td>
-                                {% comment %} <td class="fw-medium text-dark">Tk 500</td> {% endcomment %}
+                                <td>
+                                    {% if appointment.payment %}
+                                        <span class="fw-bold text-dark">₹{{ appointment.payment.totalAmount|floatformat:0 }}</span>
+                                        <br><small class="text-muted">Dr: ₹{{ appointment.payment.doctorFees|floatformat:0 }} + ₹{{ appointment.payment.platformFee|floatformat:0 }}</small>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if appointment.payment %}
+                                        {% if appointment.payment.paymentStatus == 'paid' %}
+                                            <span class="badge bg-success rounded-pill px-3 py-2 fw-medium"><i class="fa-solid fa-check-circle me-1"></i>Paid</span>
+                                        {% elif appointment.payment.paymentStatus == 'cash' %}
+                                            <span class="badge bg-info text-dark rounded-pill px-3 py-2 fw-medium"><i class="fa-solid fa-money-bill-wave me-1"></i>Cash</span>
+                                        {% elif appointment.payment.paymentStatus == 'pending' %}
+                                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-medium"><i class="fa-solid fa-clock me-1"></i>Pending</span>
+                                        {% elif appointment.payment.paymentStatus == 'failed' %}
+                                            <span class="badge bg-danger rounded-pill px-3 py-2 fw-medium"><i class="fa-solid fa-xmark me-1"></i>Failed</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <!-- STATUS BADGES -->
                                     {% if appointment.isAccepted %}
@@ -198,7 +221,7 @@ patient_my_appointments.html
                             {% empty %}
                             <!-- NO APPOINTMENT MESSAGE -->
                             <tr>
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="9" class="text-center py-5">
                                     <div class="empty-state py-4">
                                         <div class="icon-box bg-light-blue mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; border-radius: 50%;">
                                             <i class="fa-regular fa-calendar-xmark text-primary" style="font-size: 32px;"></i>
@@ -252,6 +275,41 @@ patient_my_appointments.html
                                     <p class="fw-medium text-primary"><i class="fa-solid fa-hospital-user me-2"></i>In-Clinic</p>
                                 {% endif %}
                             </div>
+                            
+                            <!-- Payment Info in Modal -->
+                            {% if appointment.payment %}
+                            <div class="col-12">
+                                <p class="text-muted small mb-1 fw-bold text-uppercase">Payment Details</p>
+                                <div class="bg-light rounded p-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Doctor's Fee:</span>
+                                        <span class="fw-bold">₹{{ appointment.payment.doctorFees|floatformat:0 }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Platform Fee:</span>
+                                        <span class="fw-bold">₹{{ appointment.payment.platformFee|floatformat:0 }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between pt-2 border-top">
+                                        <span class="fw-bold">Total:</span>
+                                        <span class="fw-bold text-primary">₹{{ appointment.payment.totalAmount|floatformat:0 }}</span>
+                                    </div>
+                                    <div class="mt-2 text-center">
+                                        {% if appointment.payment.paymentStatus == 'paid' %}
+                                            <span class="badge bg-success rounded-pill px-3 py-2"><i class="fa-solid fa-check-circle me-1"></i>Paid Online</span>
+                                        {% elif appointment.payment.paymentStatus == 'cash' %}
+                                            <span class="badge bg-info text-dark rounded-pill px-3 py-2"><i class="fa-solid fa-money-bill-wave me-1"></i>Pay at Clinic</span>
+                                        {% elif appointment.payment.paymentStatus == 'pending' %}
+                                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2"><i class="fa-solid fa-clock me-1"></i>Payment Pending</span>
+                                            <a href="{% url 'paymentPage' appointment_id=appointment.appointmentID %}" class="btn btn-sm btn-primary mt-2 rounded-pill"><i class="fa-solid fa-credit-card me-1"></i>Pay Now</a>
+                                        {% elif appointment.payment.paymentStatus == 'failed' %}
+                                            <span class="badge bg-danger rounded-pill px-3 py-2"><i class="fa-solid fa-xmark me-1"></i>Payment Failed</span>
+                                            <a href="{% url 'paymentPage' appointment_id=appointment.appointmentID %}" class="btn btn-sm btn-primary mt-2 rounded-pill"><i class="fa-solid fa-redo me-1"></i>Retry Payment</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
                             <div class="col-12">
                                 <p class="text-muted small mb-1 fw-bold text-uppercase">Status</p>
                                 {% if appointment.isAccepted %}

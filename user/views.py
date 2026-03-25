@@ -1,10 +1,16 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6af4cdee00948f199f3b5d2c548afb99007405cc
 from django.shortcuts import render,redirect
 from django.views.decorators.cache import never_cache
 from django.db.models import Avg, Count
 from datetime import datetime as dt, date
 import datetime
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
 from . models import *
+import razorpay
 
 from django.core.mail import send_mail
 from django.conf import settings
@@ -648,6 +654,14 @@ def doctorUpdateProfile(request):
         doctor.displayAddress = request.POST.get('address')
         doctor.bio = request.POST.get('bio')
         
+        # Update Consultation Fees
+        fees = request.POST.get('consultationFees')
+        if fees:
+            try:
+                doctor.consultationFees = float(fees)
+            except ValueError:
+                pass
+        
         # Update Specialization
         sc_id = request.POST.get('subcategory')
         if sc_id:
@@ -997,11 +1011,14 @@ def patientAppointments(request):
         date = request.POST.get('app_date')
         time = request.POST.get('time_slot')
         mode = request.POST.get('appointment_mode', 'offline')
+        payment_method = request.POST.get('payment_method', 'cash')  # 'razorpay' or 'cash'
 
         time_slot=dt.strptime(time, '%H:%M').time()
+        doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
+        
         p=tblAppointment(
             clientID=c,
-            doctorID=tblDoctor.objects.filter(doctorID=doctor_id).first(),
+            doctorID=doctor,
             appointmentDate=date,
             appointmentTime=time_slot,
             mode=mode,
@@ -1010,8 +1027,26 @@ def patientAppointments(request):
         )
         p.save()
         
+        # Calculate fees
+        doctor_fees = float(doctor.consultationFees)
+        platform_fee = float(settings.PLATFORM_FEE)
+        total_amount = doctor_fees + platform_fee
+        
+        # For online mode, payment MUST be online (razorpay)
+        if mode == 'online':
+            payment_method = 'razorpay'
+        
+        # Create payment record
+        payment = tblPayment.objects.create(
+            appointmentID=p,
+            doctorFees=doctor_fees,
+            platformFee=platform_fee,
+            totalAmount=total_amount,
+            paymentMethod=payment_method,
+            paymentStatus='cash' if payment_method == 'cash' else 'pending'
+        )
+        
         # Notify the doctor about the new appointment request
-        doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
         if doctor:
             app_date = dt.strptime(date, '%Y-%m-%d').strftime("%b %d, %Y")
             app_time = time_slot.strftime("%I:%M %p")
@@ -1021,10 +1056,18 @@ def patientAppointments(request):
                 message=message,
                 isRead=False
             )
+        
+        # If cash payment, redirect directly
+        if payment_method == 'cash':
+            return redirect('patientMyAppointments')
+        else:
+            # Redirect to payment page for online payment
+            return redirect('paymentPage', appointment_id=p.appointmentID)
             
-        return redirect('patientMyAppointments')
     data={
-        "doctor":tblDoctor.objects.filter(approval_status='approved')
+        "doctor":tblDoctor.objects.filter(approval_status='approved'),
+        "RAZORPAY_KEY_ID": settings.RAZORPAY_KEY_ID,
+        "PLATFORM_FEE": settings.PLATFORM_FEE,
     }        
     return render(request,'patient_book_appointment.html',data)
 
@@ -1180,7 +1223,7 @@ def patientMyAppointments(request):
         return redirect('Login')
     
     client_id = request.session['clientID']
-    appointments = tblAppointment.objects.filter(clientID=client_id)
+    appointments = tblAppointment.objects.filter(clientID=client_id).select_related('payment')
     
     # Count calculations for summary cards (before filtering)
     total_count = appointments.count()
