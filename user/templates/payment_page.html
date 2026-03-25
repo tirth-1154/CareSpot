@@ -169,8 +169,7 @@
     </div>
 </div>
 
-<!-- Razorpay Checkout JS -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- Razorpay Checkout JS already loaded in patient_base.html -->
 <script>
     function startRazorpayPayment() {
         var options = {
@@ -180,56 +179,18 @@
             "name": "CareSpot",
             "description": "Appointment Fee - Dr. {{ appointment.doctorID.displayName }}",
             "order_id": "{{ razorpay_order_id }}",
-            "handler": function (response) {
-                // Send verification to server
-                fetch("{% url 'verifyPayment' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: "razorpay_payment_id=" + response.razorpay_payment_id + 
-                          "&razorpay_order_id=" + response.razorpay_order_id + 
-                          "&razorpay_signature=" + response.razorpay_signature
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        window.location.href = "{% url 'paymentSuccess' appointment_id=appointment.appointmentID %}";
-                    } else {
-                        alert('Payment verification failed. Please contact support.');
-                        window.location.href = "{% url 'patientMyAppointments' %}";
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Something went wrong. Please contact support.');
-                });
-            },
+            "callback_url": "{{ callback_url }}",
+            "redirect": true,
             "prefill": {
                 "name": "{{ user.userName|default:'' }}",
                 "email": "{{ user.email|default:'' }}",
-                "contact": ""
-            },
-            "method": {
-                "upi": true,
-                "card": true,
-                "netbanking": true,
-                "wallet": true,
-                "paylater": true
+                "contact": "{{ user.mobileNumber|default:'' }}"
             },
             "theme": {
                 "color": "#0d6efd"
-            },
-            "modal": {
-                "ondismiss": function() {
-                    // User closed the payment modal
-                }
             }
         };
         var rzp = new Razorpay(options);
-        rzp.on('payment.failed', function (response) {
-            alert('Payment failed. Please try again.');
-        });
         rzp.open();
     }
 </script>

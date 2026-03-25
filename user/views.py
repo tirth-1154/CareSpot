@@ -1013,6 +1013,24 @@ def patientAppointments(request):
         time_slot=dt.strptime(time, '%H:%M').time()
         doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
         
+        # --- Validation: One appointment per doctor per day per patient ---
+        existing_appointment = tblAppointment.objects.filter(
+            clientID=c,
+            doctorID=doctor,
+            appointmentDate=date,
+            isRejected=False  # Only check non-rejected appointments
+        ).first()
+        
+        if existing_appointment:
+            messages.error(request, f'You already have an appointment with {doctor.displayName} on this date. You can only book one appointment per doctor per day.')
+            data = {
+                "doctor": tblDoctor.objects.filter(approval_status='approved'),
+                "RAZORPAY_KEY_ID": settings.RAZORPAY_KEY_ID,
+                "PLATFORM_FEE": settings.PLATFORM_FEE,
+            }
+            return render(request, 'patient_book_appointment.html', data)
+        # --- End Validation ---
+        
         p=tblAppointment(
             clientID=c,
             doctorID=doctor,
@@ -1672,12 +1690,30 @@ def patientBlogs(request):
         # Doctors or non-logged-in users see all blogs
         blogs = tblDoctorPost.objects.all().order_by('-createDT')
 
+    # --- Dynamic Category Tags from all blog posts ---
+    # Get unique subcategory names from ALL blog posts (not filtered)
+    all_blog_categories = tblDoctorPost.objects.exclude(
+        doctorID__subcategoryID__isnull=True
+    ).values_list(
+        'doctorID__subcategoryID__subcategoryName', flat=True
+    ).distinct().order_by('doctorID__subcategoryID__subcategoryName')
+    # Convert to a clean list (remove None/empty)
+    dynamic_tags = [cat for cat in all_blog_categories if cat]
+
+    # --- Filtering ---
     search_query = request.GET.get('search', '').strip()
+    category_filter = request.GET.get('category', '').strip()
+
     if search_query:
         blogs = blogs.filter(
             models.Q(title__icontains=search_query) |
             models.Q(description__icontains=search_query) |
             models.Q(doctorID__subcategoryID__subcategoryName__icontains=search_query)
+        )
+    
+    if category_filter:
+        blogs = blogs.filter(
+            doctorID__subcategoryID__subcategoryName=category_filter
         )
 
     # Dynamic Trending Blogs based on comments and doctor's reviews
@@ -1701,12 +1737,14 @@ def patientBlogs(request):
         'blogs': blogs,
         'trending_blogs': trending_blogs,
         'is_following_anyone': is_following_anyone,
-        'recent_posts':tblDoctorPost.objects.all().order_by('-createDT')[:5],
-        'user':user,
-        'client':c,
+        'recent_posts': tblDoctorPost.objects.all().order_by('-createDT')[:5],
+        'user': user,
+        'client': c,
         'base_template': base_template,
         'is_patient': is_patient,
         'search_query': search_query,
+        'dynamic_tags': dynamic_tags,
+        'category_filter': category_filter,
     }
     return render(request, 'patient_blogs.html', data)
 
@@ -1880,6 +1918,10 @@ def paymentPage(request, appointment_id):
     
     user = tblUser.objects.filter(userID=request.session['user_id']).first()
     
+    # Build absolute callback URL for Razorpay redirect mode (required for netbanking/UPI)
+    from django.urls import reverse
+    callback_url = request.build_absolute_uri(reverse('verifyPayment'))
+    
     data = {
         'appointment': appointment,
         'payment': payment,
@@ -1887,12 +1929,13 @@ def paymentPage(request, appointment_id):
         'razorpay_key_id': settings.RAZORPAY_KEY_ID,
         'amount_paise': amount_paise,
         'user': user,
+        'callback_url': callback_url,
     }
     return render(request, 'payment_page.html', data)
 
 @csrf_exempt
 def verifyPayment(request):
-    """Verify Razorpay payment callback"""
+    """Verify Razorpay payment callback - redirect mode"""
     if request.method == 'POST':
         razorpay_payment_id = request.POST.get('razorpay_payment_id', '')
         razorpay_order_id = request.POST.get('razorpay_order_id', '')
@@ -1901,7 +1944,10 @@ def verifyPayment(request):
         payment = tblPayment.objects.filter(razorpay_order_id=razorpay_order_id).first()
         
         if not payment:
-            return JsonResponse({'status': 'error', 'message': 'Payment not found'}, status=404)
+            return redirect('patientMyAppointments')
+        
+        # Get the appointment ID for redirect
+        appointment_id = payment.appointmentID.appointmentID if payment.appointmentID else None
         
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
         
@@ -1919,14 +1965,14 @@ def verifyPayment(request):
             payment.paymentStatus = 'paid'
             payment.save()
             
-            return JsonResponse({'status': 'success', 'message': 'Payment verified successfully'})
+            return redirect('paymentSuccess', appointment_id=appointment_id)
             
         except razorpay.errors.SignatureVerificationError:
             payment.paymentStatus = 'failed'
             payment.save()
-            return JsonResponse({'status': 'error', 'message': 'Payment verification failed'}, status=400)
+            return redirect('patientMyAppointments')
     
-    return HttpResponseBadRequest('Invalid request method')
+    return redirect('patientMyAppointments')
 
 def paymentSuccess(request, appointment_id):
     """Payment success page"""
@@ -1941,3 +1987,60 @@ def paymentSuccess(request, appointment_id):
         'payment': payment,
     }
     return render(request, 'payment_success.html', data)
+
+def videoMeeting(request, appointment_id):
+    """Embedded Jitsi Meet video consultation room"""
+    if 'user_id' not in request.session:
+        return redirect('Login')
+    
+    user_id = request.session['user_id']
+    appointment = tblAppointment.objects.filter(appointmentID=appointment_id).first()
+    
+    if not appointment:
+        return redirect('home')
+    
+    # Only allow if appointment is online, accepted, and has a meetLink
+    if appointment.mode != 'online' or not appointment.isAccepted or not appointment.meetLink:
+        return redirect('home')
+    
+    # Check if user is the doctor or the patient for this appointment
+    doctor = appointment.doctorID
+    client = appointment.clientID
+    
+    is_doctor = False
+    is_patient = False
+    
+    # Check if user is the doctor
+    doc_obj = tblDoctor.objects.filter(userID=user_id).first()
+    if doc_obj and doc_obj.doctorID == doctor.doctorID:
+        is_doctor = True
+    
+    # Check if user is the patient
+    if client.userID.userID == user_id:
+        is_patient = True
+    
+    # Deny access if user is neither doctor nor patient
+    if not is_doctor and not is_patient:
+        return redirect('home')
+    
+    # Extract room name from meetLink (e.g., "https://meet.jit.si/CareSpot-DrName-123-abc123")
+    room_name = appointment.meetLink.replace('https://meet.jit.si/', '')
+    
+    # Set display name and redirect URL based on role
+    user = tblUser.objects.filter(userID=user_id).first()
+    if is_doctor:
+        user_display_name = f"Dr. {doctor.displayName}"
+        back_url = '/doctorAppointments/'
+    else:
+        user_display_name = client.name
+        back_url = '/patientMyAppointments/'
+    
+    data = {
+        'appointment': appointment,
+        'room_name': room_name,
+        'user_display_name': user_display_name,
+        'user_email': user.email if user else '',
+        'is_doctor': is_doctor,
+        'back_url': back_url,
+    }
+    return render(request, 'video_meeting.html', data)

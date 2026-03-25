@@ -1,0 +1,450 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Video Consultation | CareSpot</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ── Top Bar ── */
+        .meeting-topbar {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .topbar-logo img {
+            height: 28px;
+            filter: brightness(0) invert(1);
+        }
+
+        .topbar-divider {
+            width: 1px;
+            height: 28px;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .meeting-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .info-chip {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.75);
+            font-weight: 500;
+        }
+
+        .info-chip i {
+            font-size: 14px;
+            color: rgba(255,255,255,0.45);
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-host {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .role-participant {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-leave {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .btn-leave:hover {
+            background: #ef4444;
+            color: #fff;
+            border-color: #ef4444;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        /* ── Jitsi Container ── */
+        .jitsi-wrapper {
+            height: calc(100vh - 60px);
+            width: 100%;
+            position: relative;
+        }
+
+        #jitsi-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ── Loading State ── */
+        .meeting-loading {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+            z-index: 5;
+            transition: opacity 0.5s ease;
+        }
+
+        .meeting-loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #076FC5, #0ea5e9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .loading-icon i {
+            font-size: 32px;
+            color: #fff;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(7, 111, 197, 0.4); transform: scale(1); }
+            50% { box-shadow: 0 0 0 20px rgba(7, 111, 197, 0); transform: scale(1.05); }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+        }
+
+        .loading-sub {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(3, end) infinite;
+        }
+
+        @keyframes dots {
+            0% { content: ''; }
+            33% { content: '.'; }
+            66% { content: '..'; }
+            100% { content: '...'; }
+        }
+
+        /* ── Error State ── */
+        .meeting-error {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+            z-index: 6;
+        }
+
+        .meeting-error.show {
+            display: flex;
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .error-icon i {
+            font-size: 32px;
+            color: #f87171;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .meeting-topbar {
+                padding: 8px 14px;
+                flex-wrap: wrap;
+                height: auto;
+                gap: 8px;
+            }
+
+            .meeting-info {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .info-chip { font-size: 11px; }
+            .topbar-divider { display: none; }
+            .jitsi-wrapper { height: calc(100vh - 80px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ══ Top Bar ══ -->
+    <div class="meeting-topbar">
+        <div class="topbar-left">
+            <a class="topbar-logo" href="#">
+                <i class="fa-solid fa-heart-pulse"></i> CareSpot
+            </a>
+            <div class="topbar-divider"></div>
+            <div class="meeting-info">
+                <span class="info-chip">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    Dr. {{ appointment.doctorID.displayName }}
+                </span>
+                <span class="info-chip">
+                    <i class="fa-solid fa-user"></i>
+                    {{ appointment.clientID.name }}
+                </span>
+                <span class="info-chip">
+                    <i class="fa-regular fa-calendar-days"></i>
+                    {{ appointment.appointmentDate|date:"M d, Y" }}
+                </span>
+                <span class="info-chip">
+                    <i class="fa-regular fa-clock"></i>
+                    {{ appointment.appointmentTime|time:"h:i A" }}
+                </span>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            {% if is_doctor %}
+                <span class="role-badge role-host">
+                    <i class="fa-solid fa-crown"></i> Host (Doctor)
+                </span>
+            {% else %}
+                <span class="role-badge role-participant">
+                    <i class="fa-solid fa-user-check"></i> Participant
+                </span>
+            {% endif %}
+            <a href="{{ back_url }}" class="btn-leave" id="leaveBtn">
+                <i class="fa-solid fa-phone-slash"></i> Leave Meeting
+            </a>
+        </div>
+    </div>
+
+    <!-- ══ Jitsi Video Container ══ -->
+    <div class="jitsi-wrapper">
+        <!-- Loading Overlay -->
+        <div class="meeting-loading" id="meetingLoading">
+            <div class="loading-icon">
+                <i class="fa-solid fa-video"></i>
+            </div>
+            <div class="loading-text">
+                {% if is_doctor %}
+                    Starting your consultation room<span class="loading-dots"></span>
+                {% else %}
+                    Joining the consultation<span class="loading-dots"></span>
+                {% endif %}
+            </div>
+            <div class="loading-sub">Please allow camera & microphone access when prompted</div>
+        </div>
+
+        <!-- Error Overlay -->
+        <div class="meeting-error" id="meetingError">
+            <div class="error-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h4 class="text-white mb-2">Unable to Start Meeting</h4>
+            <p class="text-secondary mb-4">There was a problem connecting to the video service.</p>
+            <a href="{{ back_url }}" class="btn btn-outline-light rounded-pill px-4">
+                <i class="fa-solid fa-arrow-left me-2"></i>Go Back
+            </a>
+        </div>
+
+        <!-- Jitsi IFrame mounts here -->
+        <div id="jitsi-container"></div>
+    </div>
+
+    <!-- ══ Jitsi External API ══ -->
+    <script src="https://meet.jit.si/external_api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const roomName   = "{{ room_name|escapejs }}";
+            const userName   = "{{ user_display_name|escapejs }}";
+            const userEmail  = "{{ user_email|escapejs }}";
+            const isDoctor   = {{ is_doctor|yesno:"true,false" }};
+            const backUrl    = "{{ back_url|escapejs }}";
+
+            const loading = document.getElementById('meetingLoading');
+            const errorDiv = document.getElementById('meetingError');
+
+            try {
+                const api = new JitsiMeetExternalAPI("meet.jit.si", {
+                    roomName: roomName,
+                    parentNode: document.getElementById('jitsi-container'),
+                    width: '100%',
+                    height: '100%',
+                    userInfo: {
+                        displayName: userName,
+                        email: userEmail
+                    },
+                    configOverwrite: {
+                        // Both join directly — no pre-join, no lobby
+                        prejoinPageEnabled: false,
+                        startWithAudioMuted: false,
+                        startWithVideoMuted: false,
+                        disableModeratorIndicator: false,
+                        enableLobbyChat: false,
+                        hideLobbyButton: true,
+                        // Disable lobby so patient enters directly
+                        'lobby.autoKnock': true,
+                        'lobby.enableChat': false,
+                        // Meeting settings
+                        disableDeepLinking: true,
+                        enableWelcomePage: false,
+                        enableClosePage: false,
+                        // Recording / live-stream off for privacy
+                        fileRecordingsEnabled: false,
+                        liveStreamingEnabled: false,
+                        // UI cleanup
+                        hideConferenceSubject: true,
+                        hideConferenceTimer: false,
+                        disableInviteFunctions: true,
+                    },
+                    interfaceConfigOverwrite: {
+                        SHOW_JITSI_WATERMARK: false,
+                        SHOW_WATERMARK_FOR_GUESTS: false,
+                        SHOW_BRAND_WATERMARK: false,
+                        SHOW_POWERED_BY: false,
+                        DEFAULT_BACKGROUND: '#0f172a',
+                        DISABLE_JOIN_LEAVE_NOTIFICATIONS: false,
+                        DISABLE_PRESENCE_STATUS: false,
+                        GENERATE_ROOMNAMES_ON_WELCOME_PAGE: false,
+                        HIDE_INVITE_MORE_HEADER: true,
+                        MOBILE_APP_PROMO: false,
+                        TOOLBAR_BUTTONS: [
+                            'microphone', 'camera', 'desktop', 'chat',
+                            'raisehand', 'participants-pane', 'toggle-camera',
+                            'fullscreen', 'settings', 'hangup',
+                            'select-background', 'tileview'
+                        ],
+                    }
+                });
+
+                // When conference is ready, hide loading
+                api.addEventListener('videoConferenceJoined', function (data) {
+                    loading.classList.add('hidden');
+                });
+
+                // When user hangs up via Jitsi button, redirect back
+                api.addEventListener('readyToClose', function () {
+                    window.location.href = backUrl;
+                });
+
+                // Handle errors
+                api.addEventListener('errorOccurred', function (error) {
+                    console.error('Jitsi error:', error);
+                });
+
+                // Leave button also disposes the API
+                document.getElementById('leaveBtn').addEventListener('click', function (e) {
+                    e.preventDefault();
+                    api.executeCommand('hangup');
+                    setTimeout(function () {
+                        window.location.href = backUrl;
+                    }, 500);
+                });
+
+                // Timeout fallback — hide loading after 12s even if event doesn't fire
+                setTimeout(function () {
+                    loading.classList.add('hidden');
+                }, 12000);
+
+            } catch (err) {
+                console.error('Failed to initialize Jitsi:', err);
+                loading.style.display = 'none';
+                errorDiv.classList.add('show');
+            }
+        });
+    </script>
+
+</body>
+</html>

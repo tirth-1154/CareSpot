@@ -27,7 +27,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <!-- Custom CSS Styling -->
     <style>
       :root {
@@ -400,15 +400,18 @@
       }
     </style>
 
-    <!-- Prevent Back Navigation -->
+    <!-- Prevent Back Navigation (skip on payment pages to avoid Razorpay conflicts) -->
     <script type="text/javascript">
-        // Push multiple states to trap double-clicks
-        window.history.pushState(null, null, window.location.href);
-        window.history.pushState(null, null, window.location.href);
-        
-        window.addEventListener('popstate', function (event) {
+        // Skip back-navigation prevention on payment pages (Razorpay uses popups that need history)
+        if (!window.location.pathname.includes('/payment/')) {
+            // Push multiple states to trap double-clicks
             window.history.pushState(null, null, window.location.href);
-        });
+            window.history.pushState(null, null, window.location.href);
+            
+            window.addEventListener('popstate', function (event) {
+                window.history.pushState(null, null, window.location.href);
+            });
+        }
 
         // Prevent BFCache from loading old page
         window.onpageshow = function (event) {

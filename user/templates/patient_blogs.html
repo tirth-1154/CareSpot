@@ -1,611 +1,528 @@
-patient_blogs.html
-
 {% extends base_template %}
 
-{% block title %}Patient Blogs{% endblock %}
+{% block title %}Patient Health Blog | CareSpot{% endblock %}
 
 {% block content %}
 
-<!-- Customizer & Premium Styling -->
+<!-- Premium Healthcare UI Styling -->
 <style>
   :root {
-    /* Premium Minimalist Blog Palette */
-    --dash-primary: #1e293b;       /* Slate 800 */
-    --dash-primary-hover: #0f172a; /* Slate 900 */
-    --dash-surface: #ffffff;
-    --dash-bg: #f8fafc;            /* Light gray-blue background */
-    --dash-text-main: #0f172a;
-    --dash-text-muted: #475569;    /* Slate 600 */
-    --dash-text-light: #94a3b8;    /* Slate 400 */
-    --dash-border: #e2e8f0;        /* Slate 200 */
-    --dash-accent: #3b82f6;        /* Blue 500 */
-    
-    /* Shadows & Radii */
-    --dash-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --dash-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    --dash-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-    
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-full: 9999px;
+    --cs-primary: #2D9CDB;
+    --cs-secondary: #27AE60;
+    --cs-bg-light: #F8FAFC;
+    --cs-text-main: #1f2937;
+    --cs-text-muted: #6b7280;
+    --cs-border: #e5e7eb;
+    --cs-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --cs-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --cs-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --cs-radius: 1rem;
+    --cs-transition: all 0.3s ease;
   }
 
   body {
-    background-color: var(--dash-bg);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--cs-bg-light);
+    font-family: 'Inter', sans-serif;
   }
 
-  /* ----------------------
-     Layout Wrappers
-     ---------------------- */
-  .blog-container {
-    max-width: 1150px;
+  /* ================================
+     HERO SECTION
+     ================================ */
+  .blog-hero {
+    background: transparent;
+    padding: 60px 20px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    color: var(--cs-text-main);
+    margin-bottom: 0px;
+    border-bottom: none;
+  }
+  .blog-hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 50px 20px;
   }
-  
-  .section-spacing {
-    margin-bottom: 50px;
+  .blog-hero h1 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+    color: var(--cs-text-main);
+  }
+  .blog-hero p {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--cs-text-muted);
+    margin-bottom: 35px;
   }
 
-  /* ----------------------
-     Typography & Section Titles
-     ---------------------- */
-  .section-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--dash-text-main);
-    margin-bottom: 24px;
+  /* Search Bar - Light Theme Edit */
+  .premium-search {
+    display: flex;
+    background: #ffffff;
+    border: 1px solid var(--cs-border);
+    border-radius: 9999px;
+    padding: 6px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    max-width: 650px;
+    margin: 0 auto;
+    transition: var(--cs-transition);
+    align-items: stretch;
+  }
+  .premium-search:focus-within {
+    border-color: var(--cs-primary);
+    box-shadow: 0 4px 20px rgba(45, 156, 219, 0.15);
+  }
+  .search-icon-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+    padding: 0 15px 0 20px;
+    color: var(--cs-text-muted);
   }
-
-  /* ----------------------
-     1. Search Section (Top)
-     ---------------------- */
-  .search-section {
-    max-width: 700px;
-    margin: 0 auto 50px auto;
-    text-align: center;
-  }
-  .search-section h1 {
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--dash-text-main);
-    margin-bottom: 16px;
-  }
-  .search-section p {
-    font-size: 16px;
-    color: var(--dash-text-muted);
-    margin-bottom: 30px;
-  }
-
-  .premium-search-container {
-    position: relative;
-    display: flex;
-    width: 100%;
-    box-shadow: var(--dash-shadow-md);
-    border-radius: var(--radius-full);
-    background: var(--dash-surface);
-    padding: 8px;
-    transition: box-shadow 0.3s ease;
-  }
-  .premium-search-container:focus-within {
-    box-shadow: var(--dash-shadow-lg), 0 0 0 3px rgba(59, 130, 246, 0.15);
-  }
-  
-  .premium-search-input {
+  .premium-search input {
     flex-grow: 1;
     border: none;
-    background: transparent;
-    padding: 12px 20px;
     font-size: 16px;
-    color: var(--dash-text-main);
+    color: var(--cs-text-main);
     outline: none;
-    border-radius: var(--radius-full);
+    background: transparent;
+    padding: 12px 0;
   }
-  .premium-search-btn {
-    background: var(--dash-primary);
-    color: #fff;
+  .premium-search input::placeholder {
+    color: #9ca3af;
+  }
+  .premium-search button {
+    background: var(--cs-primary);
+    color: white;
     border: none;
-    border-radius: var(--radius-full);
-    padding: 0 30px;
+    padding: 0 32px;
+    border-radius: 9999px;
     font-weight: 600;
     font-size: 15px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    transition: var(--cs-transition);
   }
-  .premium-search-btn:hover {
-    background: var(--dash-primary-hover);
+  .premium-search button:hover {
+    background: #2287c2;
     transform: translateY(-1px);
-    box-shadow: var(--dash-shadow-sm);
+    box-shadow: 0 4px 12px rgba(45, 156, 219, 0.3);
   }
 
-  /* ----------------------
-     2. Trending Now Section
-     ---------------------- */
-  .trending-scroll {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 24px;
-  }
-  .trending-card {
-    background: var(--dash-surface);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
+  /* ================================
+     MAIN LAYOUT & SIDEBAR
+     ================================ */
+  .blog-layout {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
     display: flex;
-    align-items: center;
-    padding: 20px;
-    gap: 16px;
-    box-shadow: var(--dash-shadow-sm);
-    border: 1px solid var(--dash-border);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-decoration: none !important;
+    gap: 40px;
   }
-  .trending-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--dash-shadow-md);
+  .blog-main {
+    flex: 1;
+    min-width: 0; /* fixes grid blowout */
   }
-  .trending-img {
-    width: 100px;
-    height: 100px;
-    border-radius: var(--radius-md);
-    object-fit: cover;
+  .blog-sidebar {
+    width: 320px;
     flex-shrink: 0;
   }
-  .trending-info {
-    flex-grow: 1;
-  }
-  .trending-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--dash-text-main);
-    margin: 0 0 8px 0;
-    line-height: 1.4;
-  }
-  .trending-card:hover .trending-title {
-    color: var(--dash-accent);
-  }
-  .trending-meta {
-    font-size: 13px;
-    color: var(--dash-text-muted);
+
+  @media (max-width: 992px) {
+    .blog-layout { flex-direction: column; }
+    .blog-sidebar { width: 100%; }
   }
 
-  /* ----------------------
-     3. Popular Topics
-     ---------------------- */
-  .topics-container {
+  /* ================================
+     CATEGORY FILTERS
+     ================================ */
+  .category-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--cs-border);
+    padding-bottom: 20px;
   }
-  .topic-chip {
-    background: var(--dash-surface);
-    border: 1px solid var(--dash-border);
-    color: var(--dash-text-muted);
-    padding: 10px 20px;
-    border-radius: var(--radius-full);
+  .cat-pill {
+    padding: 8px 20px;
+    background: white;
+    border: 1px solid var(--cs-border);
+    border-radius: 9999px;
+    color: var(--cs-text-muted);
+    font-weight: 500;
     font-size: 14px;
-    font-weight: 600;
     text-decoration: none;
-    transition: all 0.2s ease;
-    box-shadow: var(--dash-shadow-sm);
+    transition: var(--cs-transition);
   }
-  .topic-chip:hover {
-    background: var(--dash-primary);
-    color: #fff;
-    border-color: var(--dash-primary);
+  .cat-pill:hover, .cat-pill.active {
+    background: var(--cs-primary);
+    border-color: var(--cs-primary);
+    color: white;
+    box-shadow: 0 4px 10px rgba(45, 156, 219, 0.25);
     transform: translateY(-2px);
-    box-shadow: var(--dash-shadow-md);
   }
 
-  /* ----------------------
-     4. Recent Articles (Main Section Grid)
-     ---------------------- */
-  .dashboard-grid {
+  /* ================================
+     BLOG CARDS
+     ================================ */
+  .articles-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 30px;
   }
 
-  .dash-blog-card {
-    background: var(--dash-surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--dash-border);
-    box-shadow: var(--dash-shadow-sm);
+  .blog-card {
+    background: white;
+    border-radius: var(--cs-radius);
     overflow: hidden;
+    border: 1px solid var(--cs-border);
     display: flex;
     flex-direction: column;
-    height: 100%;
     text-decoration: none !important;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: var(--cs-transition);
+    height: 100%;
+    box-shadow: var(--cs-shadow-sm);
   }
-  .dash-blog-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--dash-shadow-lg);
+  .blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--cs-shadow-hover);
+    border-color: #d1d5db;
   }
-
-  .dash-blog-img-wrapper {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    background: var(--dash-bg);
+  
+  .blog-card-img {
+    height: 220px;
     position: relative;
+    overflow: hidden;
   }
-  .dash-blog-img-wrapper img {
+  .blog-card-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
   }
-  .dash-blog-card:hover .dash-blog-img-wrapper img {
+  .blog-card:hover .blog-card-img img {
     transform: scale(1.05);
   }
 
-  .dash-blog-content {
+  .blog-card-content {
     padding: 24px;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
   }
-
-  .dash-blog-meta {
-    font-size: 13px;
-    color: var(--dash-text-light);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 500;
-  }
-
-  .dash-blog-title {
-    font-size: 18px;
+  .blog-card-title {
+    font-size: 20px;
     font-weight: 700;
-    color: var(--dash-text-main);
-    margin: 0 0 12px 0;
+    color: var(--cs-text-main);
     line-height: 1.4;
-    transition: color 0.2s;
-  }
-  .dash-blog-card:hover .dash-blog-title {
-    color: var(--dash-accent);
-  }
-
-  .dash-blog-desc {
-    font-size: 14px;
-    color: var(--dash-text-muted);
-    line-height: 1.6;
-    margin-bottom: 24px;
-    flex-grow: 1;
+    margin: 0 0 12px;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    transition: color 0.2s ease;
+  }
+  .blog-card:hover .blog-card-title {
+    color: var(--cs-primary);
+  }
+  .blog-card-excerpt {
+    font-size: 14.5px;
+    color: var(--cs-text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
   }
 
-  .dash-blog-footer {
+  .blog-card-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-top: 1px solid var(--cs-border);
+    padding-top: 20px;
+  }
+  .blog-meta-stats {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 12.5px;
+    color: var(--cs-text-muted);
+  }
+  .author-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+  .author-avatar {
+    width: 28px; height: 28px;
+    background: var(--cs-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .read-more-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--cs-bg-light);
+    color: var(--cs-primary);
+    padding: 10px 0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: var(--cs-transition);
+  }
+  .blog-card:hover .read-more-btn {
+    background: var(--cs-primary);
+    color: white;
+  }
+
+  /* Sidebar Widgets */
+  .widget {
+    background: white;
+    border-radius: var(--cs-radius);
+    padding: 24px;
+    margin-bottom: 30px;
+    border: 1px solid var(--cs-border);
+    box-shadow: var(--cs-shadow-sm);
+  }
+  .widget-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cs-text-main);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--cs-border);
+  }
+  /* Sidebar Topic Links */
+  .sidebar-topic-link {
+    color: var(--cs-text-main);
+    text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-top: 1px solid var(--dash-border);
-    padding-top: 16px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
+    font-weight: 500;
+    background: transparent;
+  }
+  .sidebar-topic-link:hover,
+  .sidebar-topic-link.active-sidebar {
+    background: #f0f9ff;
+    color: var(--cs-primary);
+    transform: translateX(4px);
+  }
+  .sidebar-topic-link i {
+    transition: transform 0.2s ease;
+  }
+  .sidebar-topic-link:hover i,
+  .sidebar-topic-link.active-sidebar i {
+    transform: translateX(2px);
+    opacity: 1 !important;
   }
 
-  .dash-author-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .dash-author-avatar {
-    width: 32px;
-    height: 32px;
-    background: var(--dash-bg);
-    color: var(--dash-text-muted);
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* Blog Card Tag */
+  .blog-card-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(45, 156, 219, 0.9);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
     font-weight: 600;
-    font-size: 13px;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(4px);
+    z-index: 2;
   }
-  .dash-author-name {
+
+  /* Trending Mini Cards */
+  .trending-mini-card {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 16px;
+    text-decoration: none !important;
+  }
+  .trending-mini-card:last-child { margin-bottom: 0; }
+  .trending-mini-img {
+    width: 70px; height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  .trending-mini-info h4 {
     font-size: 14px;
     font-weight: 600;
-    color: var(--dash-text-main);
+    color: var(--cs-text-main);
+    line-height: 1.4;
+    margin: 0 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s;
+  }
+  .trending-mini-card:hover h4 { color: var(--cs-primary); }
+  .trending-mini-date {
+    font-size: 11px;
+    color: var(--cs-text-muted);
   }
 
-  .dash-btn-read {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--dash-text-main);
-    background: var(--dash-bg);
-    padding: 8px 16px;
-    border-radius: var(--radius-full);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-  }
-  .dash-blog-card:hover .dash-btn-read {
-    background: var(--dash-primary);
-    color: #fff;
-  }
-
-  /* ----------------------
-     5. Connect With Us Section
-     ---------------------- */
-  .connect-section {
-    background: var(--dash-surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--dash-border);
-    padding: 40px;
+  /* Empty State */
+  .empty-state {
     text-align: center;
-    box-shadow: var(--dash-shadow-sm);
-  }
-  .connect-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--dash-text-main);
-    margin-bottom: 12px;
-  }
-  .connect-desc {
-    font-size: 15px;
-    color: var(--dash-text-muted);
-    margin-bottom: 24px;
-  }
-  .connect-socials {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-  }
-  .social-icon {
-    width: 48px;
-    height: 48px;
-    background: var(--dash-bg);
-    color: var(--dash-text-muted);
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-  }
-  .social-icon:hover {
-    background: var(--dash-primary);
-    color: #fff;
-    transform: translateY(-3px);
-    box-shadow: var(--dash-shadow-md);
-  }
-
-  /* ----------------------
-     Empty State
-     ---------------------- */
-  .dash-empty-state {
-    background: var(--dash-surface);
+    padding: 60px 20px;
+    background: white;
+    border-radius: var(--cs-radius);
     border: 1px dashed #cbd5e1;
-    border-radius: var(--radius-lg);
-    padding: 80px 20px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
   }
-  .dash-empty-icon {
+  .empty-icon {
     font-size: 48px;
-    color: var(--dash-border);
-    margin-bottom: 20px;
-  }
-  .dash-empty-title {
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--dash-text-main);
-    margin: 0 0 10px 0;
-  }
-  .dash-empty-desc {
-    font-size: 15px;
-    color: var(--dash-text-muted);
-    margin: 0 0 30px 0;
-    max-width: 400px;
-  }
-  .dash-btn-primary {
-    background: var(--dash-primary);
-    color: #fff;
-    padding: 14px 28px;
-    border-radius: var(--radius-full);
-    font-weight: 600;
-    font-size: 15px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-  }
-  .dash-btn-primary:hover {
-    background: var(--dash-primary-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--dash-shadow-md);
-    color: #fff;
-  }
-
-  /* Responsive fixes */
-  @media (max-width: 768px) {
-    .premium-search-container {
-      flex-direction: column;
-      border-radius: var(--radius-lg);
-      padding: 12px;
-      gap: 12px;
-    }
-    .premium-search-btn {
-      width: 100%;
-      padding: 14px 24px;
-      justify-content: center;
-    }
-    .search-section h1 {
-      font-size: 28px;
-    }
-    .blog-container {
-      padding: 30px 15px;
-    }
+    color: #94a3b8;
+    margin-bottom: 16px;
   }
 </style>
 
-<div class="blog-container">
-
-  <!-- ==============================================
-       1. SEARCH SECTION (TOP)
-       ============================================== -->
-  <div class="search-section">
-    {% if is_following_anyone %}
-      <h1>Your Personalized Feed</h1>
-      <p>Premium insights and health tips from the doctors you follow.</p>
-    {% else %}
-      <h1>Explore Health Articles</h1>
-      <p>Discover featured health tips and medical insights from top doctors.</p>
-    {% endif %}
+<!-- 1. HERO SECTION -->
+<div class="blog-hero">
+  <div class="blog-hero-content">
+    <h1>Patient Health Blog</h1>
+    <p>Stay informed with the latest healthcare tips, wellness advice, and medical insights from our trusted experts.</p>
     
     <form method="GET">
-      <div class="premium-search-container">
-        <input id="autocomplete-input" name="search" class="premium-search-input" type="text" placeholder="Search articles..." value="{{ search_query|default_if_none:'' }}" />
-        <button type="submit" class="premium-search-btn">
-          <i class="fa-solid fa-magnifying-glass"></i> Search
-        </button>
+      <div class="premium-search">
+        <div class="search-icon-container">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <input id="autocomplete-input" name="search" type="text" placeholder="Search treatments, habits, doctors..." value="{{ search_query|default_if_none:'' }}" />
+        <button type="submit">Search</button>
       </div>
     </form>
   </div>
+</div>
 
-  <div id="dynamic-content">
-  {% if not search_query %}
-  <!-- ==============================================
-       2. TRENDING NOW SECTION
-       ============================================== -->
-  <div class="section-spacing">
-    <h2 class="section-title">🔥 Trending Now</h2>
-    <div class="trending-scroll">
-      {% for blog in trending_blogs %}
-      <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="trending-card">
-        {% if blog.thumbnail %}
-        <img src="{{ blog.thumbnail.url }}" onerror="this.src = '/static/images/blog-placeholder.jpg';" class="trending-img" alt="{{ blog.title }}" />
-        {% else %}
-        <img src="/static/images/blog-placeholder.jpg" class="trending-img" alt="{{ blog.title }}" />
-        {% endif %}
-        <div class="trending-info">
-          <h3 class="trending-title">{{ blog.title }}</h3>
-          <span class="trending-meta">{{ blog.createDT|date:"d F Y" }}</span>
-        </div>
-      </a>
-      {% empty %}
-      <p class="text-muted" style="grid-column: 1 / -1;">No trending blogs available at the moment.</p>
+<div class="blog-layout">
+
+  <!-- ===============================
+       MAIN CONTENT (LEFT)
+       =============================== -->
+  <div class="blog-main" id="dynamic-content">
+    
+    <!-- Category Filters (Dynamic from blog data) -->
+    <div class="category-pills">
+      <a href="?" class="cat-pill {% if not category_filter and not search_query %}active{% endif %}">📑 All</a>
+      {% for tag in dynamic_tags %}
+        <a href="?category={{ tag }}" class="cat-pill {% if category_filter == tag %}active{% endif %}">{{ tag }}</a>
       {% endfor %}
     </div>
-  </div>
 
-  <!-- ==============================================
-       3. POPULAR TOPICS
-       ============================================== -->
-  <div class="section-spacing">
-    <h2 class="section-title">🏷️ Popular Topics</h2>
-    <div class="topics-container">
-      <a href="#" class="topic-chip">Healthcare</a>
-      <a href="#" class="topic-chip">Mental Health</a>
-      <a href="#" class="topic-chip">Nutrition</a>
-      <a href="#" class="topic-chip">Wellness</a>
-      <a href="#" class="topic-chip">Cardiology</a>
-      <a href="#" class="topic-chip">Pediatrics</a>
-      <a href="#" class="topic-chip">Fitness</a>
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- ==============================================
-       4. RECENT ARTICLES (MAIN FEED)
-       ============================================== -->
-  <div class="section-spacing">
-    <h2 class="section-title">📰 Recent Articles</h2>
-    
+    <!-- Articles Grid -->
     {% if blogs %}
-      <div class="dashboard-grid">
+      <div class="articles-grid">
         {% for blog in blogs %}
-          <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="dash-blog-card">
-            <!-- Thumbnail -->
-            <div class="dash-blog-img-wrapper">
-              {% if blog.thumbnail %}
-                <img src="{{blog.thumbnail.url}}" alt="{{blog.title}}" />
-              {% else %}
-                <img src="/static/images/blog-placeholder.jpg" alt="Placeholder" onerror="this.src='/static/images/blog-01a.jpg';" />
-              {% endif %}
-            </div>
-            
-            <!-- Content -->
-            <div class="dash-blog-content">
-              <div class="dash-blog-meta">
-                <i class="fa-regular fa-calendar"></i> {{blog.createDT|date:"d M Y"}}
-              </div>
-              <h3 class="dash-blog-title">{{blog.title}}</h3>
-              <p class="dash-blog-desc">{{blog.description}}</p>
-              
-              <!-- Footer & Actions (Avatar + Read More) -->
-              <div class="dash-blog-footer">
-                <div class="dash-author-info">
-                  <div class="dash-author-avatar">
-                    {{blog.doctorID.displayName|make_list|first|upper}}
-                  </div>
-                  <div class="dash-author-name">{{blog.doctorID.displayName}}</div>
+        <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="blog-card">
+          <!-- Image -->
+          <div class="blog-card-img">
+            {% if blog.thumbnail %}
+              <img src="{{ blog.thumbnail.url }}" alt="{{ blog.title }}" />
+            {% else %}
+              <img src="/static/images/blog-placeholder.jpg" alt="Healthcare" onerror="this.src='/static/images/blog-01a.jpg';" />
+            {% endif %}
+            {% if blog.doctorID.subcategoryID %}
+              <span class="blog-card-tag">{{ blog.doctorID.subcategoryID.subcategoryName }}</span>
+            {% endif %}
+          </div>
+
+          <!-- Content -->
+          <div class="blog-card-content">
+            <h3 class="blog-card-title">{{ blog.title }}</h3>
+            <p class="blog-card-excerpt">{{ blog.description }}</p>
+
+            <div class="blog-card-footer">
+              <div class="blog-meta-stats">
+                <div class="author-meta">
+                  <div class="author-avatar">{{ blog.doctorID.displayName|make_list|first|upper }}</div>
+                  <span>{{ blog.doctorID.displayName }}</span>
                 </div>
-                <div class="dash-btn-read">
-                  Read More
-                </div>
+                <span><i class="fa-regular fa-calendar me-1"></i> {{ blog.createDT|date:"M d, Y" }}</span>
+              </div>
+              <div class="read-more-btn">
+                Read Article <i class="fa-solid fa-arrow-right"></i>
               </div>
             </div>
-          </a>
+          </div>
+        </a>
         {% endfor %}
       </div>
     {% else %}
-      <!-- EMPTY STATE -->
-      <div class="dash-empty-state">
-        <i class="fa-solid fa-inbox dash-empty-icon"></i>
-        {% if search_query %}
-          <h3 class="dash-empty-title">No articles found</h3>
-          <p class="dash-empty-desc">We couldn't find any articles matching "<strong>{{ search_query }}</strong>".</p>
-          <a href="?" class="dash-btn-primary">
-            Clear Search
-          </a>
-        {% else %}
-          <h3 class="dash-empty-title">No articles available yet</h3>
-          {% if is_patient and not is_following_anyone %}
-            <p class="dash-empty-desc">You are not following any doctors right now. Follow a doctor to see their blog posts here.</p>
-          {% else %}
-            <p class="dash-empty-desc">The doctors you follow haven't posted any recent articles.</p>
-          {% endif %}
-          <a href="{% url 'patientDoctorsList' %}" class="dash-btn-primary">
-            <i class="fa-solid fa-users"></i> Discover Doctors
-          </a>
-        {% endif %}
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+        <h3 style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">No articles found</h3>
+        <p style="color: var(--cs-text-muted); margin-bottom: 20px;">We couldn't find any articles matching your criteria.</p>
+        <a href="?" style="background: var(--cs-primary); color: white; padding: 10px 24px; border-radius: 9999px; text-decoration: none; font-weight: 500;">Clear Filters</a>
       </div>
     {% endif %}
-  </div>
 
   </div>
-  <!-- ==============================================
-       5. CONNECT WITH US SECTION
-       ============================================== -->
-  <div class="connect-section">
-    <h3 class="connect-title">Stay Connected</h3>
-    <p class="connect-desc">Get the latest health tips and updates from our community directly to your feed.</p>
-    <div class="connect-socials">
-      <a href="#" class="social-icon" title="Twitter"><i class="fa-brands fa-twitter"></i></a>
-      <a href="#" class="social-icon" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-      <a href="#" class="social-icon" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-      <a href="#" class="social-icon" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+
+  <!-- ===============================
+       SIDEBAR (RIGHT)
+       =============================== -->
+  <aside class="blog-sidebar">
+    
+    <!-- Widget: Explore Categories -->
+    <div class="widget">
+      <h3 class="widget-title"><i class="fa-solid fa-tag" style="color: var(--cs-primary)"></i> Explore Topics</h3>
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        {% for tag in dynamic_tags %}
+        <li style="margin-bottom: 8px;"><a href="?category={{ tag }}" class="sidebar-topic-link{% if category_filter == tag %} active-sidebar{% endif %}"><span>{{ tag }}</span> <i class="fa-solid fa-chevron-right" style="font-size: 10px; opacity: 0.5;"></i></a></li>
+        {% empty %}
+        <li style="color: var(--cs-text-muted); font-size: 13px;">No topics available yet.</li>
+        {% endfor %}
+      </ul>
     </div>
-  </div>
+
+
+
+    <!-- Widget: Trending Posts -->
+    <div class="widget">
+      <h3 class="widget-title"><i class="fa-solid fa-arrow-trend-up" style="color: var(--cs-secondary)"></i> Trending Now</h3>
+      <div style="display: flex; flex-direction: column;">
+        {% for blog in trending_blogs|slice:":4" %}
+        <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="trending-mini-card">
+          {% if blog.thumbnail %}
+            <img src="{{ blog.thumbnail.url }}" onerror="this.src='/static/images/blog-placeholder.jpg';" class="trending-mini-img" alt="{{ blog.title }}" />
+          {% else %}
+            <img src="/static/images/blog-placeholder.jpg" class="trending-mini-img" alt="{{ blog.title }}" />
+          {% endif %}
+          <div class="trending-mini-info">
+            <h4>{{ blog.title }}</h4>
+            <span class="trending-mini-date"><i class="fa-regular fa-calendar"></i> {{ blog.createDT|date:"M d, Y" }}</span>
+          </div>
+        </a>
+        {% empty %}
+          <p style="color: var(--cs-text-muted); font-size: 13px;">No trending posts found.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
 
 </div>
 
@@ -631,8 +548,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     url.searchParams.delete('search');
                 }
 
-                // Show a subtle loading state
                 dynamicContent.style.opacity = '0.5';
+                dynamicContent.style.transition = 'opacity 0.2s ease';
 
                 fetch(url)
                     .then(response => response.text())
@@ -640,12 +557,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(html, 'text/html');
                         const newContent = doc.getElementById('dynamic-content');
-                        
+
                         if (newContent) {
                             dynamicContent.innerHTML = newContent.innerHTML;
                             dynamicContent.style.opacity = '1';
-                            
-                            // Update browser URL without reload
                             window.history.replaceState({}, '', url);
                         }
                     })
@@ -653,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.error('Search error:', error);
                         dynamicContent.style.opacity = '1';
                     });
-            }, 300); // 300ms debounce
+            }, 300);
         });
     }
 });

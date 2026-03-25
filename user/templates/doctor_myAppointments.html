@@ -392,8 +392,8 @@
                             <i class="fa-solid fa-circle-check"></i> Accepted
                         </span>
                         {% if a.mode == 'online' and a.meetLink %}
-                            <a href="{{ a.meetLink }}" target="_blank" class="btn-action bg-success text-white" style="box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">
-                                <i class="fa-solid fa-video"></i> Join Meet
+                            <a href="{% url 'videoMeeting' a.appointmentID %}" class="btn-action bg-success text-white" style="box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">
+                                <i class="fa-solid fa-video"></i> Start Meeting
                             </a>
                         {% endif %}
                     {% elif a.isRejected %}
