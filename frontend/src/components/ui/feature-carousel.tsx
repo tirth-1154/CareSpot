@@ -21,10 +21,9 @@ interface Doctor {
   profile_image: string | null;
 }
 
-export function FeatureCarousel({ doctors = [] }: { doctors: Doctor[] }) {
+export function FeatureCarousel({ doctors = [], countdown, onGetStarted }: { doctors: Doctor[], countdown: number, onGetStarted: () => void }) {
   const [step, setStep] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [countdown, setCountdown] = useState(15);
 
   const FEATURES = doctors.map((doctor) => ({
     id: doctor.id,
@@ -52,29 +51,6 @@ export function FeatureCarousel({ doctors = [] }: { doctors: Doctor[] }) {
     const interval = setInterval(nextStep, AUTO_PLAY_INTERVAL);
     return () => clearInterval(interval);
   }, [nextStep, isPaused, FEATURES.length]);
-
-  // Countdown and Redirect Logic
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleGetStarted = () => {
-    document.body.style.transition = 'opacity 0.6s ease';
-    document.body.style.opacity = '0';
-    setTimeout(() => {
-        window.location.href = "/login/";
-    }, 600);
-  };
-
-  useEffect(() => {
-    const redirectTimeout = setTimeout(() => {
-      handleGetStarted();
-    }, 15000); // 15 seconds
-    return () => clearTimeout(redirectTimeout);
-  }, []);
 
   const getCardStatus = (index: number) => {
     const diff = index - currentIndex;
@@ -119,7 +95,7 @@ export function FeatureCarousel({ doctors = [] }: { doctors: Doctor[] }) {
             </p>
             
             <button 
-              onClick={handleGetStarted}
+              onClick={onGetStarted}
               className="px-8 py-4 bg-gradient-to-r from-[#4FC3F7] to-[#0288D1] text-white font-bold text-lg rounded-2xl hover:-translate-y-1 hover:shadow-[0_15px_30px_-5px_rgba(2,136,209,0.4)] transition-all duration-300 group inline-flex items-center gap-2"
             >
               Get Started 
