@@ -1636,11 +1636,17 @@ def doctorCaseStudy(request, id):
         prescription = request.POST.get('prescription')
         additional_notes = request.POST.get('additionalNotes')
         is_special = request.POST.get('is_marked_special') == 'on'
+        subcategory_id = request.POST.get('subcategory')
         doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
+        
+        subcategory_obj = None
+        if subcategory_id:
+            subcategory_obj = tblSubcategory.objects.filter(subcategoryID=subcategory_id).first()
         
         tblclientHistory.objects.create(
             clientID=appointment.clientID,
             doctorID=doctor,
+            subcategoryID=subcategory_obj,
             title=title,
             symptoms=symptoms,
             diagnosis=diagnosis,
@@ -1658,7 +1664,8 @@ def doctorCaseStudy(request, id):
         "doctor": tblDoctor.objects.filter(doctorID=doctor_id).first(),
         "appointment": appointment,
         "age": age,
-        "case_histories": case_histories
+        "case_histories": case_histories,
+        "subcategories": tblSubcategory.objects.select_related('CategoryID').all().order_by('subcategoryName')
     }
     return render(request, 'doctor_case_study.html', data)
 
@@ -1865,6 +1872,21 @@ def get_doctors_api(request):
             'profile_image': doctor.userID.profilePic.url if doctor.userID.profilePic else None,
         })
     return JsonResponse(doctor_list, safe=False)
+
+def get_blogs_api(request):
+    blogs = tblDoctorPost.objects.all().order_by('-createDT')
+    blog_list = []
+    for blog in blogs:
+        blog_list.append({
+            'id': blog.doctorPostID,
+            'title': blog.title,
+            'description': blog.description,
+            'thumbnail': blog.thumbnail.url if blog.thumbnail else None,
+            'doctor_name': blog.doctorID.displayName,
+            'specialization': blog.doctorID.subcategoryID.subcategoryName,
+            'created_at': blog.createDT.strftime("%b %d, %Y"),
+        })
+    return JsonResponse(blog_list, safe=False)
 
 # --- Razorpay Payment Views ---
 

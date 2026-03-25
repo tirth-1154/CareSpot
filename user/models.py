@@ -114,6 +114,7 @@ class tblclientHistory(models.Model):
     clientHistoryID=models.AutoField(primary_key=True)
     clientID=models.ForeignKey(tblClient,on_delete=models.CASCADE)
     doctorID=models.ForeignKey(tblDoctor,on_delete=models.CASCADE)
+    subcategoryID=models.ForeignKey(tblSubcategory,on_delete=models.SET_NULL,null=True,blank=True)
     title = models.TextField(max_length=100, null=True, blank=True)
     symptoms = models.TextField(max_length=500, null=True, blank=True)
     diagnosis = models.TextField(max_length=500, null=True, blank=True)
