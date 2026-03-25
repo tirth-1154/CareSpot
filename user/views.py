@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 6af4cdee00948f199f3b5d2c548afb99007405cc
 from django.shortcuts import render,redirect
 from django.views.decorators.cache import never_cache
 from django.db.models import Avg, Count

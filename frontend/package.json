@@ -11,8 +11,10 @@
   "dependencies": {
     "@hugeicons/core-free-icons": "^1.0.0",
     "@hugeicons/react": "^1.0.0",
+    "@paper-design/shaders-react": "^0.0.72",
     "clsx": "^2.1.1",
-    "framer-motion": "^11.0.8",
+    "framer-motion": "^11.18.2",
+    "lucide-react": "^0.460.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^2.2.1"
