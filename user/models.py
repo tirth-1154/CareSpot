@@ -30,9 +30,8 @@ class tblDiagnosis(models.Model):
     diagnosisID = models.AutoField(primary_key=True)
     diagnosisName = models.CharField(max_length=150)
     subcategoryID = models.ForeignKey(tblSubcategory, on_delete=models.CASCADE, related_name='diagnoses')
-
-    def _str_(self):
-        return self.diagnosisName
+    def __str__(self):
+        return '%d'' %s'' %s' % (self.diagnosisID,self.subcategoryID.subcategoryName,self.diagnosisName)
 
 class tblUser(models.Model):
     userID=models.AutoField(primary_key=True)

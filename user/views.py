@@ -84,6 +84,11 @@ def home(request):
     return render(request, 'home.html', data)# Create your views here.
 
 def intro(request):
+    if request.session.get('user_id'):
+        if request.session.get('isDoctor'):
+            return redirect(doctorDashboard)
+        else:
+            return redirect(patientDashboard)
     return render(request, 'Intro.html')
 
 def Login(request):
@@ -161,6 +166,9 @@ def forgotPassword(request):
         user = tblUser.objects.filter(email=email).first()
         
         if user:
+            # Auto-cleanup: Delete all OTPs older than 24 hours
+            OTP.objects.filter(created_at__lt=timezone.now() - timedelta(hours=24)).delete()
+
             # Generate 6 digit random OTP
             otp_code = str(random.randint(100000, 999999))
             

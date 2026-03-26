@@ -16,9 +16,7 @@
     border-radius: 16px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
     border: 1px solid rgba(0, 0, 0, 0.02);
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .premium-card:hover {
@@ -42,24 +40,8 @@
     right: -10%;
     width: 300px;
     height: 300px;
-    background: radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0) 70%
-    );
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
     border-radius: 50%;
-  }
-
-  .patient-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    border: 2px solid rgba(255, 255, 255, 0.4);
   }
 
   .patient-avatar-img {
@@ -78,57 +60,202 @@
     font-size: 0.9rem;
   }
 
-  /* Timeline Styling */
-  .timeline {
-    position: relative;
-    padding-left: 30px;
-    margin: 0;
-    list-style: none;
+    /* 3. Board Card Inspired Medical UI (Exact UI) */
+    .medical-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 24px;
+        margin-top: 30px;
+    }
+
+    .medical-report-card {
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .medical-report-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        border-color: #e2e8f0;
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1e1b4b; /* Deep Indigo */
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .card-description {
+        font-size: 15px;
+        color: #94a3b8;
+        line-height: 1.5;
+        margin-top: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .card-tag {
+        background: #eff6ff;
+        color: #3b82f6;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+    }
+
+    .card-tag.tag-special {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+
+    .card-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 1px #f1f5f9;
+    }
+
+    .card-divider {
+        height: 1px;
+        background: #f1f5f9;
+        margin: 20px -24px;
+    }
+
+    .card-footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-footer-section {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .footer-stats {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #94a3b8;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .stat-item i {
+        font-size: 16px;
+        opacity: 0.8;
+    }
+
+    .footer-date {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #94a3b8;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .btn-view-details {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .medical-report-card:hover .btn-view-details {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #3b82f6;
+    }
+
+  /* ── Diagnosis Filter Bar ── */
+  .diagnosis-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #e5e7eb;
   }
 
-  .timeline::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 11px;
-    width: 2px;
-    background: #e9ecef;
+  .diagnosis-filter-bar .filter-bar-label {
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    margin-right: 10px;
   }
 
-  .timeline-item {
-    position: relative;
-    margin-bottom: 2rem;
-  }
-
-  .timeline-item::before {
-    content: "";
-    position: absolute;
-    width: 24px;
-    height: 24px;
+  .diagnosis-filter-tag {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1.5px solid #e2e8f0;
     background: #fff;
-    border: 4px solid var(--primary-color);
-    border-radius: 50%;
-    left: -30px;
-    top: 0;
-    z-index: 1;
-    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .timeline-item.special::before {
-    border-color: #dc3545;
-    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1);
+  .diagnosis-filter-tag.active {
+    background: #0284c7;
+    color: #fff;
+    border-color: #0284c7;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
   }
 
-  .timeline-date {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-    display: inline-block;
-    background: #e7f1ff;
-    padding: 4px 12px;
-    border-radius: 20px;
+  .tag-count {
+    font-size: 10px;
+    font-weight: 900;
+    background: rgba(0,0,0,0.08);
+    padding: 1px 7px;
+    border-radius: 4px;
+  }
+
+  .diagnosis-filter-tag.active .tag-count {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .filter-hidden {
+    display: none !important;
   }
 
   /* Table Styling */
@@ -143,70 +270,17 @@
     transition: transform 0.2s;
   }
 
-  .table-custom tr:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  }
-
-  .table-custom th {
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 0.5px;
-    padding: 0 20px 10px;
-  }
-
   .table-custom td {
     border: none;
     padding: 18px 20px;
     vertical-align: middle;
   }
 
-  .table-custom td:first-child {
-    border-radius: 10px 0 0 10px;
-  }
-  .table-custom td:last-child {
-    border-radius: 0 10px 10px 0;
-  }
-
-  /* Prescription Card */
-  .rx-card {
-    border-left: 4px solid var(--primary-color);
-  }
-
-  /* Empty State */
-  .empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    background: #fff;
-    border-radius: 16px;
-    border: 2px dashed #e9ecef;
-  }
-
-  .empty-state i {
-    font-size: 4rem;
-    color: #dee2e6;
-    margin-bottom: 1.5rem;
-  }
-
-  .form-control,
-  .form-select {
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    padding: 0.6rem 1rem;
-  }
-
-  .form-control:focus,
-  .form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
-  }
+  .table-custom td:first-child { border-radius: 10px 0 0 10px; }
+  .table-custom td:last-child { border-radius: 0 10px 10px 0; }
 </style>
 
-<div class="container-fluid">
+<div class="container-fluid py-4">
   <!-- Page Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -214,25 +288,18 @@
         My Medical History
       </h2>
       <p class="text-muted mb-0">
-        View your past appointments, diagnoses, prescriptions, and medical
-        records.
+        Access your previous clinical assessments, diagnoses, and medical records.
       </p>
     </div>
   </div>
 
   {% if not has_history %}
-  <!-- EMPTY STATE -->
-  <div class="empty-state">
-    <i class="fa-solid fa-notes-medical"></i>
+  <div class="empty-state text-center py-5 bg-white rounded-4 border-dashed border-2">
+    <i class="fa-solid fa-notes-medical fs-1 text-muted opacity-25 mb-3"></i>
     <h4 class="fw-bold text-dark">No Medical Records Found</h4>
-    <p class="text-muted mb-4">
-      You do not have any medical history records yet.
-    </p>
-    <a
-      href="{% url 'patientAppointments' %}"
-      class="btn btn-primary rounded-pill px-4 py-2 fw-medium"
-    >
-      <i class="fa-solid fa-calendar-plus me-2"></i>Book Your First Appointment
+    <p class="text-muted mb-4">You do not have any published medical history records yet.</p>
+    <a href="{% url 'patientAppointments' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-medium">
+      <i class="fa-solid fa-calendar-plus me-2"></i>Schedule Appointment
     </a>
   </div>
   {% else %}
@@ -242,43 +309,19 @@
     <div class="row align-items-center position-relative" style="z-index: 2">
       <div class="col-md-7 d-flex align-items-center mb-3 mb-md-0">
         {% if user.profilePic %}
-        <img
-          src="{{ user.profilePic.url }}"
-          alt="{{ client.name }}"
-          class="patient-avatar-img me-4 shadow"
-        />
-        {% else %}
-        <div class="patient-avatar me-4 shadow">
-          <i class="fa-regular fa-user"></i>
-        </div>
+        <img src="{{ user.profilePic.url }}" alt="{{ client.name }}" class="patient-avatar-img me-4 shadow">
         {% endif %}
         <div>
           <h3 class="fw-bold mb-1 text-white">{{ client.name }}</h3>
-          <p class="text-white-50 mb-0">
-            <i class="fa-solid fa-id-card me-2"></i>Patient ID: #PID-{{ client.clientID }}
-          </p>
+          <p class="text-white-50 mb-0"><i class="fa-solid fa-id-card me-2"></i>Patient ID: #PID-{{ client.clientID }}</p>
         </div>
       </div>
       <div class="col-md-5">
         <div class="d-flex flex-wrap gap-2 justify-content-md-end">
-          <span class="patient-stat"
-            ><i class="fa-solid fa-calendar me-2"></i><strong>Age:</strong> {{ age }} Yrs</span
-          >
-          <span class="patient-stat"
-            ><i class="fa-solid fa-venus-mars me-2"></i
-            ><strong>Gender:</strong> {{ client.gender }}</span
-          >
-          <span class="patient-stat"
-            ><i class="fa-solid fa-droplet text-danger me-2"></i
-            ><strong>Blood:</strong> {{ client.bloodGroup }}</span
-          >
-          <span class="patient-stat"
-            ><i class="fa-solid fa-phone me-2"></i><strong>Contact:</strong> {{ client.userID.mobileNumber }}</span
-          >
-          <span class="patient-stat bg-white text-primary"
-            ><i class="fa-solid fa-stethoscope me-2"></i
-            ><strong>Total Visits:</strong> {{ total_visits }}</span
-          >
+          <span class="patient-stat"><i class="fa-solid fa-calendar me-2"></i><strong>Age:</strong> {{ age }} Yrs</span>
+          <span class="patient-stat"><i class="fa-solid fa-venus-mars me-2"></i><strong>Gender:</strong> {{ client.gender }}</span>
+          <span class="patient-stat"><i class="fa-solid fa-droplet text-danger me-2"></i><strong>Blood:</strong> {{ client.bloodGroup }}</span>
+          <span class="patient-stat bg-white text-primary"><i class="fa-solid fa-stethoscope me-2"></i><strong>Visits:</strong> {{ total_visits }}</span>
         </div>
       </div>
     </div>
@@ -286,131 +329,155 @@
 
   <!-- MAIN TABS -->
   <ul class="nav nav-pills mb-4 gap-2" id="medicalHistoryTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button
-        class="nav-link active rounded-pill px-4 fw-medium"
-        id="timeline-tab"
-        data-bs-toggle="pill"
-        data-bs-target="#timeline"
-        type="button"
-        role="tab"
-        aria-selected="true"
-      >
-        <i class="fa-solid fa-stream me-2"></i>Case Studies
+    <li class="nav-item">
+      <button class="nav-link active rounded-pill px-4 fw-bold" id="timeline-tab" data-bs-toggle="pill" data-bs-target="#timeline" type="button">
+        <i class="fa-solid fa-folder-open me-2"></i>Clinical Case Studies
       </button>
     </li>
-    <li class="nav-item" role="presentation">
-      <button
-        class="nav-link rounded-pill px-4 fw-medium"
-        id="appointments-tab"
-        data-bs-toggle="pill"
-        data-bs-target="#appointments"
-        type="button"
-        role="tab"
-        aria-selected="false"
-      >
-        <i class="fa-solid fa-calendar-check me-2"></i>Appointments
+    <li class="nav-item">
+      <button class="nav-link rounded-pill px-4 fw-bold" id="appointments-tab" data-bs-toggle="pill" data-bs-target="#appointments" type="button">
+        <i class="fa-solid fa-calendar-check me-2"></i>Appointment History
       </button>
     </li>
   </ul>
 
   <!-- TAB CONTENT -->
   <div class="tab-content" id="medicalHistoryContent">
-    <!-- 1. CASE STUDIES TIMELINE TAB -->
-    <div
-      class="tab-pane fade show active"
-      id="timeline"
-      role="tabpanel"
-      aria-labelledby="timeline-tab"
-    >
+    <div class="tab-pane fade show active" id="timeline">
       <div class="premium-card p-4 p-md-5">
-        <h5 class="fw-bold mb-5 border-bottom pb-3">
-          <i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Case
-          Studies Timeline
+        <h5 class="fw-bold mb-4 border-bottom pb-3">
+          <i class="fa-solid fa-microscope text-primary me-2"></i>Medical Case History
         </h5>
 
         {% if case_histories %}
-        <ul class="timeline">
-          {% for h in case_histories %}
-          <li
-            class="timeline-item {% if h.isMarkedSpecial %}special{% endif %}"
-          >
-            <span class="timeline-date"
-              >{{ h.createdDT|date:"F d, Y - h:i A" }}</span
-            >
-            {% if h.isMarkedSpecial %}
-            <span class="badge bg-danger ms-2">Special Case</span>
-            {% endif %}
-            <div class="bg-light rounded-3 p-4 mt-2 border">
-              <div
-                class="d-flex justify-content-between align-items-start mb-3"
-              >
-                <div>
-                  <h5 class="fw-bold mb-1 text-dark">
-                    {{ h.title|default:"Clinical Note" }}
-                  </h5>
-                  <p class="text-muted mb-0">
-                    <i class="fa-solid fa-user-doctor me-2"></i>{{ h.doctorID.displayName }} •
-                    <span class="badge bg-secondary"
-                      >{{ h.doctorID.subcategoryID.subcategoryName }}</span
-                    >
-                  </p>
-                </div>
+        <!-- ── Diagnosis Filter Bar ── -->
+        <div id="diagnosisFilterBar" class="diagnosis-filter-bar mb-4">
+          <span class="filter-bar-label"><i class="fa-solid fa-filter me-1"></i> Filter by Diagnosis:</span>
+        </div>
+
+        <div class="medical-card-grid" id="caseStudyGrid">
+          {% for history in case_histories %}
+          <div class="medical-report-card" 
+               data-diagnosis="{{ history.diagnosisID.diagnosisName|default:history.customDiagnosis|default:'Uncategorized' }}"
+               data-title="{{ history.title|default:'' }}">
+               
+              <div class="card-body-section">
+                  <h3 class="card-title">{% if history.title %}{{ history.title }}{% else %}Clinical Assessment{% endif %}</h3>
+                  <p class="card-description">{% if history.symptoms %}{{ history.symptoms|truncatechars:100 }}{% else %}Regular clinical checkup and assessment record.{% endif %}</p>
+                  
+                  <div class="card-meta-row">
+                      <span class="card-tag {% if history.isMarkedSpecial %}tag-special{% endif %}">
+                          {% if history.isMarkedSpecial %}Special Case{% else %}{{ history.diagnosisID.diagnosisName|default:history.customDiagnosis|default:"General"|truncatechars:18 }}{% endif %}
+                      </span>
+                      <div class="d-flex align-items-center gap-2">
+                          <span class="text-secondary small fw-bold">{{ history.doctorID.displayName|truncatechars:15 }}</span>
+                          <img src="{{ history.doctorID.userID.profilePic.url }}" class="card-avatar shadow-sm" alt="doc">
+                      </div>
+                  </div>
               </div>
 
-              {% if h.symptoms %}
-              <div class="mb-2">
-                <strong class="text-dark">Symptoms:</strong>
-                <span class="text-dark">{{ h.symptoms }}</span>
+              <div class="card-divider"></div>
+
+              <div class="card-footer-section">
+                  <div class="footer-stats">
+                      <div class="footer-date ms-2">
+                          <i class="fa-regular fa-calendar-check"></i>
+                          <span>{{ history.createdDT|date:"M d, Y" }}</span>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-view-details shadow-sm" data-bs-toggle="modal" data-bs-target="#medModal{{ history.clientHistoryID }}">View Details</button>
               </div>
-              {% endif %} {% if h.diagnosis %}
-              <div class="mb-2">
-                <strong class="text-dark">Diagnosis:</strong>
-                <span class="text-dark">{{ h.diagnosis }}</span>
+          </div>
+
+          <!-- Modern Detail Modal -->
+          <div class="modal fade" id="medModal{{ history.clientHistoryID }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                      <div class="modal-header bg-primary text-white p-4">
+                          <h5 class="modal-title fw-bold">
+                              <i class="fa-solid fa-file-medical me-2"></i>{{ history.title|default:"Detailed Clinical Record" }}
+                          </h5>
+                          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body p-4">
+                          <!-- Doctor & Category Info -->
+                          <div class="d-flex align-items-center justify-content-between mb-4 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                              <div class="d-flex align-items-center gap-3">
+                                  <img src="{{ history.doctorID.userID.profilePic.url }}" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border: 2px solid #e2e8f0;" alt="doc">
+                                  <div>
+                                      <div class="fw-bold text-dark" style="font-size:14px;">Dr. {{ history.doctorID.displayName }}</div>
+                                      <div class="text-muted" style="font-size:12px;">{{ history.subcategoryID.subcategoryName|default:"General Medicine" }}</div>
+                                  </div>
+                              </div>
+                              {% if history.isMarkedSpecial %}
+                              <span class="badge rounded-pill px-3 py-2" style="background: #fee2e2; color: #ef4444; font-weight: 700; font-size: 11px;">
+                                  <i class="fa-solid fa-star me-1"></i>Special Case
+                              </span>
+                              {% endif %}
+                          </div>
+
+                          <div class="row g-4">
+                              {% if history.symptoms %}
+                              <div class="col-md-6">
+                                  <div class="p-3 bg-light rounded-3 h-100">
+                                      <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-stethoscope me-2"></i>Symptoms</h6>
+                                      <div class="text-dark">{{ history.symptoms|linebreaks }}</div>
+                                  </div>
+                              </div>
+                              {% endif %}
+                              <div class="col-md-6">
+                                  <div class="p-3 bg-light rounded-3 h-100">
+                                      <h6 class="fw-bold text-purple mb-3" style="color: #6f42c1;"><i class="fa-solid fa-microscope me-2"></i>Diagnosis</h6>
+                                      <div class="fw-bold text-dark">{{ history.diagnosisID.diagnosisName|default:history.customDiagnosis|default:"General Assessment" }}</div>
+                                  </div>
+                              </div>
+                              {% if history.prescription %}
+                              <div class="col-12">
+                                  <div class="p-4 bg-success bg-opacity-10 rounded-3 border border-success border-opacity-10">
+                                      <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-file-prescription me-2"></i>Treatment Plan</h6>
+                                      <div class="text-dark lead">{{ history.prescription|linebreaks }}</div>
+                                  </div>
+                              </div>
+                              {% endif %}
+                              {% if history.additionalNotes %}
+                              <div class="col-12">
+                                  <div class="p-3 border rounded-3">
+                                      <h6 class="fw-bold text-muted mb-2"><i class="fa-solid fa-note-sticky me-2"></i>Doctor's Notes</h6>
+                                      <div class="small text-muted">{{ history.additionalNotes|linebreaks }}</div>
+                                  </div>
+                              </div>
+                              {% endif %}
+                          </div>
+                      </div>
+                      <div class="modal-footer bg-light p-3">
+                          <div class="me-auto text-muted small">
+                              <i class="fa-regular fa-clock me-1"></i> Recorded on {{ history.createdDT|date:"M d, Y" }}
+                          </div>
+                          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                      </div>
+                  </div>
               </div>
-              {% endif %} {% if h.prescription %}
-              <div class="mb-2">
-                <strong class="text-dark">Treatment / Prescription:</strong>
-                <span class="text-dark">{{ h.prescription }}</span>
-              </div>
-              {% endif %} {% if h.additionalNotes %}
-              <div
-                class="mt-3 p-3 bg-white rounded border"
-                style="font-size: 0.9rem"
-              >
-                <strong>Additional Notes:</strong> {{ h.additionalNotes }}
-              </div>
-              {% endif %}
-            </div>
-          </li>
+          </div>
           {% endfor %}
-        </ul>
-        {% else %}
-        <div class="text-center py-5">
-          <i
-            class="fa-solid fa-folder-open text-muted"
-            style="font-size: 3rem; opacity: 0.3"
-          ></i>
-          <p class="text-muted mt-3">No case studies have been recorded yet.</p>
+        </div>
+
+        <div id="noFilterResults" class="text-center py-5" style="display: none;">
+          <i class="fa-solid fa-filter-circle-xmark fs-1 text-muted opacity-25"></i>
+          <p class="text-muted mt-3">No matching clinical records found for this diagnosis.</p>
         </div>
         {% endif %}
       </div>
     </div>
 
     <!-- 2. APPOINTMENTS TAB -->
-    <div
-      class="tab-pane fade"
-      id="appointments"
-      role="tabpanel"
-      aria-labelledby="appointments-tab"
-    >
+    <div class="tab-pane fade" id="appointments">
       <div class="table-responsive">
         <table class="table table-custom w-100">
           <thead>
             <tr>
-              <th>APT ID</th>
-              <th>Doctor Info</th>
-              <th>Date & Time</th>
+              <th>ID</th>
+              <th>Medical Specialist</th>
+              <th>Consultation Schedule</th>
               <th>Department</th>
               <th>Status</th>
             </tr>
@@ -421,39 +488,21 @@
               <td class="fw-bold text-muted">#APT-{{ apt.appointmentID }}</td>
               <td>
                 <div class="d-flex align-items-center">
-                  <div class="bg-light rounded-circle p-2 me-3 text-primary">
-                    <i class="fa-solid fa-user-doctor"></i>
-                  </div>
-                  <span class="fw-bold"
-                    >{{ apt.doctorID.displayName }}</span
-                  >
+                  <span class="fw-bold">{{ apt.doctorID.displayName }}</span>
                 </div>
               </td>
               <td>
-                <div class="fw-medium">
-                  {{ apt.appointmentDate|date:"M d, Y" }}
-                </div>
-                <small class="text-muted"
-                  >{{ apt.appointmentTime|time:"h:i A" }}</small
-                >
+                <div class="fw-medium">{{ apt.appointmentDate|date:"M d, Y" }}</div>
+                <small class="text-muted">{{ apt.appointmentTime|time:"h:i A" }}</small>
               </td>
               <td>{{ apt.doctorID.subcategoryID.subcategoryName }}</td>
               <td>
                 {% if apt.isAccepted %}
-                <span
-                  class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill"
-                  >Completed</span
-                >
+                <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">Completed</span>
                 {% elif apt.isRejected %}
-                <span
-                  class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2 rounded-pill"
-                  >Rejected</span
-                >
+                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2 rounded-pill">Rejected</span>
                 {% else %}
-                <span
-                  class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill"
-                  >Pending</span
-                >
+                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill">Pending</span>
                 {% endif %}
               </td>
             </tr>
@@ -469,8 +518,62 @@
       </div>
     </div>
   </div>
-  <!-- End Tab Content -->
-
   {% endif %}
 </div>
+
+<script>
+// ── Premium Dynamic Diagnosis Filter ──
+(function() {
+    const cards = document.querySelectorAll('.medical-report-card');
+    const filterBar = document.getElementById('diagnosisFilterBar');
+    if (!filterBar || cards.length === 0) return;
+
+    const tagMap = {};
+
+    cards.forEach(card => {
+        const diag = (card.dataset.diagnosis || 'Uncategorized').trim();
+        if (!tagMap[diag]) tagMap[diag] = 0;
+        tagMap[diag]++;
+    });
+
+    function makeTag(label, filterKey, count, isActive) {
+        const btn = document.createElement('button');
+        btn.className = 'diagnosis-filter-tag' + (isActive ? ' active' : '');
+        btn.innerHTML = label + ' <span class="tag-count">' + count + '</span>';
+        btn.dataset.filter = filterKey;
+        btn.type = 'button';
+        return btn;
+    }
+
+    filterBar.appendChild(makeTag('<i class="fa-solid fa-layer-group"></i> All Assessments', 'all', cards.length, true));
+
+    Object.entries(tagMap).sort((a, b) => b[1] - a[1]).forEach(([name, count]) => {
+        filterBar.appendChild(makeTag(name, name, count, false));
+    });
+
+    filterBar.addEventListener('click', function(e) {
+        const btn = e.target.closest('.diagnosis-filter-tag');
+        if (!btn) return;
+
+        filterBar.querySelectorAll('.diagnosis-filter-tag').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filterVal = btn.dataset.filter;
+        let visibleCount = 0;
+        const noResults = document.getElementById('noFilterResults');
+
+        cards.forEach(card => {
+            const diag = (card.dataset.diagnosis || 'Uncategorized').trim();
+            if (filterVal === 'all' || diag === filterVal) {
+                card.classList.remove('filter-hidden');
+                visibleCount++;
+            } else {
+                card.classList.add('filter-hidden');
+            }
+        });
+
+        if (noResults) noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    });
+})();
+</script>
 {% endblock %}
