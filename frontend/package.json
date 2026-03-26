@@ -14,7 +14,12 @@
     "@paper-design/shaders-react": "^0.0.72",
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.8",
+<<<<<<< HEAD
     "lucide-react": "^1.0.1",
+=======
+    "lucide-react": "^1.7.0",
+    "motion": "^12.38.0",
+>>>>>>> ebd2d415f8e51ee9edd0a998cae9ca31a8456e2c
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^2.2.1"

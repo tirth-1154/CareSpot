@@ -1910,7 +1910,7 @@ def get_blogs_api(request):
         blog_list.append({
             'id': blog.doctorPostID,
             'title': blog.title,
-            'description': blog.description,
+            'description': blog.description[:120] + '...' if len(blog.description) > 120 else blog.description,
             'thumbnail': blog.thumbnail.url if blog.thumbnail else None,
             'doctor_name': blog.doctorID.displayName,
             'specialization': blog.doctorID.subcategoryID.subcategoryName,
