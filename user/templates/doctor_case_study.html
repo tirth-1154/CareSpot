@@ -854,12 +854,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Problem Category</label>
-                            <select class="form-select" name="subcategory" required>
-                                <option value="" disabled selected>-- Select Category --</option>
-                                {% for sub in subcategories %}
-                                <option value="{{ sub.subcategoryID }}">{{ sub.subcategoryName }} ({{ sub.CategoryID.categoryName }})</option>
-                                {% endfor %}
-                            </select>
+                            <input type="text" class="form-control" value="{{ subcategory.subcategoryName }}" readonly>
                         </div>
                     </div>
 
@@ -870,10 +865,19 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Diagnosis</label>
-                            <textarea class="form-control" name="diagnosis" rows="4" placeholder="Medical diagnosis based on symptoms and tests..."></textarea>
+                            <select name="diagnosisID" class="form-control">
+                                <option value="">-- Select Diagnosis --</option>
+                                {% for d in diagnoses %}
+                                    <option value="{{ d.diagnosisID }}">{{ d.diagnosisName }}</option>
+                                {% endfor %}
+                                <option value="custom" >Other</option>
+                            </select>
                         </div>
                     </div>
-
+                    <div class="mb-4" id="customDiagnosisDiv" style="display: none;">
+                        <label class="form-label fw-bold">Add the Diagnosis if not in list</label>
+                        <input type="text" name="customDiagnosis" class="form-control" placeholder="Enter new diagnosis if not in list">
+                    </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">Treatment Plan / Prescription</label>
                         <textarea class="form-control" name="prescription" rows="4" placeholder="Describe the recommended treatment, medications, lifestyle changes..." required></textarea>
@@ -1112,6 +1116,28 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const diagnosisSelect = document.querySelector('select[name="diagnosisID"]');
+        const customDiagnosisDiv = document.getElementById('customDiagnosisDiv');
+        const customDiagnosisInput = document.querySelector('input[name="customDiagnosis"]');
+
+        // Function to toggle visibility
+        function toggleCustomDiagnosis() {
+            if (diagnosisSelect.value === 'custom') {
+                customDiagnosisDiv.style.display = 'block';
+                customDiagnosisInput.required = true;
+            } else {
+                customDiagnosisDiv.style.display = 'none';
+                customDiagnosisInput.required = false;
+            }
+        }
+
+        // Initial check
+        toggleCustomDiagnosis();
+
+        // Add event listener for change
+        diagnosisSelect.addEventListener('change', toggleCustomDiagnosis);
+    });
     // View Toggle + Filter Bar
     function switchView(view) {
         const timelineView = document.getElementById('timelineView');

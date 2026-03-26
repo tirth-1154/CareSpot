@@ -89,6 +89,7 @@ admin.site.register(tblchat)
 admin.site.register(tblnotification)
 admin.site.register(tblFollow)
 admin.site.register(tblDoctorAttachment)
+admin.site.register(tblDiagnosis)
 # admin.site.register(tblDoctorSchedule)
 
 # Register your models here.

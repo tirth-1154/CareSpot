@@ -29,10 +29,8 @@ urlpatterns = [
     path('doctorMessages/',views.doctorMessages,name='doctorMessages'),
     path('doctorManageBlogs/',views.doctorManageBlogs,name='doctorManageBlogs'),
     path('doctorTotalPatients/', views.doctorTotalPatients, name='doctorTotalPatients'),
-    # path('addDoctorCaseStudy/<int:app_id>/', views.addDoctorCaseStudy, name='addDoctorCaseStudy'),
     path('doctorCaseStudy/<int:id>/', views.doctorCaseStudy, name='doctorCaseStudy'),
     path('doctorSchedule/', views.doctorSchedule, name='doctorSchedule'),
-    # path('doctorCaseStudy/',views.doctorCaseStudy,name='doctorCaseStudy'),
 
 
     #patient urls

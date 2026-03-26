@@ -26,6 +26,14 @@ class tblSubcategory(models.Model):
     def __str__(self):
         return '%d'' %s' % (self.subcategoryID,self.subcategoryName)
 
+class tblDiagnosis(models.Model):
+    diagnosisID = models.AutoField(primary_key=True)
+    diagnosisName = models.CharField(max_length=150)
+    subcategoryID = models.ForeignKey(tblSubcategory, on_delete=models.CASCADE, related_name='diagnoses')
+
+    def _str_(self):
+        return self.diagnosisName
+
 class tblUser(models.Model):
     userID=models.AutoField(primary_key=True)
     userName=models.TextField(max_length=50)
@@ -117,12 +125,13 @@ class tblclientHistory(models.Model):
     subcategoryID=models.ForeignKey(tblSubcategory,on_delete=models.SET_NULL,null=True,blank=True)
     title = models.TextField(max_length=100, null=True, blank=True)
     symptoms = models.TextField(max_length=500, null=True, blank=True)
-    diagnosis = models.TextField(max_length=500, null=True, blank=True)
+    diagnosisID = models.ForeignKey(tblDiagnosis,on_delete=models.SET_NULL,null=True,blank=True)
+    customDiagnosis = models.TextField(max_length=500, null=True, blank=True)
     prescription=models.TextField(max_length=500)
     additionalNotes = models.TextField(max_length=500, null=True, blank=True)
     createdDT=models.DateTimeField(auto_now_add=True)
     isMarkedSpecial=models.BooleanField(default=False)
-    def _str_(self):
+    def __str__(self):
         return '%d'' %s' % (self.clientHistoryID,self.clientID)
 
 class tblReview(models.Model):

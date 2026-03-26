@@ -1616,6 +1616,8 @@ def doctorCaseStudy(request, id):
         return redirect('Login')
     
     doctor_id = request.session['doctorID']
+    doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
+
     appointment = tblAppointment.objects.filter(clientID=id, doctorID=doctor_id).first()
     
     if not appointment:
@@ -1631,41 +1633,62 @@ def doctorCaseStudy(request, id):
     if request.method == 'POST':
         title = request.POST.get('title')
         symptoms = request.POST.get('symptoms')
-        diagnosis = request.POST.get('diagnosis')
         prescription = request.POST.get('prescription')
         additional_notes = request.POST.get('additionalNotes')
         is_special = request.POST.get('is_marked_special') == 'on'
-        subcategory_id = request.POST.get('subcategory')
-        doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
-        
-        subcategory_obj = None
-        if subcategory_id:
-            subcategory_obj = tblSubcategory.objects.filter(subcategoryID=subcategory_id).first()
-        
+
+        selected_diagnosis_id = request.POST.get('diagnosisID')
+        custom_diagnosis = request.POST.get('customDiagnosis', '').strip()
+
+        subcategory = doctor.subcategoryID   # 🔥 AUTO SET (IMPORTANT)
+        diagnosis_obj = None
+
+        # 🔥 LOGIC: CUSTOM DIAGNOSIS ADD
+        if custom_diagnosis:
+            diagnosis_obj, created = tblDiagnosis.objects.get_or_create(
+                diagnosisName=custom_diagnosis,
+                subcategoryID=subcategory
+            )
+
+        # 🔥 EXISTING DROPDOWN DIAGNOSIS
+        elif selected_diagnosis_id:
+            diagnosis_obj = tblDiagnosis.objects.filter(
+                diagnosisID=selected_diagnosis_id,
+                subcategoryID=subcategory
+            ).first()
+
+        # 🔥 SAVE CLIENT HISTORY
         tblclientHistory.objects.create(
             clientID=appointment.clientID,
             doctorID=doctor,
-            subcategoryID=subcategory_obj,
+            subcategoryID=subcategory,   # 🔥 FORCE CORRECT CATEGORY
             title=title,
             symptoms=symptoms,
-            diagnosis=diagnosis,
+            diagnosisID=diagnosis_obj,   # 🔥 FOREIGN KEY SAVE
+            customDiagnosis=custom_diagnosis if custom_diagnosis else None,
             prescription=prescription,
             additionalNotes=additional_notes,
             isMarkedSpecial=is_special
         )
+
         return redirect('doctorCaseStudy', id=id)
+
+    # 🔥 FILTERED DIAGNOSIS FOR DROPDOWN
+    diagnoses = tblDiagnosis.objects.filter(subcategoryID=doctor.subcategoryID)
 
     case_histories = tblclientHistory.objects.filter(
         clientID=appointment.clientID
     ).order_by('-createdDT')
 
     data = {
-        "doctor": tblDoctor.objects.filter(doctorID=doctor_id).first(),
+        "doctor": doctor,
         "appointment": appointment,
         "age": age,
         "case_histories": case_histories,
-        "subcategories": tblSubcategory.objects.select_related('CategoryID').all().order_by('subcategoryName')
+        "diagnoses": diagnoses,  # 🔥 IMPORTANT
+        "subcategory": doctor.subcategoryID  # 🔥 SHOW IN UI
     }
+
     return render(request, 'doctor_case_study.html', data)
 
 def patientBlogs(request):
