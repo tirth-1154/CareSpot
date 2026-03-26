@@ -1,0 +1,8 @@
+﻿
+> frontend@0.0.0 build
+> tsc && vite build
+
+src/components/ui/doctor-intro.tsx(5,39): error TS2307: Cannot find module '@hugeicons/core-free-icons' or its corresponding type declarations.
+  There are types at 'E:/CareSpot/frontend/node_modules/@hugeicons/core-free-icons/dist/types/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+src/components/ui/feature-carousel.tsx(5,39): error TS2307: Cannot find module '@hugeicons/core-free-icons' or its corresponding type declarations.
+  There are types at 'E:/CareSpot/frontend/node_modules/@hugeicons/core-free-icons/dist/types/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.

@@ -59,4 +59,12 @@ urlpatterns = [
     path('api/blogs/', views.get_blogs_api, name='get_blogs_api'),
     
     #payment urls
-] 
+    path('payment/<int:appointment_id>/', views.paymentPage, name='paymentPage'),
+    path('ajax/verify_payment/', views.verifyPayment, name='verifyPayment'),
+    path('payment/success/<int:appointment_id>/', views.paymentSuccess, name='paymentSuccess'),
+    
+    #meeting url
+    path('meeting/<int:appointment_id>/', views.videoMeeting, name='videoMeeting'),
+    path('api/blogs/', views.get_blogs_api, name='get_blogs_api'),
+
+]

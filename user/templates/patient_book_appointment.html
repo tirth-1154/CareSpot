@@ -117,6 +117,80 @@
             padding-top: 80px;
         }
     }
+
+    /* Custom Premium Alerts */
+    .messages-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .custom-alert {
+        display: flex;
+        align-items: start;
+        padding: 16px 20px;
+        border-radius: 12px;
+        background: #fff;
+        border-left: 5px solid transparent;
+        position: relative;
+        animation: slideInDown 0.4s ease-out;
+        transition: all 0.3s ease;
+    }
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes slideInDown {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .custom-alert.error, .custom-alert.danger {
+        border-left-color: #ef4444; 
+        background: #fef2f2;
+    }
+    .custom-alert.success {
+        border-left-color: #10b981;
+        background: #ecfdf5;
+    }
+    .custom-alert.info {
+        border-left-color: #3b82f6;
+        background: #eff6ff;
+    }
+    .alert-icon {
+        margin-right: 15px;
+        font-size: 1.25rem;
+    }
+    .error .alert-icon { color: #ef4444; }
+    .success .alert-icon { color: #10b981; }
+    .info .alert-icon { color: #3b82f6; }
+    
+    .alert-content {
+        flex-grow: 1;
+        padding-right: 20px;
+    }
+    .alert-title {
+        font-weight: 700;
+        margin-bottom: 2px;
+        color: #1a1a1a;
+        font-size: 0.95rem;
+    }
+    .alert-text {
+        font-size: 0.88rem;
+        color: #4b5563;
+        margin: 0;
+    }
+    .alert-close {
+        background: none;
+        border: none;
+        color: #9ca3af;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 5px;
+        transition: background 0.2s;
+        align-self: flex-start;
+    }
+    .alert-close:hover {
+        background: rgba(0,0,0,0.05);
+        color: #4b5563;
+    }
 </style>
 
     <!-- MAIN CONTENT -->
@@ -137,8 +211,48 @@
                         <form method="POST" class="needs-validation" novalidate id="bookingForm">
                             {% csrf_token %}
 
-                            {% if msg %}
-                            <div class="alert alert-danger">{{ msg }}</div>
+                            {% if msg or messages %}
+                            <div class="messages-container mb-4">
+                                {% if msg %}
+                                <div class="custom-alert error fade-in shadow-sm">
+                                    <div class="alert-icon">
+                                        <i class="fa-solid fa-circle-exclamation"></i>
+                                    </div>
+                                    <div class="alert-content">
+                                        <h6 class="alert-title">Oops! Something went wrong</h6>
+                                        <p class="alert-text">{{ msg }}</p>
+                                    </div>
+                                    <button type="button" class="alert-close" onclick="this.parentElement.style.display='none';">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                {% endif %}
+
+                                {% if messages %}
+                                {% for message in messages %}
+                                <div class="custom-alert {{ message.tags }} fade-in shadow-sm">
+                                    <div class="alert-icon">
+                                        {% if message.tags == 'success' %}
+                                            <i class="fa-solid fa-circle-check"></i>
+                                        {% elif message.tags == 'error' %}
+                                            <i class="fa-solid fa-circle-exclamation"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-circle-info"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="alert-content">
+                                        <h6 class="alert-title">
+                                            {% if message.tags == 'success' %}Success{% elif message.tags == 'error' %}Validation Error{% else %}Notification{% endif %}
+                                        </h6>
+                                        <p class="alert-text">{{ message }}</p>
+                                    </div>
+                                    <button type="button" class="alert-close" onclick="this.parentElement.style.display='none';">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                            </div>
                             {% endif %}
 
                             <h5 class="fw-bold mb-4 border-bottom pb-2">Select Doctor</h5>
