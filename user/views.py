@@ -1429,28 +1429,46 @@ def send_message(request):
         sender_id = request.session['user_id']
         receiver_id = request.POST.get('receiver_id')
         message_text = request.POST.get('message')
+        attachments = request.FILES.getlist('attachments')
         
-        if not receiver_id or not message_text:
-            return JsonResponse({'status': 'error', 'message': 'Missing data'}, status=400)
+        if not receiver_id:
+            return JsonResponse({'status': 'error', 'message': 'Missing receiver'}, status=400)
             
-        # Save chat message
-        tblchat.objects.create(
-            senderID=sender_id,
-            receiverID=receiver_id,
-            message=message_text,
-            isRead=False
-        )
-        
+        if not message_text and not attachments:
+            return JsonResponse({'status': 'error', 'message': 'Empty message'}, status=400)
+            
         # Create notification for receiver
         sender_user = tblUser.objects.filter(userID=sender_id).first()
         receiver_user = tblUser.objects.filter(userID=receiver_id).first()
+
+        # If it's a mix of text and 1+ files, we'll store the text + first file in one row,
+        # and subsequent files as separate empty-text rows if necessary.
+        # But for simplicity and UI consistency, we'll just create one row per attachment or text.
         
-        if receiver_user and sender_user:
-            notif_message = f"New message from {sender_user.userName}: '{message_text[:30]}...'"
-            tblnotification.objects.create(
-                userID=receiver_user,
+        if message_text:
+            tblchat.objects.create(
                 senderID=sender_id,
-                message=notif_message,
+                receiverID=receiver_id,
+                message=message_text,
+                isRead=False
+            )
+            
+            # notify
+            if receiver_user and sender_user:
+                notif_msg = f"New message from {sender_user.userName}: '{message_text[:30]}...'"
+                tblnotification.objects.create(
+                    userID=receiver_user,
+                    senderID=sender_id,
+                    message=notif_msg,
+                    isRead=False
+                )
+
+        for f in attachments:
+            tblchat.objects.create(
+                senderID=sender_id,
+                receiverID=receiver_id,
+                message=None,
+                attachment=f,
                 isRead=False
             )
             
@@ -1538,12 +1556,17 @@ def get_chat_history(request):
     
     messages = []
     for chat in chats:
-        messages.append({
+        msg_data = {
             'sender_id': str(chat.senderID),
             'message': chat.message,
             'time': timezone.localtime(chat.createdDT).strftime("%b %d, %Y %I:%M %p"),
             'is_sent': str(chat.senderID) == str(user_id)
-        })
+        }
+        if chat.attachment:
+            msg_data['attachment_url'] = chat.attachment.url
+            msg_data['attachment_name'] = chat.attachment.name.split('/')[-1]
+            
+        messages.append(msg_data)
     
     # Check if partner is a doctor to provide profile link
     doctor = tblDoctor.objects.filter(userID=partner).first()
