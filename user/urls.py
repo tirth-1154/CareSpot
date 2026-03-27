@@ -31,6 +31,8 @@ urlpatterns = [
     path('doctorTotalPatients/', views.doctorTotalPatients, name='doctorTotalPatients'),
     path('doctorCaseStudy/<int:id>/', views.doctorCaseStudy, name='doctorCaseStudy'),
     path('doctorSchedule/', views.doctorSchedule, name='doctorSchedule'),
+    path('doctorSetSchedule/', views.doctorSetSchedule, name='doctorSetSchedule'),
+    path('doctorViewPatientProfile/<int:id>/', views.doctorViewPatientProfile, name='doctorViewPatientProfile'),
 
 
     #patient urls

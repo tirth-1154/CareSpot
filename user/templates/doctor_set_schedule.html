@@ -1,0 +1,499 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Set Schedule | CareSpot{% endblock %}
+
+{% block css %}
+<style>
+    :root {
+        --primary-teal: #2E7D72;
+        --light-teal: rgba(46, 125, 114, 0.1);
+        --border-color: #E2E8F0;
+        --text-dark: #1A202C;
+        --text-muted: #718096;
+    }
+
+    .appointments-header {
+        margin-bottom: 2rem;
+    }
+
+    .appointments-header h1 {
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 1.8rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .appointments-header p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .btn-teal {
+        background-color: var(--primary-teal);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+
+    .btn-teal:hover {
+        background-color: #24635a;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .controls-row {
+        background: white;
+        padding: 1rem;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .search-container {
+        position: relative;
+        flex: 1;
+        max-width: 400px;
+    }
+
+    .search-container i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .search-container input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.8rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background-color: #F8FAFC;
+        font-size: 0.9rem;
+    }
+
+    .view-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .view-selector {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: white;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .view-toggles {
+        display: flex;
+        background: #F1F5F9;
+        padding: 0.3rem;
+        border-radius: 8px;
+    }
+
+    .view-toggle-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+    }
+
+    .view-toggle-btn.active {
+        background: white;
+        color: var(--primary-teal);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    /* Calendar Grid */
+    .calendar-container {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+
+    .calendar-nav {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .month-display {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .nav-arrow {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: white;
+        color: var(--text-dark);
+        cursor: pointer;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .calendar-header-cell {
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        border-bottom: 1px solid var(--border-color);
+        background-color: #F8FAFC;
+    }
+
+    .calendar-cell {
+        min-height: 140px;
+        border-right: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        padding: 0.75rem;
+        position: relative;
+    }
+
+    .calendar-cell:nth-child(7n) {
+        border-right: none;
+    }
+
+    .day-number {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #94A3B8;
+        margin-bottom: 0.5rem;
+        display: block;
+        text-align: right;
+    }
+
+    .day-number.active-month {
+        color: var(--text-dark);
+    }
+
+    /* Appointment Cards */
+    .apt-card {
+        background: white;
+        border: 1px solid #EDF2F7;
+        border-radius: 8px;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+
+    .apt-card:hover {
+        transform: scale(1.02);
+        border-color: var(--primary-teal);
+    }
+
+    .apt-time {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 0.3rem;
+    }
+
+    .apt-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .apt-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .apt-name {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .apt-dots {
+        display: flex;
+        gap: 2px;
+        margin-left: auto;
+    }
+
+    .apt-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        font-size: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+    }
+
+    .dot-blue { background-color: #3182CE; }
+    .dot-green { background-color: #38A169; }
+    .dot-red { background-color: #E53E3E; }
+
+    @media (max-width: 1200px) {
+        .calendar-cell { min-height: 120px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-end appointments-header">
+        <div>
+            <h1>Appointments</h1>
+            <p>there is the latest update for the last 7 days. check now</p>
+        </div>
+        <a class="btn btn-teal" href="{% url 'doctorSchedule' %}">
+            <i class="fa-solid fa-plus"></i>
+            Set Schedule
+        </a>
+    </div>
+
+    <!-- Controls Row -->
+    <div class="controls-row">
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search anything here">
+        </div>
+        <div class="view-controls">
+            <select class="view-selector">
+                <option>Week</option>
+                <option>Month</option>
+                <option>Day</option>
+            </select>
+            <div class="view-toggles">
+                <button class="view-toggle-btn"><i class="fa-solid fa-list-ul"></i></button>
+                <button class="view-toggle-btn active"><i class="fa-solid fa-calendar-days"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Container -->
+    <div class="calendar-container">
+        <div class="calendar-nav">
+            <button class="nav-arrow"><i class="fa-solid fa-chevron-left"></i></button>
+            <span class="month-display">May</span>
+            <button class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="ms-auto">
+                <span class="text-muted small">Showing 26 Apr - 5 June 2023</span>
+            </div>
+        </div>
+
+        <div class="calendar-grid">
+            <!-- Header Days -->
+            <div class="calendar-header-cell">Sun</div>
+            <div class="calendar-header-cell">Mon</div>
+            <div class="calendar-header-cell">Tue</div>
+            <div class="calendar-header-cell">Wed</div>
+            <div class="calendar-header-cell">Thu</div>
+            <div class="calendar-header-cell">Fri</div>
+            <div class="calendar-header-cell">Sat</div>
+
+            <!-- Empty Cells for previous month -->
+            <div class="calendar-cell"><span class="day-number">26</span></div>
+            <div class="calendar-cell"><span class="day-number">27</span></div>
+            <div class="calendar-cell"><span class="day-number">28</span></div>
+            <div class="calendar-cell"><span class="day-number">29</span></div>
+            <div class="calendar-cell"><span class="day-number">30</span></div>
+            <div class="calendar-cell"><span class="day-number">31</span></div>
+            <div class="calendar-cell"><span class="day-number active-month">1</span></div>
+
+            <!-- Week 1 -->
+            <div class="calendar-cell"><span class="day-number active-month">2</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">3</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <img src="https://ui-avatars.com/api/?name=Isagi+Yoichi&background=random" class="apt-avatar">
+                        <span class="apt-name">Isagi Yoichi</span>
+                    </div>
+                </div>
+            </div>
+            <div class="calendar-cell"><span class="day-number active-month">4</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">5</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <div class="d-flex overlap-avatars">
+                            <img src="https://ui-avatars.com/api/?name=Nagi+Seishiro&background=random" class="apt-avatar">
+                            <div class="apt-dot dot-red ms-1">PO</div>
+                            <div class="apt-dot dot-green ms-1">VN</div>
+                        </div>
+                    </div>
+                    <div class="apt-name mt-1">Nagi Seishiro, Peter...</div>
+                </div>
+            </div>
+            <div class="calendar-cell"><span class="day-number active-month">6</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">7</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <img src="https://ui-avatars.com/api/?name=Kaiser+Brown&background=random" class="apt-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Jhon&background=random" class="apt-avatar">
+                        <div class="apt-dot dot-red ms-auto"></div>
+                    </div>
+                    <div class="apt-name mt-1">Kaiser Brown, Jhon...</div>
+                </div>
+            </div>
+            <div class="calendar-cell"><span class="day-number active-month">8</span></div>
+
+            <!-- Week 2 -->
+            <div class="calendar-cell"><span class="day-number active-month">9</span></div>
+            <div class="calendar-cell"><span class="day-number active-month">10</span></div>
+            <div class="calendar-cell"><span class="day-number active-month">11</span></div>
+            <div class="calendar-cell"><span class="day-number active-month">12</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">13</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <img src="https://ui-avatars.com/api/?name=Alexandro+Bernard&background=random" class="apt-avatar">
+                        <img src="https://ui-avatars.com/api/?name=User&background=random" class="apt-avatar">
+                    </div>
+                    <div class="apt-name mt-1">Alexandro Bernard...</div>
+                </div>
+            </div>
+            <div class="calendar-cell"><span class="day-number active-month">14</span></div>
+            <div class="calendar-cell"><span class="day-number active-month">15</span></div>
+
+            <!-- Week 3 -->
+            <div class="calendar-cell"><span class="day-number active-month">16</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">17</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <img src="https://ui-avatars.com/api/?name=Romanov+Ely&background=random" class="apt-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Betty&background=random" class="apt-avatar">
+                    </div>
+                    <div class="apt-name mt-1">Romanov Ely, Betty..</div>
+                </div>
+            </div>
+            <div class="calendar-cell"><span class="day-number active-month">18</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">19</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <img src="https://ui-avatars.com/api/?name=Kitty+Lily&background=random" class="apt-avatar">
+                    </div>
+                    <div class="apt-name mt-1">Kitty Lily</div>
+                </div>
+            </div>
+            <div class="calendar-cell"><span class="day-number active-month">20</span></div>
+            <div class="calendar-cell"><span class="day-number active-month">21</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">22</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <img src="https://ui-avatars.com/api/?name=Lily+Alexa&background=random" class="apt-avatar">
+                    </div>
+                    <div class="apt-name mt-1">Lily Alexa</div>
+                </div>
+            </div>
+
+            <!-- Week 4 -->
+            <div class="calendar-cell"><span class="day-number active-month">23</span></div>
+            <div class="calendar-cell"><span class="day-number active-month">24</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">25</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <img src="https://ui-avatars.com/api/?name=Shasa+Brown&background=random" class="apt-avatar">
+                    </div>
+                    <div class="apt-name mt-1">Shasa Brown</div>
+                </div>
+            </div>
+            <div class="calendar-cell"><span class="day-number active-month">26</span></div>
+            <div class="calendar-cell"><span class="day-number active-month">27</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">28</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <div class="apt-dot dot-blue me-1">AL</div>
+                        <span class="apt-name">Ahmed Lali</span>
+                    </div>
+                </div>
+            </div>
+            <div class="calendar-cell"><span class="day-number active-month">29</span></div>
+
+            <!-- Week 5 -->
+            <div class="calendar-cell"><span class="day-number active-month">30</span></div>
+            <div class="calendar-cell">
+                <span class="day-number active-month">31</span>
+                <div class="apt-card">
+                    <div class="apt-time">10:00 am - 11:00 am</div>
+                    <div class="apt-info">
+                        <div class="apt-dot dot-green me-1">BD</div>
+                        <img src="https://ui-avatars.com/api/?name=Saimon&background=random" class="apt-avatar">
+                    </div>
+                    <div class="apt-name mt-1">Budiman Dio, Saimon..</div>
+                </div>
+            </div>
+            <div class="calendar-cell"><span class="day-number">1</span></div>
+            <div class="calendar-cell"><span class="day-number">2</span></div>
+            <div class="calendar-cell"><span class="day-number">3</span></div>
+            <div class="calendar-cell"><span class="day-number">4</span></div>
+            <div class="calendar-cell"><span class="day-number">5</span></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add active state to sidebar
+        const scheduleLink = document.querySelector('a[href="{% url "doctorSetSchedule" %}"]');
+        if (scheduleLink) {
+            scheduleLink.classList.add('active');
+        }
+    });
+</script>
+{% endblock %}

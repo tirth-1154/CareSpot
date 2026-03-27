@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+{% block title %}Patient Profile - {{ client.name }}{% endblock %}
+{% block sidebar_nav_patients %}active{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       PATIENT PROFILE — PREMIUM MEDICAL THEME
+    ============================================================ */
+    :root {
+        --primary-blue: #0076BD;
+        --bg-soft: #F1F5F9;
+        --text-dark: #1E293B;
+        --text-muted: #64748B;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        --accent-teal: #2E7D72;
+    }
+
+    .profile-container {
+        padding: 24px;
+        background-color: #F8FAFC;
+        min-height: 100vh;
+    }
+
+    /* Breadcrumbs */
+    .breadcrumb-nav {
+        margin-bottom: 28px;
+        font-size: 18px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-dark);
+    }
+    .breadcrumb-nav a { text-decoration: none; color: var(--primary-blue); }
+    .breadcrumb-nav span { color: var(--text-muted); font-weight: 400; }
+
+    /* Layout Grid */
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr 350px;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .card-premium {
+        background: #fff;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    /* Left Card: Essential Profile */
+    .profile-essential {
+        text-align: center;
+    }
+    .profile-avatar-wrapper {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        padding: 5px;
+        background: linear-gradient(135deg, var(--primary-blue), #60A5FA);
+    }
+    .profile-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #fff;
+    }
+    .profile-name {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+    .profile-email {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+    }
+    .profile-mini-stats {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 30px;
+        padding: 15px 0;
+        border-top: 1px solid #F1F5F9;
+        border-bottom: 1px solid #F1F5F9;
+    }
+    .stat-item { text-align: center; }
+    .stat-val { font-size: 18px; font-weight: 700; color: var(--text-dark); display: block; }
+    .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .btn-message {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        background-color: #F1F5F9;
+        color: var(--text-dark);
+        border: none;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-message:hover { background-color: #E2E8F0; }
+
+    /* Middle Card: Details */
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px 40px;
+    }
+    .info-group label {
+        display: block;
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+    .info-group p {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    /* Right Card: Reports */
+    .card-header-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+    .card-header-flex h3 { font-size: 18px; font-weight: 700; margin: 0; }
+    .add-link { color: var(--primary-blue); font-size: 13px; font-weight: 600; text-decoration: none; }
+
+    .report-list { list-style: none; padding: 0; margin: 0; }
+    .report-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 0;
+        border-bottom: 1px solid #F1F5F9;
+    }
+    .report-item:last-child { border-bottom: none; }
+    .report-info { flex: 1; }
+    .report-name { font-size: 14px; font-weight: 600; color: var(--text-dark); display: block; }
+    .report-date { font-size: 12px; color: var(--text-muted); }
+    .report-actions { display: flex; gap: 8px; }
+    .action-icon {
+        width: 32px; height: 32px;
+        background: #F8FAFC;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .action-icon:hover { background: #F1F5F9; color: var(--primary-blue); }
+
+    /* Appointment Section */
+    .section-title-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .section-title-flex h2 { font-size: 22px; font-weight: 700; margin: 0; }
+
+    .tabs-nav {
+        display: flex;
+        gap: 30px;
+        border-bottom: 1px solid #E2E8F0;
+        margin-bottom: 24px;
+    }
+    .tab-link {
+        padding: 12px 0;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-decoration: none;
+        position: relative;
+        cursor: pointer;
+    }
+    .tab-link.active { color: var(--primary-blue); }
+    .tab-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px; left: 0; width: 100%; height: 2px;
+        background-color: var(--primary-blue);
+    }
+
+    .apt-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .apt-table th {
+        text-align: left;
+        padding: 16px;
+        color: var(--text-muted);
+        font-weight: 500;
+        font-size: 14px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+    .apt-table td {
+        padding: 16px;
+        font-size: 14px;
+        color: var(--text-dark);
+        border-bottom: 1px solid #F1F5F9;
+        vertical-align: middle;
+    }
+    .apt-table tr:last-child td { border-bottom: none; }
+
+    .payment-status {
+        font-weight: 600;
+        font-size: 13px;
+    }
+    .status-pending { color: #F59E0B; }
+    .status-complete { color: #10B981; }
+
+    .btn-action-more {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    @media (max-width: 1200px) {
+        .profile-grid { grid-template-columns: 1fr 1fr; }
+        .card-reports { grid-column: span 2; }
+    }
+    @media (max-width: 768px) {
+        .profile-grid { grid-template-columns: 1fr; }
+        .card-reports { grid-column: span 1; }
+    }
+</style>
+
+<div class="profile-container">
+    <!-- Breadcrumbs -->
+    <div class="breadcrumb-nav">
+        <a href="{% url 'doctorTotalPatients' %}">Patients List</a>
+        <span>&gt;</span>
+        <p class="mb-0">{{ client.name }}</p>
+    </div>
+
+    <!-- Stats & Info Grid -->
+    <div class="profile-grid">
+        <!-- Sidebar Card -->
+        <div class="card-premium profile-essential">
+            <div class="profile-avatar-wrapper">
+                {% if client.userID.profilePic %}
+                    <img src="{{ client.userID.profilePic.url }}" class="profile-avatar" alt="Avatar">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ client.name }}&background=0076BD&color=fff" class="profile-avatar" alt="Avatar">
+                {% endif %}
+            </div>
+            <h1 class="profile-name">{{ client.name }}</h1>
+            <p class="profile-email">{{ client.userID.email }}</p>
+
+            <div class="profile-mini-stats">
+                <div class="stat-item">
+                    <span class="stat-val">{{ total_appointments }}</span>
+                    <span class="stat-label">Appointments</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-val">₹{{ total_payment }}</span>
+                    <span class="stat-label">Payment made</span>
+                </div>
+            </div>
+
+            <button class="btn-message" onclick="window.location.href='{% url 'doctorMessages' %}'">
+                Send Message
+            </button>
+        </div>
+
+        <!-- Main Details Card -->
+        <div class="card-premium">
+            <div class="details-grid">
+                <div class="info-group">
+                    <label>Gender</label>
+                    <p>{{ client.gender|title }}</p>
+                </div>
+                <div class="info-group">
+                    <label>Birth Date</label>
+                    <p>{{ client.dob|date:"d F, Y" }}</p>
+                </div>
+                <div class="info-group">
+                    <label>City</label>
+                    <p>{{ client.userID.cityID.cityName }}</p>
+                </div>
+                <div class="info-group">
+                    <label>Mobile Number</label>
+                    <p>{{ client.userID.mobileNumber }}</p>
+                </div>
+                <div class="info-group">
+                    <label>Zip Code</label>
+                    <p>{{ client.userID.zipCode|default:"E18 4BR" }}</p>
+                </div>
+                <div class="info-group">
+                    <label>Address</label>
+                    <p>{{ client.address }}</p>
+                </div>
+                <div class="info-group">
+                    <label>Member Status</label>
+                    <p class="text-success">Active</p>
+                </div>
+                <div class="info-group">
+                    <label>Register Date</label>
+                    <p>{{ client.userID.registrationDT|date:"d M, Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Card -->
+        <div class="card-premium card-reports">
+            <div class="card-header-flex">
+                <h3>Reports</h3>
+                <a href="{% url 'doctorCaseStudy' client.clientID %}" class="add-link">+ Add Reports</a>
+            </div>
+            <div class="report-list">
+                {% for report in reports %}
+                <div class="report-item">
+                    <div class="report-info">
+                        <span class="report-name">{{ report.title|default:"Clinical Report" }}</span>
+                        <span class="report-date">Date - {{ report.createdDT|date:"d M, Y" }}</span>
+                    </div>
+                    <div class="report-actions">
+                        <a href="#" class="action-icon" title="View"><i class="fa-solid fa-eye"></i></a>
+                        <a href="#" class="action-icon" title="Download"><i class="fa-solid fa-download"></i></a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-4 text-muted" style="font-size: 13px;">
+                    No reports found.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Section -->
+    <div class="section-title-flex">
+        <h2>Appointment</h2>
+        <a href="{% url 'doctorSetSchedule' %}" class="add-link">+ Add Appointment</a>
+    </div>
+
+    <div class="card-premium">
+        <div class="tabs-nav">
+            <div class="tab-link active" onclick="switchAptTab('all', this)">All Appointment</div>
+            <div class="tab-link" onclick="switchAptTab('upcoming', this)">Upcoming</div>
+            <div class="tab-link" onclick="switchAptTab('completed', this)">Completed</div>
+        </div>
+
+        <div id="all-apts" class="apt-content">
+            <table class="apt-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Treatment Type</th>
+                        <th>Booking Time</th>
+                        <th>Comments</th>
+                        <th>Payment</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for apt in appointments %}
+                    <tr class="apt-row" data-type="{% if apt in upcoming_appointments %}upcoming{% else %}completed{% endif %}">
+                        <td>{{ apt.appointmentDate|date:"d M, Y" }}</td>
+                        <td>{{ apt.mode|title }} checkup</td>
+                        <td>{{ apt.appointmentTime|time:"g.i a" }}</td>
+                        <td>
+                            {% if apt.clientID.description %}
+                            <a href="#" class="add-link" title="{{ apt.clientID.description }}">See Comment</a>
+                            {% else %}
+                            <span class="text-muted">No Comments</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if apt.payment.paymentStatus == 'paid' %}
+                                <span class="payment-status status-complete">Complete</span>
+                            {% else %}
+                                <span class="payment-status status-pending">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn-action-more"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">No appointments found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchAptTab(type, el) {
+        // Update active class
+        document.querySelectorAll('.tab-link').forEach(tab => tab.classList.remove('active'));
+        el.classList.add('active');
+
+        // Filter rows
+        const rows = document.querySelectorAll('.apt-row');
+        rows.forEach(row => {
+            if (type === 'all') {
+                row.style.display = 'table-row';
+            } else if (row.getAttribute('data-type') === type) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

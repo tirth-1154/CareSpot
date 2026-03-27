@@ -207,6 +207,9 @@
               {% endif %}
             </td>
             <td class="text-end">
+              <a href="{% url 'doctorViewPatientProfile' p.client.clientID %}" class="tbl-action-btn-secondary">
+                <i class="fa-solid fa-user"></i> Profile
+              </a>
               {% if p.case_studies_count > 0 %}
               <a href="{% url 'doctorCaseStudy' p.client.clientID %}" class="tbl-action-btn-secondary">
                 <i class="fa-solid fa-plus"></i> Add Another

@@ -2100,3 +2100,53 @@ def videoMeeting(request, appointment_id):
         'specialization': blog.doctorID.subcategoryID.subcategoryName,
     }
     return render(request, 'video_meeting.html', data)
+
+def doctorViewPatientProfile(request, id):
+    if 'doctorID' not in request.session:
+        return redirect('Login')
+    
+    doctor_id = request.session['doctorID']
+    doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
+    client = tblClient.objects.filter(clientID=id).first()
+    
+    if not client:
+        return redirect('doctorTotalPatients')
+    
+    # Appointments with THIS doctor
+    appointments = tblAppointment.objects.filter(clientID=client, doctorID=doctor).order_by('-appointmentDate', '-appointmentTime')
+    
+    # Stats
+    total_appointments = appointments.count()
+    total_payment = tblPayment.objects.filter(appointmentID__in=appointments, paymentStatus='paid').aggregate(models.Sum('totalAmount'))['totalAmount__sum'] or 0
+    
+    # Reports (client history)
+    reports = tblclientHistory.objects.filter(clientID=client, doctorID=doctor).order_by('-createdDT')
+    
+    # Categorized appointments
+    upcoming_appointments = appointments.filter(appointmentDate__gte=timezone.now().date(), isAccepted=True)
+    completed_appointments = appointments.filter(appointmentDate__lt=timezone.now().date(), isAccepted=True)
+    
+    data = {
+        'doctor': doctor,
+        'client': client,
+        'appointments': appointments,
+        'total_appointments': total_appointments,
+        'total_payment': total_payment,
+        'reports': reports,
+        'upcoming_appointments': upcoming_appointments,
+        'completed_appointments': completed_appointments,
+    }
+    return render(request, 'doctor_view_patient_profile.html', data)
+
+def doctorSetSchedule(request):
+    if 'doctorID' not in request.session:
+        return redirect('Login')
+    
+    doctor_id = request.session['doctorID']
+    doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
+    
+    # For now, it's a static display as requested for the UI
+    data = {
+        'doctor': doctor,
+    }
+    return render(request, 'doctor_set_schedule.html', data)
