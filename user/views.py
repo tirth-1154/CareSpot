@@ -1719,13 +1719,15 @@ def patientBlogs(request):
         followed = tblFollow.objects.filter(userID=user).values_list('doctorID', flat=True)
         if followed.exists():
             is_following_anyone = True
-            blogs = tblDoctorPost.objects.filter(doctorID__in=followed).order_by('-createDT')
+            # Shuffle order for the 'shuffle style' requested by the user
+            blogs = tblDoctorPost.objects.filter(doctorID__in=followed).order_by('?')
         else:
             is_following_anyone = False
             blogs = tblDoctorPost.objects.none()
     else:
         # Doctors or non-logged-in users see all blogs
-        blogs = tblDoctorPost.objects.all().order_by('-createDT')
+        # Shuffle order for the 'shuffle style' requested by the user
+        blogs = tblDoctorPost.objects.all().order_by('?')
 
     # --- Dynamic Category Tags from all blog posts ---
     # Get unique subcategory names from ALL blog posts (not filtered)

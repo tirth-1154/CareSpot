@@ -4,525 +4,612 @@
 
 {% block content %}
 
-<!-- Premium Healthcare UI Styling -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
+  /* ================================
+     ROOT VARIABLES
+     ================================ */
   :root {
-    --cs-primary: #2D9CDB;
-    --cs-secondary: #27AE60;
-    --cs-bg-light: #F8FAFC;
-    --cs-text-main: #1f2937;
-    --cs-text-muted: #6b7280;
-    --cs-border: #e5e7eb;
-    --cs-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --cs-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --cs-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --cs-radius: 1rem;
-    --cs-transition: all 0.3s ease;
+    --blog-primary: #2D9CDB;
+    --blog-primary-dark: #2287c2;
+    --blog-secondary: #27AE60;
+    --blog-bg: #F4F6F9;
+    --blog-text: #1f2937;
+    --blog-muted: #6b7280;
+    --blog-border: #e5e7eb;
+    --blog-radius: 1rem;
+    --blog-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  body {
-    background-color: var(--cs-bg-light);
-    font-family: 'Inter', sans-serif;
+  .blog-page-wrapper {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--blog-bg);
+    min-height: 100vh;
   }
 
   /* ================================
      HERO SECTION
      ================================ */
-  .blog-hero {
-    background: transparent;
-    padding: 60px 20px 20px;
+  .blog-hero-section {
+    background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #e0f2fe 100%);
+    padding: 50px 20px 30px;
     text-align: center;
     position: relative;
     overflow: hidden;
-    color: var(--cs-text-main);
-    margin-bottom: 0px;
-    border-bottom: none;
   }
-  .blog-hero-content {
+  .blog-hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(45,156,219,0.06) 0%, transparent 70%);
+    animation: heroGlow 8s ease-in-out infinite alternate;
+  }
+  @keyframes heroGlow {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(5%, 5%); }
+  }
+  .blog-hero-inner {
     position: relative;
-    z-index: 10;
-    max-width: 800px;
+    z-index: 2;
+    max-width: 750px;
     margin: 0 auto;
   }
-  .blog-hero h1 {
-    font-size: 42px;
+  .blog-hero-inner h1 {
+    font-size: 38px;
     font-weight: 800;
-    margin-bottom: 16px;
+    color: var(--blog-text);
+    margin: 0 0 12px;
     letter-spacing: -0.5px;
-    color: var(--cs-text-main);
   }
-  .blog-hero p {
-    font-size: 18px;
-    font-weight: 400;
-    color: var(--cs-text-muted);
-    margin-bottom: 35px;
+  .blog-hero-inner p {
+    font-size: 17px;
+    color: var(--blog-muted);
+    margin: 0 0 28px;
+    line-height: 1.6;
   }
 
-  /* Search Bar - Light Theme Edit */
-  .premium-search {
+  /* Search Bar */
+  .blog-search-bar {
     display: flex;
     background: #ffffff;
-    border: 1px solid var(--cs-border);
+    border: 1.5px solid var(--blog-border);
     border-radius: 9999px;
-    padding: 6px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    max-width: 650px;
+    padding: 5px 5px 5px 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    max-width: 600px;
     margin: 0 auto;
-    transition: var(--cs-transition);
-    align-items: stretch;
-  }
-  .premium-search:focus-within {
-    border-color: var(--cs-primary);
-    box-shadow: 0 4px 20px rgba(45, 156, 219, 0.15);
-  }
-  .search-icon-container {
-    display: flex;
+    transition: var(--blog-transition);
     align-items: center;
-    padding: 0 15px 0 20px;
-    color: var(--cs-text-muted);
   }
-  .premium-search input {
+  .blog-search-bar:focus-within {
+    border-color: var(--blog-primary);
+    box-shadow: 0 4px 24px rgba(45, 156, 219, 0.15);
+  }
+  .blog-search-bar i.search-icon {
+    color: var(--blog-muted);
+    font-size: 16px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .blog-search-bar input {
     flex-grow: 1;
     border: none;
-    font-size: 16px;
-    color: var(--cs-text-main);
+    font-size: 15px;
+    color: var(--blog-text);
     outline: none;
     background: transparent;
-    padding: 12px 0;
+    padding: 10px 0;
+    font-family: inherit;
   }
-  .premium-search input::placeholder {
-    color: #9ca3af;
-  }
-  .premium-search button {
-    background: var(--cs-primary);
+  .blog-search-bar input::placeholder { color: #9ca3af; }
+  .blog-search-bar button {
+    background: var(--blog-primary);
     color: white;
     border: none;
-    padding: 0 32px;
+    padding: 10px 28px;
     border-radius: 9999px;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
-    transition: var(--cs-transition);
+    transition: var(--blog-transition);
+    font-family: inherit;
+    flex-shrink: 0;
   }
-  .premium-search button:hover {
-    background: #2287c2;
-    transform: translateY(-1px);
+  .blog-search-bar button:hover {
+    background: var(--blog-primary-dark);
     box-shadow: 0 4px 12px rgba(45, 156, 219, 0.3);
   }
 
   /* ================================
-     MAIN LAYOUT & SIDEBAR
+     MAIN LAYOUT
      ================================ */
-  .blog-layout {
-    max-width: 1280px;
+  .blog-page-layout {
+    max-width: 1300px;
     margin: 0 auto;
     padding: 0 20px 60px;
     display: flex;
-    gap: 40px;
+    gap: 36px;
   }
-  .blog-main {
+  .blog-content-main {
     flex: 1;
-    min-width: 0; /* fixes grid blowout */
+    min-width: 0;
   }
-  .blog-sidebar {
-    width: 320px;
+  .blog-content-sidebar {
+    width: 310px;
     flex-shrink: 0;
   }
-
-  @media (max-width: 992px) {
-    .blog-layout { flex-direction: column; }
-    .blog-sidebar { width: 100%; }
+  @media (max-width: 1024px) {
+    .blog-page-layout { flex-direction: column; }
+    .blog-content-sidebar { width: 100%; }
   }
 
   /* ================================
-     CATEGORY FILTERS
+     CATEGORY PILLS
      ================================ */
-  .category-pills {
+  .blog-categories {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 30px;
-    border-bottom: 1px solid var(--cs-border);
-    padding-bottom: 20px;
+    gap: 10px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--blog-border);
+    margin-bottom: 28px;
   }
-  .cat-pill {
-    padding: 8px 20px;
+  .blog-cat-pill {
+    padding: 7px 18px;
     background: white;
-    border: 1px solid var(--cs-border);
+    border: 1px solid var(--blog-border);
     border-radius: 9999px;
-    color: var(--cs-text-muted);
+    color: var(--blog-muted);
     font-weight: 500;
-    font-size: 14px;
+    font-size: 13px;
     text-decoration: none;
-    transition: var(--cs-transition);
+    transition: var(--blog-transition);
+    cursor: pointer;
+    font-family: inherit;
   }
-  .cat-pill:hover, .cat-pill.active {
-    background: var(--cs-primary);
-    border-color: var(--cs-primary);
+  .blog-cat-pill:hover, .blog-cat-pill.active {
+    background: var(--blog-primary);
+    border-color: var(--blog-primary);
     color: white;
-    box-shadow: 0 4px 10px rgba(45, 156, 219, 0.25);
+    box-shadow: 0 4px 12px rgba(45, 156, 219, 0.25);
     transform: translateY(-2px);
   }
 
   /* ================================
-     BLOG CARDS
+     MASONRY GRID
      ================================ */
-  .articles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px;
+  .masonry-grid {
+    column-count: 2;
+    column-gap: 24px;
+  }
+  @media (max-width: 900px) {
+    .masonry-grid { column-count: 2; }
+  }
+  @media (max-width: 600px) {
+    .masonry-grid { column-count: 1; }
   }
 
-  .blog-card {
+  /* ================================
+     MASONRY CARD (Professional Card Style)
+     ================================ */
+  .masonry-card {
+    break-inside: avoid;
+    margin-bottom: 24px;
+    border-radius: 16px;
     background: white;
-    border-radius: var(--cs-radius);
     overflow: hidden;
-    border: 1px solid var(--cs-border);
+    position: relative;
     display: flex;
     flex-direction: column;
     text-decoration: none !important;
-    transition: var(--cs-transition);
-    height: 100%;
-    box-shadow: var(--cs-shadow-sm);
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+    border: 1px solid var(--blog-border);
+    /* Reveal animation */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardReveal 0.6s ease forwards;
   }
-  .blog-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--cs-shadow-hover);
-    border-color: #d1d5db;
+  .masonry-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    border-color: var(--blog-primary);
   }
-  
-  .blog-card-img {
-    height: 220px;
-    position: relative;
-    overflow: hidden;
+
+  @keyframes cardReveal {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
-  .blog-card-img img {
+
+  /* Shuffled appearance delays - randomized for organic feel */
+  .masonry-card:nth-child(2n) { animation-delay: 0.1s; }
+  .masonry-card:nth-child(3n) { animation-delay: 0.2s; }
+  .masonry-card:nth-child(5n) { animation-delay: 0.05s; }
+  .masonry-card:nth-child(7n) { animation-delay: 0.15s; }
+
+  .masonry-card-img-container {
     width: 100%;
-    height: 100%;
+    overflow: hidden;
+    background: #f3f4f6;
+  }
+
+  .masonry-card-img {
+    width: 100%;
+    height: auto;
+    display: block;
     object-fit: cover;
     transition: transform 0.5s ease;
   }
-  .blog-card:hover .blog-card-img img {
+  .masonry-card:hover .masonry-card-img {
     transform: scale(1.05);
   }
 
-  .blog-card-content {
-    padding: 24px;
-    flex-grow: 1;
+  /* Content below the image */
+  .masonry-card-content {
+    padding: 16px 20px 20px;
     display: flex;
     flex-direction: column;
-  }
-  .blog-card-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--cs-text-main);
-    line-height: 1.4;
-    margin: 0 0 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    transition: color 0.2s ease;
-  }
-  .blog-card:hover .blog-card-title {
-    color: var(--cs-primary);
-  }
-  .blog-card-excerpt {
-    font-size: 14.5px;
-    color: var(--cs-text-muted);
-    line-height: 1.6;
-    margin-bottom: 24px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    flex-grow: 1;
+    gap: 12px;
   }
 
-  .blog-card-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    border-top: 1px solid var(--cs-border);
-    padding-top: 20px;
-  }
-  .blog-meta-stats {
+  .masonry-card-doctor {
     display: flex;
     align-items: center;
-    gap: 15px;
-    font-size: 12.5px;
-    color: var(--cs-text-muted);
+    gap: 12px;
   }
-  .author-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
+  .masonry-card-doctor-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--blog-border);
+    object-fit: cover;
+    background: var(--blog-primary);
   }
-  .author-avatar {
-    width: 28px; height: 28px;
-    background: var(--cs-primary);
-    color: white;
+  .masonry-card-doctor-avatar-placeholder {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    background: var(--blog-primary);
   }
-  .read-more-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: var(--cs-bg-light);
-    color: var(--cs-primary);
-    padding: 10px 0;
-    border-radius: 8px;
+  .masonry-card-doctor-name {
     font-size: 14px;
     font-weight: 600;
-    transition: var(--cs-transition);
+    color: var(--blog-text);
+    line-height: 1.2;
   }
-  .blog-card:hover .read-more-btn {
-    background: var(--cs-primary);
-    color: white;
+  .masonry-card-doctor-spec {
+    font-size: 12px;
+    color: var(--blog-muted);
   }
 
-  /* Sidebar Widgets */
-  .widget {
-    background: white;
-    border-radius: var(--cs-radius);
-    padding: 24px;
-    margin-bottom: 30px;
-    border: 1px solid var(--cs-border);
-    box-shadow: var(--cs-shadow-sm);
-  }
-  .widget-title {
+  .masonry-card-topic h3 {
     font-size: 18px;
     font-weight: 700;
-    color: var(--cs-text-main);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--cs-border);
-  }
-  /* Sidebar Topic Links */
-  .sidebar-topic-link {
-    color: var(--cs-text-main);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 12px;
-    border-radius: 10px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 14px;
-    font-weight: 500;
-    background: transparent;
-  }
-  .sidebar-topic-link:hover,
-  .sidebar-topic-link.active-sidebar {
-    background: #f0f9ff;
-    color: var(--cs-primary);
-    transform: translateX(4px);
-  }
-  .sidebar-topic-link i {
-    transition: transform 0.2s ease;
-  }
-  .sidebar-topic-link:hover i,
-  .sidebar-topic-link.active-sidebar i {
-    transform: translateX(2px);
-    opacity: 1 !important;
-  }
-
-  /* Blog Card Tag */
-  .blog-card-tag {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: rgba(45, 156, 219, 0.9);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    backdrop-filter: blur(4px);
-    z-index: 2;
-  }
-
-  /* Trending Mini Cards */
-  .trending-mini-card {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 16px;
-    text-decoration: none !important;
-  }
-  .trending-mini-card:last-child { margin-bottom: 0; }
-  .trending-mini-img {
-    width: 70px; height: 70px;
-    border-radius: 10px;
-    object-fit: cover;
-  }
-  .trending-mini-info h4 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--cs-text-main);
-    line-height: 1.4;
+    color: var(--blog-text);
     margin: 0 0 6px;
+    line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     transition: color 0.2s;
   }
-  .trending-mini-card:hover h4 { color: var(--cs-primary); }
-  .trending-mini-date {
-    font-size: 11px;
-    color: var(--cs-text-muted);
+  .masonry-card:hover .masonry-card-topic h3 {
+    color: var(--blog-primary);
   }
 
-  /* Empty State */
-  .empty-state {
+  .masonry-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+
+  .card-date {
+    font-size: 12px;
+    color: var(--blog-muted);
+    font-weight: 500;
+  }
+
+  /* Category badge on card */
+  .masonry-card-badge {
+    background: #eff6ff;
+    color: var(--blog-primary);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* ================================
+     EMPTY STATE
+     ================================ */
+  .blog-empty-state {
     text-align: center;
-    padding: 60px 20px;
+    padding: 60px 24px;
     background: white;
-    border-radius: var(--cs-radius);
+    border-radius: var(--blog-radius);
     border: 1px dashed #cbd5e1;
   }
-  .empty-icon {
+  .blog-empty-state i {
     font-size: 48px;
     color: #94a3b8;
     margin-bottom: 16px;
   }
+  .blog-empty-state h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--blog-text);
+    margin: 0 0 10px;
+  }
+  .blog-empty-state p {
+    color: var(--blog-muted);
+    margin: 0 0 20px;
+  }
+  .blog-empty-state a.clear-btn {
+    display: inline-block;
+    background: var(--blog-primary);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 9999px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--blog-transition);
+  }
+  .blog-empty-state a.clear-btn:hover {
+    background: var(--blog-primary-dark);
+  }
+
+  /* ================================
+     SIDEBAR WIDGETS
+     ================================ */
+  .blog-widget {
+    background: white;
+    border-radius: var(--blog-radius);
+    padding: 20px 22px;
+    margin-bottom: 24px;
+    border: 1px solid var(--blog-border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .blog-widget-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--blog-text);
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--blog-border);
+  }
+  .blog-widget-title i {
+    font-size: 15px;
+  }
+
+  /* Sidebar Topic Links */
+  .sidebar-topic-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--blog-text);
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: var(--blog-transition);
+    margin-bottom: 4px;
+  }
+  .sidebar-topic-item:hover, .sidebar-topic-item.active {
+    background: #f0f9ff;
+    color: var(--blog-primary);
+    transform: translateX(3px);
+  }
+  .sidebar-topic-item i {
+    font-size: 10px;
+    opacity: 0.4;
+    transition: var(--blog-transition);
+  }
+  .sidebar-topic-item:hover i {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+
+  /* Trending Card */
+  .trending-item {
+    display: flex;
+    gap: 12px;
+    text-decoration: none !important;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+    transition: var(--blog-transition);
+  }
+  .trending-item:last-child { border-bottom: none; }
+  .trending-item:hover { transform: translateX(3px); }
+  .trending-item-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #e5e7eb;
+  }
+  .trending-item-info h4 {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--blog-text);
+    margin: 0 0 4px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s;
+  }
+  .trending-item:hover h4 { color: var(--blog-primary); }
+  .trending-item-info .trending-date {
+    font-size: 11px;
+    color: var(--blog-muted);
+  }
+  .trending-item-info .trending-doctor {
+    font-size: 11px;
+    color: var(--blog-primary);
+    font-weight: 500;
+  }
 </style>
 
-<!-- 1. HERO SECTION -->
-<div class="blog-hero">
-  <div class="blog-hero-content">
-    <h1>Patient Health Blog</h1>
-    <p>Stay informed with the latest healthcare tips, wellness advice, and medical insights from our trusted experts.</p>
-    
-    <form method="GET">
-      <div class="premium-search">
-        <div class="search-icon-container">
-          <i class="fa-solid fa-magnifying-glass"></i>
+<div class="blog-page-wrapper">
+
+  <!-- 1. HERO SECTION -->
+  <div class="blog-hero-section">
+    <div class="blog-hero-inner">
+      <h1>Patient Health Blog</h1>
+      <p>Stay informed with the latest healthcare tips, wellness advice, and medical insights from our trusted experts.</p>
+      <form method="GET">
+        <div class="blog-search-bar">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input id="autocomplete-input" name="search" type="text" placeholder="Search treatments, habits, doctors..." value="{{ search_query|default_if_none:'' }}" />
+          <button type="submit">Search</button>
         </div>
-        <input id="autocomplete-input" name="search" type="text" placeholder="Search treatments, habits, doctors..." value="{{ search_query|default_if_none:'' }}" />
-        <button type="submit">Search</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="blog-layout">
-
-  <!-- ===============================
-       MAIN CONTENT (LEFT)
-       =============================== -->
-  <div class="blog-main" id="dynamic-content">
-    
-    <!-- Category Filters (Dynamic from blog data) -->
-    <div class="category-pills">
-      <a href="?" class="cat-pill {% if not category_filter and not search_query %}active{% endif %}">📑 All</a>
-      {% for tag in dynamic_tags %}
-        <a href="?category={{ tag }}" class="cat-pill {% if category_filter == tag %}active{% endif %}">{{ tag }}</a>
-      {% endfor %}
+      </form>
     </div>
+  </div>
 
-    <!-- Articles Grid -->
-    {% if blogs %}
-      <div class="articles-grid">
-        {% for blog in blogs %}
-        <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="blog-card">
-          <!-- Image -->
-          <div class="blog-card-img">
-            {% if blog.thumbnail %}
-              <img src="{{ blog.thumbnail.url }}" alt="{{ blog.title }}" />
-            {% else %}
-              <img src="/static/images/blog-placeholder.jpg" alt="Healthcare" onerror="this.src='/static/images/blog-01a.jpg';" />
-            {% endif %}
-            {% if blog.doctorID.subcategoryID %}
-              <span class="blog-card-tag">{{ blog.doctorID.subcategoryID.subcategoryName }}</span>
-            {% endif %}
-          </div>
+  <!-- 2. MAIN LAYOUT -->
+  <div class="blog-page-layout">
 
-          <!-- Content -->
-          <div class="blog-card-content">
-            <h3 class="blog-card-title">{{ blog.title }}</h3>
-            <p class="blog-card-excerpt">{{ blog.description }}</p>
+    <!-- ======= LEFT: MAIN CONTENT ======= -->
+    <div class="blog-content-main" id="dynamic-content">
 
-            <div class="blog-card-footer">
-              <div class="blog-meta-stats">
-                <div class="author-meta">
-                  <div class="author-avatar">{{ blog.doctorID.displayName|make_list|first|upper }}</div>
-                  <span>{{ blog.doctorID.displayName }}</span>
-                </div>
-                <span><i class="fa-regular fa-calendar me-1"></i> {{ blog.createDT|date:"M d, Y" }}</span>
+      <!-- Category Filters -->
+      <div class="blog-categories">
+        <a href="?" class="blog-cat-pill {% if not category_filter and not search_query %}active{% endif %}">📑 All</a>
+        {% for tag in dynamic_tags %}
+          <a href="?category={{ tag }}" class="blog-cat-pill {% if category_filter == tag %}active{% endif %}">{{ tag }}</a>
+        {% endfor %}
+      </div>
+
+      <!-- Masonry Grid -->
+      {% if blogs %}
+        <div class="masonry-grid">
+          {% for blog in blogs %}
+          <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="masonry-card">
+            <!-- Thumbnail Image -->
+            <div class="masonry-card-img-container">
+              {% if blog.thumbnail %}
+                <img class="masonry-card-img" src="{{ blog.thumbnail.url }}" alt="{{ blog.title }}" onerror="this.src='https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=60';" />
+              {% else %}
+                <img class="masonry-card-img" src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=60" alt="Healthcare" />
+              {% endif %}
+            </div>
+
+            <!-- Content Below Image -->
+            <div class="masonry-card-content">
+              <!-- Topic Title -->
+              <div class="masonry-card-topic">
+                <h3>{{ blog.title }}</h3>
               </div>
-              <div class="read-more-btn">
-                Read Article <i class="fa-solid fa-arrow-right"></i>
+
+              <!-- Doctor Info -->
+              <div class="masonry-card-doctor">
+                {% if blog.doctorID.userID.profilePic %}
+                  <img class="masonry-card-doctor-avatar" src="{{ blog.doctorID.userID.profilePic.url }}" alt="{{ blog.doctorID.displayName }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                  <div class="masonry-card-doctor-avatar-placeholder" style="display:none;">{{ blog.doctorID.displayName|make_list|first|upper }}</div>
+                {% else %}
+                  <div class="masonry-card-doctor-avatar-placeholder">{{ blog.doctorID.displayName|make_list|first|upper }}</div>
+                {% endif %}
+                <div>
+                  <div class="masonry-card-doctor-name">Dr. {{ blog.doctorID.displayName }}</div>
+                  {% if blog.doctorID.subcategoryID %}
+                    <div class="masonry-card-doctor-spec">{{ blog.doctorID.subcategoryID.subcategoryName }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Footer with Badge and Date -->
+              <div class="masonry-card-footer">
+                {% if blog.doctorID.subcategoryID %}
+                  <span class="masonry-card-badge">{{ blog.doctorID.subcategoryID.subcategoryName }}</span>
+                {% endif %}
+                <span class="card-date"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i>{{ blog.createDT|date:"M d, Y" }}</span>
               </div>
             </div>
-          </div>
-        </a>
-        {% endfor %}
+          </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty State -->
+        <div class="blog-empty-state">
+          <i class="fa-solid fa-magnifying-glass-chart"></i>
+          <h3>No articles found</h3>
+          <p>We couldn't find any articles matching your criteria.</p>
+          <a href="?" class="clear-btn">Clear Filters</a>
+        </div>
+      {% endif %}
+
+    </div>
+
+    <!-- ======= RIGHT: SIDEBAR ======= -->
+    <aside class="blog-content-sidebar">
+
+      <!-- Widget: Explore Topics -->
+      <div class="blog-widget">
+        <h3 class="blog-widget-title"><i class="fa-solid fa-tag" style="color: var(--blog-primary);"></i> Explore Topics</h3>
+        <div>
+          {% for tag in dynamic_tags %}
+            <a href="?category={{ tag }}" class="sidebar-topic-item {% if category_filter == tag %}active{% endif %}">
+              <span>{{ tag }}</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
+          {% empty %}
+            <p style="color: var(--blog-muted); font-size: 13px; margin: 0;">No topics available yet.</p>
+          {% endfor %}
+        </div>
       </div>
-    {% else %}
-      <!-- Empty State -->
-      <div class="empty-state">
-        <div class="empty-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
-        <h3 style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">No articles found</h3>
-        <p style="color: var(--cs-text-muted); margin-bottom: 20px;">We couldn't find any articles matching your criteria.</p>
-        <a href="?" style="background: var(--cs-primary); color: white; padding: 10px 24px; border-radius: 9999px; text-decoration: none; font-weight: 500;">Clear Filters</a>
+
+      <!-- Widget: Trending Now -->
+      <div class="blog-widget">
+        <h3 class="blog-widget-title"><i class="fa-solid fa-arrow-trend-up" style="color: var(--blog-secondary);"></i> Trending Now</h3>
+        <div>
+          {% for blog in trending_blogs|slice:":4" %}
+          <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="trending-item">
+            {% if blog.thumbnail %}
+              <img src="{{ blog.thumbnail.url }}" class="trending-item-img" alt="{{ blog.title }}" onerror="this.src='https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=200&auto=format&fit=crop&q=60';" />
+            {% else %}
+              <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=200&auto=format&fit=crop&q=60" class="trending-item-img" alt="{{ blog.title }}" />
+            {% endif %}
+            <div class="trending-item-info">
+              <h4>{{ blog.title }}</h4>
+              <span class="trending-doctor">Dr. {{ blog.doctorID.displayName }}</span>
+              <br />
+              <span class="trending-date"><i class="fa-regular fa-calendar" style="margin-right:3px;"></i>{{ blog.createDT|date:"M d, Y" }}</span>
+            </div>
+          </a>
+          {% empty %}
+            <p style="color: var(--blog-muted); font-size: 13px; margin: 0;">No trending posts found.</p>
+          {% endfor %}
+        </div>
       </div>
-    {% endif %}
+
+    </aside>
 
   </div>
-
-  <!-- ===============================
-       SIDEBAR (RIGHT)
-       =============================== -->
-  <aside class="blog-sidebar">
-    
-    <!-- Widget: Explore Categories -->
-    <div class="widget">
-      <h3 class="widget-title"><i class="fa-solid fa-tag" style="color: var(--cs-primary)"></i> Explore Topics</h3>
-      <ul style="list-style: none; padding: 0; margin: 0;">
-        {% for tag in dynamic_tags %}
-        <li style="margin-bottom: 8px;"><a href="?category={{ tag }}" class="sidebar-topic-link{% if category_filter == tag %} active-sidebar{% endif %}"><span>{{ tag }}</span> <i class="fa-solid fa-chevron-right" style="font-size: 10px; opacity: 0.5;"></i></a></li>
-        {% empty %}
-        <li style="color: var(--cs-text-muted); font-size: 13px;">No topics available yet.</li>
-        {% endfor %}
-      </ul>
-    </div>
-
-
-
-    <!-- Widget: Trending Posts -->
-    <div class="widget">
-      <h3 class="widget-title"><i class="fa-solid fa-arrow-trend-up" style="color: var(--cs-secondary)"></i> Trending Now</h3>
-      <div style="display: flex; flex-direction: column;">
-        {% for blog in trending_blogs|slice:":4" %}
-        <a href="{% url 'doctorPostDetails' blog.doctorPostID %}" class="trending-mini-card">
-          {% if blog.thumbnail %}
-            <img src="{{ blog.thumbnail.url }}" onerror="this.src='/static/images/blog-placeholder.jpg';" class="trending-mini-img" alt="{{ blog.title }}" />
-          {% else %}
-            <img src="/static/images/blog-placeholder.jpg" class="trending-mini-img" alt="{{ blog.title }}" />
-          {% endif %}
-          <div class="trending-mini-info">
-            <h4>{{ blog.title }}</h4>
-            <span class="trending-mini-date"><i class="fa-regular fa-calendar"></i> {{ blog.createDT|date:"M d, Y" }}</span>
-          </div>
-        </a>
-        {% empty %}
-          <p style="color: var(--cs-text-muted); font-size: 13px;">No trending posts found.</p>
-        {% endfor %}
-      </div>
-    </div>
-  </aside>
 
 </div>
 
