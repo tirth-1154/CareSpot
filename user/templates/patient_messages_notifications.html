@@ -269,13 +269,14 @@
   .messages-container {
     display: flex;
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08); /* Bigger card shadow */
     overflow: hidden;
-    height: 600px;
-    min-height: 500px;
+    height: calc(100vh - 80px); /* Full screen chat height */
+    min-height: 600px;
     border: 1px solid #eef2f5;
-    margin-bottom: 30px;
+    margin-top: -20px;
+    margin-bottom: 20px;
   }
 
   /* Left Side: Inbox List */
@@ -588,88 +589,7 @@
   }
 </style>
 
-<div class="container-fluid">
-  <!-- Page Header -->
-  <div
-    class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3"
-  >
-    <div>
-      <h2 class="fw-bold mb-1" style="color: var(--text-primary)">Messages</h2>
-      <p class="text-muted mb-0">
-        Stay updated with appointment alerts, doctor messages, and system
-        notices.
-      </p>
-    </div>
-    <div class="d-flex gap-2">
-      <form
-        action="{% url 'mark_notifications_read' %}"
-        method="POST"
-        class="m-0"
-      >
-        {% csrf_token %}
-        <button type="submit" class="btn btn-outline-primary btn-pill">
-          <i class="fa-solid fa-check-double me-1"></i> Mark All as Read
-        </button>
-      </form>
-    </div>
-  </div>
-
-  {% if not notifications %}
-  <!-- EMPTY STATE -->
-  <div class="premium-card empty-state">
-    <i class="fa-regular fa-bell-slash"></i>
-    <h4 class="fw-bold text-dark">You're all caught up!</h4>
-    <p class="text-muted mb-0">You have no notifications at the moment.</p>
-  </div>
-  {% else %}
-
-  <!-- SUMMARY CARDS -->
-  <div class="row g-4 mb-4">
-    <div class="col-xl-3 col-md-6">
-      <div class="summary-card">
-        <div class="summary-icon primary">
-          <i class="fa-regular fa-bell"></i>
-        </div>
-        <div>
-          <div class="summary-value">{{ notifications.count }}</div>
-          <div class="summary-label">Total Notifications</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-      <div class="summary-card">
-        <div class="summary-icon warning">
-          <i class="fa-regular fa-envelope-open"></i>
-        </div>
-        <div>
-          <div class="summary-value">{{ unread_count }}</div>
-          <div class="summary-label">Unread Alerts</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-      <div class="summary-card">
-        <div class="summary-icon success">
-          <i class="fa-regular fa-calendar-check"></i>
-        </div>
-        <div>
-          <div class="summary-value">{{ notifications.count }}</div>
-          <div class="summary-label">Activity Alerts</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-      <div class="summary-card">
-        <div class="summary-icon info">
-          <i class="fa-solid fa-laptop-medical"></i>
-        </div>
-        <div>
-          <div class="summary-value">1</div>
-          <div class="summary-label">System Notices</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Dashboard Headers removed for fullscreen UI -->
 
   <div class="row g-4">
     <!-- LEFT COLUMN: TABS & FILTER -->
@@ -1055,6 +975,18 @@
                   </div>
                 </div>
 
+                <!-- Hidden File Input -->
+                <input type="file" id="fileInput" multiple class="d-none">
+
+                <!-- Selected Files Preview -->
+                <div class="px-4" id="filePreviewContainer" style="display: none; background: #fdfdfd; border-bottom: 1px solid #eef2f5;">
+                    <div class="d-flex justify-content-between align-items-center pt-3 pb-2">
+                        <span class="small fw-bold" id="fileCountText">Files ready to send (0)</span>
+                        <button type="button" id="clearFilesBtn" class="btn btn-link text-danger p-0 text-decoration-none" style="font-size: 13px;">Clear all</button>
+                    </div>
+                    <div class="row g-2 pb-3" id="fileList"></div>
+                </div>
+
                 <!-- Chat Messages Log -->
                 <div class="chat-messages d-flex flex-column" id="chatLog">
                   <!-- Messages loaded via AJAX -->
@@ -1080,7 +1012,7 @@
                       >
                         <i class="fa-regular fa-face-smile"></i>
                       </button>
-                      <button type="button" class="chat-input-btn" title="Send Attachment">
+                      <button type="button" class="chat-input-btn" title="Send Attachment" onclick="document.getElementById('fileInput').click()">
                         <i class="fa-solid fa-paperclip"></i>
                       </button>
                       <input
@@ -1192,6 +1124,105 @@
     const chatMessageInput = document.getElementById("chatMessageInput");
     const patientChatForm = document.getElementById("patientChatForm");
 
+    const fileInput = document.getElementById('fileInput');
+    const filePreviewContainer = document.getElementById('filePreviewContainer');
+    const fileList = document.getElementById('fileList');
+    const fileCountText = document.getElementById('fileCountText');
+    const clearFilesBtn = document.getElementById('clearFilesBtn');
+    let uploadedFiles = [];
+
+    // Drag and Drop Events on Container
+    const container = document.querySelector('.messages-container');
+    if (container) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          container.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+          container.addEventListener(eventName, () => {
+              activeChatArea.style.opacity = '0.6';
+              activeChatArea.style.backgroundColor = 'rgba(13, 110, 253, 0.05)';
+          }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+          container.addEventListener(eventName, () => {
+              activeChatArea.style.opacity = '1';
+              activeChatArea.style.backgroundColor = '#fff';
+          }, false);
+      });
+
+      container.addEventListener('drop', handleDrop, false);
+    }
+    
+    fileInput.addEventListener('change', function() { handleFiles(this.files); });
+
+    function handleDrop(e) {
+        let dt = e.dataTransfer;
+        let files = dt.files;
+        handleFiles(files);
+    }
+
+    function handleFiles(files) {
+        const newFiles = Array.from(files).map(file => ({
+            id: Date.now() + Math.random(),
+            file: file,
+            name: file.name,
+            size: formatFileSize(file.size)
+        }));
+        uploadedFiles = [...uploadedFiles, ...newFiles];
+        updateFileUI();
+    }
+
+    function removeFile(id) {
+        uploadedFiles = uploadedFiles.filter(f => f.id !== id);
+        updateFileUI();
+    }
+
+    if (clearFilesBtn) {
+      clearFilesBtn.addEventListener('click', () => {
+          uploadedFiles = [];
+          fileInput.value = '';
+          updateFileUI();
+      });
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'], i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function updateFileUI() {
+        if (uploadedFiles.length > 0) {
+            filePreviewContainer.style.display = 'block';
+            fileCountText.textContent = `Files ready to send (${uploadedFiles.length})`;
+            fileList.innerHTML = '';
+            uploadedFiles.forEach(f => {
+                const div = document.createElement('div');
+                div.className = 'col-sm-6 col-md-4';
+                div.innerHTML = `
+                    <div class="d-flex align-items-center p-2 rounded border bg-light">
+                        <i class="fa-solid fa-file text-muted me-2"></i>
+                        <div class="flex-grow-1 overflow-hidden" style="min-width: 0;">
+                            <div class="text-truncate small fw-bold">${f.name}</div>
+                            <div class="text-muted" style="font-size: 11px;">${f.size}</div>
+                        </div>
+                        <button type="button" class="btn btn-link text-danger p-0 ms-2" onclick="removeFile(${f.id})"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                `;
+                fileList.appendChild(div);
+            });
+        } else {
+            filePreviewContainer.style.display = 'none';
+        }
+    }
+    
+    // Make removeFile globally accessible
+    window.removeFile = removeFile;
+
     function loadPatientChat(partnerId) {
       fetch(`/ajax/get_chat_history/?partner_id=${partnerId}`)
         .then((response) => response.json())
@@ -1222,9 +1253,36 @@
               const bubble = document.createElement("div");
               bubble.className = `message-bubble ${msg.is_sent ? "sent" : "received"}`;
 
+              let attachmentHtml = '';
+              if (msg.attachment_url) {
+                  const isImage = msg.attachment_name.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                  if (isImage) {
+                      attachmentHtml = `
+                          <div class="attachment-preview mb-2">
+                              <a href="${msg.attachment_url}" target="_blank">
+                                  <img src="${msg.attachment_url}" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                              </a>
+                          </div>
+                      `;
+                  } else {
+                      attachmentHtml = `
+                          <div class="attachment-file mb-2">
+                              <a href="${msg.attachment_url}" target="_blank" class="d-flex align-items-center p-2 rounded border bg-light text-decoration-none">
+                                  <i class="fa-solid fa-file-arrow-down me-2 fs-4" style="color: var(--primary-color);"></i>
+                                  <div class="overflow-hidden">
+                                      <div class="small fw-bold text-dark text-truncate">${msg.attachment_name}</div>
+                                      <div class="text-muted" style="font-size: 10px;">Click to open</div>
+                                  </div>
+                              </a>
+                          </div>
+                      `;
+                  }
+              }
+
               bubble.innerHTML = `
                             <div class="bubble-content">
-                                ${msg.message}
+                                ${attachmentHtml}
+                                ${msg.message ? `<div>${msg.message}</div>` : ''}
                             </div>
                             <div class="bubble-time-small">
                                 ${msg.time} 
@@ -1263,11 +1321,15 @@
       const message = chatMessageInput.value.trim();
       const receiverId = chatReceiverIdInput.value;
 
-      if (!message || !receiverId) return;
+      // Must have at least a message or an attachment
+      if (!message && uploadedFiles.length === 0) return;
 
       const formData = new FormData();
       formData.append("receiver_id", receiverId);
       formData.append("message", message);
+      uploadedFiles.forEach(f => {
+          formData.append('attachments', f.file);
+      });
       formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
 
       fetch("/ajax/send_message/", {
@@ -1278,6 +1340,11 @@
         .then((data) => {
           if (data.status === "success") {
             chatMessageInput.value = "";
+            // Clear files
+            uploadedFiles = [];
+            if (fileInput) fileInput.value = '';
+            updateFileUI();
+            
             loadPatientChat(receiverId); // Reload chat to show new message
           }
         });
@@ -1320,7 +1387,7 @@
       }
     }
   </script>
-  {% endif %}
+  {% comment %} {% endif %} {% endcomment %}
 </div>
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 <script>

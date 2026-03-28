@@ -308,15 +308,18 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm"
                                 aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="{% url 'doctorDashboard' %}"><i
-                                            class="fa-solid fa-chart-line me-2"></i> Dashboard</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'doctorUpdateProfile' %}">
+                                        <i class="fa-solid fa-gear"></i> Settings
+                                    </a>
+                                </li>
                                 <li><a class="dropdown-item" href="{% url 'doctorProfile' %}"><i
                                             class="fa-regular fa-user me-2"></i> Profile</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
-                                            class="fa-solid fa-arrow-right-from-bracket me-2"></i> Logout</a></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -354,12 +357,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% block sidebar_nav_appointments %}{% endblock %}"
-                                href="{% url 'doctorAppointments' %}">
-                                <i class="fa-solid fa-calendar-check"></i> My Appointments
-                            </a>
-                            <a class="nav-link {% block sidebar_nav_schedule %}{% endblock %}"
                                 href="{% url 'doctorSetSchedule' %}">
-                                <i class="fa-solid fa-clock"></i> Set Schedule
+                                <i class="fa-solid fa-calendar-check"></i> My Appointments
                             </a>
                             <a class="nav-link {% block sidebar_nav_patients %}{% endblock %}"
                                 href="{% url 'doctorTotalPatients' %}">
@@ -381,20 +380,6 @@
                             <a class="nav-link {% block sidebar_nav_reviews %}{% endblock %}"
                                 href="{% url 'doctorReviews' %}">
                                 <i class="fa-solid fa-star-half-stroke"></i> Reviews
-                            </a>
-                        </li>
-
-                        <li class="nav-item mt-3 mb-2 px-4 text-uppercase fs-7 fw-bold text-secondary">Account</li>
-
-                        <li class="nav-item">
-                            <a class="nav-link {% block sidebar_nav_settings %}{% endblock %}"
-                                href="{% url 'doctorUpdateProfile' %}">
-                                <i class="fa-solid fa-gear"></i> Settings
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-danger" href="{% url 'logout' %}">
-                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
                             </a>
                         </li>
                     </ul>

@@ -775,103 +775,75 @@ def acceptAppointment(request, id):
     
     appointment = tblAppointment.objects.filter(appointmentID=id).first()
     if appointment:
-        appointment.isAccepted = True
-        appointment.isRejected = False
-        appointment.save()
-        
-        # Define variables first (needed for both Meet email and notification)
-        doctor = appointment.doctorID
-        patient_user = appointment.clientID.userID
-        app_date = appointment.appointmentDate.strftime("%b %d, %Y")
-        app_time = appointment.appointmentTime.strftime("%I:%M %p")
-        
-        # Generate Meet link and send Email if mode is online
-        if appointment.mode == 'online':
-            import string
-            # Generate unique Jitsi Meet room (works instantly - no API needed)
-            def get_random_string(length):
-                return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
-            room_id = f"CareSpot-{doctor.displayName.replace(' ', '')}-{appointment.appointmentID}-{get_random_string(6)}"
-            meet_link = f"https://meet.jit.si/{room_id}"
-            appointment.meetLink = meet_link
-            appointment.save()
+        # Define internal function to reuse logic
+        _process_appointment_acceptance(appointment)
+        messages.success(request, f"Appointment for {appointment.clientID.name} accepted.")
+    
+    return redirect(request.META.get('HTTP_REFERER', 'doctorDashboard'))
 
-            # Prepare Email
-            subject = f"Online Appointment Confirmed - CareSpot"
-            
-            # Plain text fallback
-            email_msg = f"Hello,\n\nYour online appointment has been confirmed.\n\n"
-            email_msg += f"Date: {app_date}\nTime: {app_time}\n"
-            email_msg += f"Doctor: Dr. {doctor.displayName}\nPatient: {appointment.clientID.name}\n\n"
-            email_msg += f"Join your video consultation here:\n{meet_link}\n\n"
-            email_msg += f"Please join the meeting at or just before the scheduled time.\nBoth doctor and patient should click the same link to connect.\n\n"
-            email_msg += f"Thank you,\nCareSpot Team"
-            
-            # HTML Email Body
-            html_message = f"""
-            <html>
-            <body style="font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 20px;">
-                <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                    <div style="background-color: #0d6efd; color: white; padding: 20px; text-align: center;">
-                        <h2 style="margin: 0; font-size: 24px;">CareSpot</h2>
-                        <p style="margin: 5px 0 0; opacity: 0.9;">Online Consultation Confirmed</p>
+def _process_appointment_acceptance(appointment):
+    appointment.isAccepted = True
+    appointment.isRejected = False
+    appointment.save()
+    
+    doctor = appointment.doctorID
+    patient_user = appointment.clientID.userID
+    app_date = appointment.appointmentDate.strftime("%b %d, %Y")
+    app_time = appointment.appointmentTime.strftime("%I:%M %p")
+    
+    # Generate Meet link and send Email if mode is online
+    if appointment.mode == 'online':
+        import string
+        # Generate unique Jitsi Meet room
+        def get_random_string(length):
+            return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+        room_id = f"CareSpot-{doctor.displayName.replace(' ', '')}-{appointment.appointmentID}-{get_random_string(6)}"
+        meet_link = f"https://meet.jit.si/{room_id}"
+        appointment.meetLink = meet_link
+        appointment.save()
+
+        # Prepare Email
+        subject = f"Online Appointment Confirmed - CareSpot"
+        
+        # HTML Email Body
+        html_message = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <div style="background-color: #0d6efd; color: white; padding: 20px; text-align: center;">
+                    <h2 style="margin: 0; font-size: 24px;">CareSpot</h2>
+                    <p style="margin: 5px 0 0; opacity: 0.9;">Online Consultation Confirmed</p>
+                </div>
+                <div style="padding: 30px;">
+                    <p style="font-size: 16px; color: #333;">Hello,</p>
+                    <p style="font-size: 16px; color: #333; line-height: 1.5;">Your online video consultation has been confirmed.</p>
+                    <div style="background-color: #f8fbff; border-left: 4px solid #0d6efd; padding: 15px; margin: 25px 0; border-radius: 4px;">
+                        <p style="margin: 0; font-size: 15px;"><strong>Date:</strong> {app_date} at {app_time}</p>
+                        <p style="margin: 0; font-size: 15px;"><strong>Doctor:</strong> {doctor.displayName}</p>
                     </div>
-                    
-                    <div style="padding: 30px;">
-                        <p style="font-size: 16px; color: #333;">Hello,</p>
-                        <p style="font-size: 16px; color: #333; line-height: 1.5;">Your online video consultation has been successfully scheduled and confirmed.</p>
-                        
-                        <div style="background-color: #f8fbff; border-left: 4px solid #0d6efd; padding: 15px; margin: 25px 0; border-radius: 4px;">
-                            <p style="margin: 0 0 10px; font-size: 15px;"><strong>Patient:</strong> {appointment.clientID.name}</p>
-                            <p style="margin: 0 0 10px; font-size: 15px;"><strong>Doctor:</strong> {doctor.displayName}</p>
-                            <p style="margin: 0 0 10px; font-size: 15px;"><strong>Date:</strong> {app_date}</p>
-                            <p style="margin: 0; font-size: 15px;"><strong>Time:</strong> {app_time}</p>
-                        </div>
-                        
-                        <div style="text-align: center; margin: 35px 0;">
-                            <a href="{meet_link}" style="background-color: #198754; color: white; padding: 14px 28px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px; display: inline-block;">
-                                Join Video Meeting
-                            </a>
-                            <p style="margin-top: 15px; font-size: 13px; color: #6c757d;">Or copy this link: <br>{meet_link}</p>
-                        </div>
-                        
-                        <p style="font-size: 14px; color: #666; line-height: 1.5;"><strong>Instructions:</strong><br>Please join the meeting at or just before the scheduled time. Both the doctor and patient will use the same link to connect.</p>
-                        
-                    </div>
-                    
-                    <div style="background-color: #f8f9fa; padding: 15px; text-align: center; border-top: 1px solid #eee;">
-                        <p style="margin: 0; font-size: 13px; color: #999;">Thank you for using CareSpot.</p>
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="{meet_link}" style="background-color: #198754; color: white; padding: 14px 28px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px; display: inline-block;">
+                            Join Video Meeting
+                        </a>
                     </div>
                 </div>
-            </body>
-            </html>
-            """
-            
-            try:
-                # Send to both Doctor and Patient
-                recipient_list = [doctor.userID.email, patient_user.email]
-                send_mail(
-                    subject,
-                    email_msg,
-                    settings.EMAIL_HOST_USER,
-                    recipient_list,
-                    fail_silently=True,
-                    html_message=html_message
-                )
-            except Exception as e:
-                print(f"Failed to send email: {e}")
-                
-        # Create a notification for the patient
-        message = f"Dr. {doctor.displayName} accepted your appointment on {app_date} at {app_time}."
+            </div>
+        </body>
+        </html>
+        """
         
-        tblnotification.objects.create(
-            userID=patient_user,
-            senderID=doctor.userID.userID,
-            message=message,
-            isRead=False
-        )
-    
-    return redirect('doctorAppointments')
+        try:
+            send_mail(subject, "", settings.EMAIL_HOST_USER, [doctor.userID.email, patient_user.email], fail_silently=True, html_message=html_message)
+        except Exception as e:
+            print(f"Failed to send email: {e}")
+            
+    # Create notification
+    tblnotification.objects.create(
+        userID=patient_user,
+        senderID=doctor.userID.userID,
+        message=f"Dr. {doctor.displayName} accepted your appointment on {app_date} at {app_time}.",
+        isRead=False
+    )
 
 def rejectAppointment(request, id):
     if 'doctorID' not in request.session:
@@ -879,24 +851,26 @@ def rejectAppointment(request, id):
     
     appointment = tblAppointment.objects.filter(appointmentID=id).first()
     if appointment:
-        appointment.isAccepted = False
-        appointment.isRejected = True
-        appointment.save()
-
-        # Create a notification for the patient
-        doctor = appointment.doctorID
-        patient_user = appointment.clientID.userID
-        app_date = appointment.appointmentDate.strftime("%b %d, %Y")
-        message = f"{doctor.displayName} rejected your appointment request for {app_date}."
-        
-        tblnotification.objects.create(
-            userID=patient_user,
-            senderID=doctor.userID.userID,
-            message=message,
-            isRead=False
-        )
+        _process_appointment_rejection(appointment)
+        messages.success(request, f"Appointment for {appointment.clientID.name} rejected.")
     
-    return redirect('doctorAppointments')
+    return redirect(request.META.get('HTTP_REFERER', 'doctorDashboard'))
+
+def _process_appointment_rejection(appointment):
+    appointment.isAccepted = False
+    appointment.isRejected = True
+    appointment.save()
+
+    doctor = appointment.doctorID
+    patient_user = appointment.clientID.userID
+    app_date = appointment.appointmentDate.strftime("%b %d, %Y")
+    
+    tblnotification.objects.create(
+        userID=patient_user,
+        senderID=doctor.userID.userID,
+        message=f"{doctor.displayName} rejected your appointment request for {app_date}.",
+        isRead=False
+    )
 
 def patientDashboard(request):
     if 'user_id' not in request.session:
@@ -1428,25 +1402,44 @@ def send_message(request):
             
         sender_id = request.session['user_id']
         receiver_id = request.POST.get('receiver_id')
-        message_text = request.POST.get('message')
+        message_text = request.POST.get('message', '').strip()
+        attachments = request.FILES.getlist('attachments')
         
-        if not receiver_id or not message_text:
+        if not receiver_id:
+            return JsonResponse({'status': 'error', 'message': 'Missing receiver'}, status=400)
+        
+        # Must have at least a message or an attachment
+        if not message_text and not attachments:
             return JsonResponse({'status': 'error', 'message': 'Missing data'}, status=400)
-            
-        # Save chat message
-        tblchat.objects.create(
-            senderID=sender_id,
-            receiverID=receiver_id,
-            message=message_text,
-            isRead=False
-        )
         
-        # Create notification for receiver
         sender_user = tblUser.objects.filter(userID=sender_id).first()
         receiver_user = tblUser.objects.filter(userID=receiver_id).first()
         
+        if attachments:
+            # Create one chat entry per attachment
+            for att in attachments:
+                tblchat.objects.create(
+                    senderID=sender_id,
+                    receiverID=receiver_id,
+                    message=message_text if att == attachments[-1] else '',
+                    attachment=att,
+                    isRead=False
+                )
+        else:
+            # Text-only message
+            tblchat.objects.create(
+                senderID=sender_id,
+                receiverID=receiver_id,
+                message=message_text,
+                isRead=False
+            )
+        
+        # Create notification for receiver
         if receiver_user and sender_user:
-            notif_message = f"New message from {sender_user.userName}: '{message_text[:30]}...'"
+            if message_text:
+                notif_message = f"New message from {sender_user.userName}: '{message_text[:30]}...'"
+            else:
+                notif_message = f"New message from {sender_user.userName}: 📎 Sent an attachment"
             tblnotification.objects.create(
                 userID=receiver_user,
                 senderID=sender_id,
@@ -1536,14 +1529,17 @@ def get_chat_history(request):
     # Mark messages as read if receiver is current user
     chats.filter(receiverID=user_id, isRead=False).update(isRead=True)
     
-    messages = []
+    messages_list = []
     for chat in chats:
-        messages.append({
+        msg_data = {
             'sender_id': str(chat.senderID),
             'message': chat.message,
             'time': timezone.localtime(chat.createdDT).strftime("%b %d, %Y %I:%M %p"),
-            'is_sent': str(chat.senderID) == str(user_id)
-        })
+            'is_sent': str(chat.senderID) == str(user_id),
+            'attachment_url': chat.attachment.url if chat.attachment else None,
+            'attachment_name': chat.attachment.name.split('/')[-1] if chat.attachment else None,
+        }
+        messages_list.append(msg_data)
     
     # Check if partner is a doctor to provide profile link
     doctor = tblDoctor.objects.filter(userID=partner).first()
@@ -1558,7 +1554,7 @@ def get_chat_history(request):
             'profile_pic': partner.profilePic.url if partner.profilePic else 'https://ui-avatars.com/api/?name=' + partner.userName,
             'is_online': bool(partner.last_seen and timezone.now() - partner.last_seen < timedelta(minutes=1))
         },
-        'messages': messages,
+        'messages': messages_list,
         'current_user_id': user_id
     })
 
@@ -1719,13 +1715,15 @@ def patientBlogs(request):
         followed = tblFollow.objects.filter(userID=user).values_list('doctorID', flat=True)
         if followed.exists():
             is_following_anyone = True
-            blogs = tblDoctorPost.objects.filter(doctorID__in=followed).order_by('-createDT')
+            # Shuffle order for the 'shuffle style' requested by the user
+            blogs = tblDoctorPost.objects.filter(doctorID__in=followed).order_by('?')
         else:
             is_following_anyone = False
             blogs = tblDoctorPost.objects.none()
     else:
         # Doctors or non-logged-in users see all blogs
-        blogs = tblDoctorPost.objects.all().order_by('-createDT')
+        # Shuffle order for the 'shuffle style' requested by the user
+        blogs = tblDoctorPost.objects.all().order_by('?')
 
     # --- Dynamic Category Tags from all blog posts ---
     # Get unique subcategory names from ALL blog posts (not filtered)
@@ -1784,7 +1782,7 @@ def patientBlogs(request):
         'category_filter': category_filter,
     }
     return render(request, 'patient_blogs.html', data)
-
+    
 def doctorSchedule(request):
     if 'doctorID' not in request.session:
         return redirect('Login')
@@ -1812,7 +1810,10 @@ def doctorSchedule(request):
                     'is_available': is_available,
                 }
             )
-        return redirect('doctorSchedule')
+        next_url = request.POST.get('next', '') or request.GET.get('next', '')
+        if next_url == 'doctorSetSchedule':
+            return redirect('doctorSetSchedule')
+        return redirect('doctorDashboard')
     
     # GET: load existing schedule
     existing_schedule = tblDoctorSchedule.objects.filter(doctorID=doctor).order_by('day_of_week')
@@ -2122,9 +2123,30 @@ def doctorViewPatientProfile(request, id):
     # Reports (client history)
     reports = tblclientHistory.objects.filter(clientID=client, doctorID=doctor).order_by('-createdDT')
     
-    # Categorized appointments
-    upcoming_appointments = appointments.filter(appointmentDate__gte=timezone.now().date(), isAccepted=True)
-    completed_appointments = appointments.filter(appointmentDate__lt=timezone.now().date(), isAccepted=True)
+    # Precise status categorization based on real-time
+    from datetime import datetime
+    current_dt = timezone.now()
+    
+    for apt in appointments:
+        # Combine date and time (assuming the database values are naive or in same TZ)
+        # Using make_aware to ensure we can compare with timezone.now()
+        apt_dt = timezone.make_aware(datetime.combine(apt.appointmentDate, apt.appointmentTime))
+        
+        if apt.isRejected:
+            apt.status_label = "Rejected"
+            apt.status_class = "rejected"
+        elif not apt.isAccepted:
+            apt.status_label = "Pending"
+            apt.status_class = "pending"
+        elif apt_dt < current_dt:
+            apt.status_label = "Completed"
+            apt.status_class = "completed"
+        else:
+            apt.status_label = "Accepted"
+            apt.status_class = "accepted"
+
+    upcoming_appointments = [a for a in appointments if a.status_label == "Accepted"]
+    completed_appointments = [a for a in appointments if a.status_label == "Completed"]
     
     data = {
         'doctor': doctor,
@@ -2138,6 +2160,27 @@ def doctorViewPatientProfile(request, id):
     }
     return render(request, 'doctor_view_patient_profile.html', data)
 
+
+def updateAppointmentStatusAjax(request):
+    if 'doctorID' not in request.session:
+        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
+    
+    if request.method == 'POST':
+        appointment_id = request.POST.get('appointment_id')
+        action = request.POST.get('action')
+        try:
+            # Ensure the appointment belongs to this doctor
+            doctor_id = request.session['doctorID']
+            appointment = tblAppointment.objects.get(appointmentID=appointment_id, doctorID=doctor_id)
+            if action == 'accept':
+                _process_appointment_acceptance(appointment)
+            else:
+                _process_appointment_rejection(appointment)
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error'}, status=400)
+
 def doctorSetSchedule(request):
     if 'doctorID' not in request.session:
         return redirect('Login')
@@ -2145,8 +2188,49 @@ def doctorSetSchedule(request):
     doctor_id = request.session['doctorID']
     doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
     
-    # For now, it's a static display as requested for the UI
+    # Fetch all appointments for this doctor
+    appointments = tblAppointment.objects.filter(doctorID=doctor_id).order_by('appointmentDate', 'appointmentTime')
+    
+    appointments_list = []
+    pending_list = []
+    
+    for a in appointments:
+        profile_url = ''
+        try:
+            if a.clientID.userID.profilePic:
+                profile_url = a.clientID.userID.profilePic.url
+        except:
+            pass
+        
+        if a.isAccepted and a.appointmentDate < date.today():
+            status = 'Completed'
+        elif a.isAccepted:
+            status = 'Accepted'
+        elif a.isRejected:
+            status = 'Rejected'
+        else:
+            status = 'Pending'
+        
+        appt_data = {
+            'id': a.appointmentID,
+            'date': a.appointmentDate.isoformat(),
+            'time': a.appointmentTime.strftime('%I:%M %p'),
+            'patient': a.clientID.name,
+            'status': status,
+            'mode': a.mode,
+            'profile': profile_url,
+        }
+        
+        appointments_list.append(appt_data)
+        
+        # Add to pending list if truly pending and not in the past
+        if status == 'Pending' and a.appointmentDate >= date.today():
+            pending_list.append(appt_data)
+    
+    import json
     data = {
         'doctor': doctor,
+        'appointments_json': json.dumps(appointments_list),
+        'pending_json': json.dumps(pending_list),
     }
     return render(request, 'doctor_set_schedule.html', data)

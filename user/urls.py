@@ -57,6 +57,7 @@ urlpatterns = [
     # path('ajax/get_doctor_fees/', views.get_doctor_fees, name='get_doctor_fees'),
     path('api/doctors/', views.get_doctors_api, name='get_doctors_api'),
     path('api/blogs/', views.get_blogs_api, name='get_blogs_api'),
+    path('ajax/update_appointment_status/', views.updateAppointmentStatusAjax, name='updateAppointmentStatusAjax'),
     
     #payment urls
     path('payment/<int:appointment_id>/', views.paymentPage, name='paymentPage'),

@@ -212,12 +212,18 @@
     }
     .apt-table tr:last-child td { border-bottom: none; }
 
-    .payment-status {
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
         font-weight: 600;
-        font-size: 13px;
+        display: inline-block;
+        text-transform: capitalize;
     }
-    .status-pending { color: #F59E0B; }
-    .status-complete { color: #10B981; }
+    .status-badge.accepted { background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
+    .status-badge.pending { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+    .status-badge.rejected { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+    .status-badge.completed { background: #E0F2FE; color: #075985; border: 1px solid #BAE6FD; }
 
     .btn-action-more {
         background: none;
@@ -266,7 +272,7 @@
                 </div>
                 <div class="stat-item">
                     <span class="stat-val">₹{{ total_payment }}</span>
-                    <span class="stat-label">Payment made</span>
+                    <span class="stat-label">Total Payment</span>
                 </div>
             </div>
 
@@ -296,18 +302,18 @@
                 </div>
                 <div class="info-group">
                     <label>Zip Code</label>
-                    <p>{{ client.userID.zipCode|default:"E18 4BR" }}</p>
+                    <p>{{ client.userID.zipCode|default:"-" }}</p>
                 </div>
                 <div class="info-group">
                     <label>Address</label>
-                    <p>{{ client.address }}</p>
+                    <p>{{ client.address|default:"Not specified" }}</p>
                 </div>
                 <div class="info-group">
-                    <label>Member Status</label>
-                    <p class="text-success">Active</p>
+                    <label>Blood Group</label>
+                    <p class="text-danger">{{ client.bloodGroup|default:"-" }}</p>
                 </div>
                 <div class="info-group">
-                    <label>Register Date</label>
+                    <label>Member Since</label>
                     <p>{{ client.userID.registrationDT|date:"d M, Y" }}</p>
                 </div>
             </div>
@@ -316,24 +322,23 @@
         <!-- Reports Card -->
         <div class="card-premium card-reports">
             <div class="card-header-flex">
-                <h3>Reports</h3>
-                <a href="{% url 'doctorCaseStudy' client.clientID %}" class="add-link">+ Add Reports</a>
+                <h3>Clinical Reports</h3>
+                <a href="{% url 'doctorCaseStudy' client.clientID %}" class="add-link">+ Add Report</a>
             </div>
             <div class="report-list">
                 {% for report in reports %}
                 <div class="report-item">
                     <div class="report-info">
-                        <span class="report-name">{{ report.title|default:"Clinical Report" }}</span>
+                        <span class="report-name">{{ report.diagnosis|truncatechars:30|default:"Clinical Record" }}</span>
                         <span class="report-date">Date - {{ report.createdDT|date:"d M, Y" }}</span>
                     </div>
                     <div class="report-actions">
-                        <a href="#" class="action-icon" title="View"><i class="fa-solid fa-eye"></i></a>
-                        <a href="#" class="action-icon" title="Download"><i class="fa-solid fa-download"></i></a>
+                        <a href="{% url 'doctorCaseStudy' client.clientID %}" class="action-icon" title="View"><i class="fa-solid fa-eye"></i></a>
                     </div>
                 </div>
                 {% empty %}
                 <div class="text-center py-4 text-muted" style="font-size: 13px;">
-                    No reports found.
+                    No clinical reports found for this patient.
                 </div>
                 {% endfor %}
             </div>
@@ -342,56 +347,47 @@
 
     <!-- Appointment Section -->
     <div class="section-title-flex">
-        <h2>Appointment</h2>
-        <a href="{% url 'doctorSetSchedule' %}" class="add-link">+ Add Appointment</a>
+        <h2>Appointment History</h2>
     </div>
 
     <div class="card-premium">
         <div class="tabs-nav">
-            <div class="tab-link active" onclick="switchAptTab('all', this)">All Appointment</div>
-            <div class="tab-link" onclick="switchAptTab('upcoming', this)">Upcoming</div>
+            <div class="tab-link active" onclick="switchAptTab('all', this)">All History</div>
+            <div class="tab-link" onclick="switchAptTab('accepted', this)">Upcoming</div>
             <div class="tab-link" onclick="switchAptTab('completed', this)">Completed</div>
         </div>
 
-        <div id="all-apts" class="apt-content">
+        <div id="apt-container" class="apt-content">
             <table class="apt-table">
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Treatment Type</th>
-                        <th>Booking Time</th>
-                        <th>Comments</th>
-                        <th>Payment</th>
-                        <th>Action</th>
+                        <th>Type</th>
+                        <th>Time</th>
+                        <th>Notes</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for apt in appointments %}
-                    <tr class="apt-row" data-type="{% if apt in upcoming_appointments %}upcoming{% else %}completed{% endif %}">
+                    <tr class="apt-row" data-type="{{ apt.status_class }}">
                         <td>{{ apt.appointmentDate|date:"d M, Y" }}</td>
-                        <td>{{ apt.mode|title }} checkup</td>
+                        <td>{{ apt.mode|title }} Consultation</td>
                         <td>{{ apt.appointmentTime|time:"g.i a" }}</td>
                         <td>
                             {% if apt.clientID.description %}
-                            <a href="#" class="add-link" title="{{ apt.clientID.description }}">See Comment</a>
+                            <span class="text-muted" title="{{ apt.clientID.description }}">{{ apt.clientID.description|truncatechars:20 }}</span>
                             {% else %}
-                            <span class="text-muted">No Comments</span>
+                            <span class="text-muted">No Notes</span>
                             {% endif %}
                         </td>
                         <td>
-                            {% if apt.payment.paymentStatus == 'paid' %}
-                                <span class="payment-status status-complete">Complete</span>
-                            {% else %}
-                                <span class="payment-status status-pending">Pending</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <button class="btn-action-more"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <span class="status-badge {{ apt.status_class }}">{{ apt.status_label }}</span>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">No appointments found.</td>
+                        <td colspan="6" class="text-center py-5 text-muted">No appointments recorded.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -148,6 +148,7 @@ class tblchat(models.Model):
     senderID=models.IntegerField()
     receiverID=models.IntegerField()
     message=models.TextField(max_length=500)
+    attachment=models.FileField(upload_to='chat_attachments/', null=True, blank=True)
     createdDT=models.DateTimeField(auto_now_add=True)
     isRead=models.BooleanField(default=False)   
     def __str__(self):

@@ -142,6 +142,7 @@
 
         <form method="POST">
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
 
             {% for day in schedule_data %}
             <div class="day-row {% if day.is_available %}available{% endif %}" id="dayRow_{{ day.day_index }}">

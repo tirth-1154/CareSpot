@@ -159,6 +159,27 @@
     }
     .view-all-link:hover { background: rgba(15,109,182,0.14); color: #0F6DB6; }
 
+    .btn-set-schedule {
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff !important;
+        text-decoration: none !important;
+        background: #0F6DB6;
+        padding: 6px 14px;
+        border-radius: 20px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 10px rgba(15, 109, 182, 0.25);
+        display: inline-flex;
+        align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .btn-set-schedule:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(15, 109, 182, 0.35);
+        background: #1590c8;
+    }
+
     /* ---------- Premium Tables ---------- */
     .dash-table-container {
         overflow-x: auto;
@@ -715,6 +736,7 @@
             <div class="dashboard-box h-100">
                 <div class="box-header">
                     <h3><i class="fa-solid fa-business-time"></i> Weekly Schedule</h3>
+                    <a href="{% url 'doctorSchedule' %}" class="btn-set-schedule"><i class="fa-solid fa-plus me-1"></i>Set Schedule</a>
                 </div>
                 {% if weekly_schedule %}
                 <div class="schedule-grid">

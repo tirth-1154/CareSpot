@@ -5,9 +5,13 @@
 
 {% block css %}
 <style>
+    :root {
+        --primary-color: #229FDF !important;
+    }
+    
     /* Messages Dashboard UI Improvements */
     .dashboard-headline {
-        margin-bottom: 30px;
+        margin-bottom: 15px;
     }
     
     .dashboard-headline h3 {
@@ -27,13 +31,14 @@
     .messages-container {
         display: flex;
         background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08); /* Bigger card shadow */
         overflow: hidden;
-        height: calc(100vh - 250px);
-        min-height: 500px;
+        height: calc(100vh - 60px); /* Full screen chat height */
+        min-height: 600px;
         border: 1px solid #eef2f5;
-        margin-bottom: 30px;
+        margin-top: -30px; /* Pull up to fill gap after removing headline */
+        margin-bottom: 20px;
     }
 
     /* Left Side: Inbox List */
@@ -385,11 +390,7 @@
 {% block content %}
 
 <div class="container-fluid p-0">
-    <!-- Dashboard Headline -->
-    <div class="dashboard-headline">
-        <h3>Inbox & Messages</h3>
-        <p class="subtitle mt-2">Communicate securely with your patients and answer health inquiries.</p>
-    </div>
+    <!-- Dashboard Headline removed for fullscreen UI -->
 
     <!-- Main Messages Layout -->
     <div class="messages-container">
@@ -448,6 +449,18 @@
                 </div>
             </div>
 
+            <!-- Hidden File Input -->
+            <input type="file" id="fileInput" multiple class="d-none">
+
+            <!-- Selected Files Preview -->
+            <div class="px-4" id="filePreviewContainer" style="display: none; background: #fdfdfd; border-bottom: 1px solid #eef2f5;">
+                <div class="d-flex justify-content-between align-items-center pt-3 pb-2">
+                    <span class="small fw-bold" id="fileCountText">Files ready to send (0)</span>
+                    <button type="button" id="clearFilesBtn" class="btn btn-link text-danger p-0 text-decoration-none" style="font-size: 13px;">Clear all</button>
+                </div>
+                <div class="row g-2 pb-3" id="fileList"></div>
+            </div>
+
             <!-- Chat Messages Log -->
             <div class="chat-messages d-flex flex-column" id="chatLog">
                 <!-- Messages will be loaded here -->
@@ -464,7 +477,7 @@
                         <button type="button" class="chat-input-btn" id="emojiToggle" title="Add Emoji">
                             <i class="fa-regular fa-face-smile"></i>
                         </button>
-                        <button type="button" class="chat-input-btn" title="Send Attachment">
+                        <button type="button" class="chat-input-btn" title="Send Attachment" onclick="document.getElementById('fileInput').click()">
                             <i class="fa-solid fa-paperclip"></i>
                         </button>
                         
@@ -503,6 +516,103 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageInput = document.getElementById('messageInput');
     const chatForm = document.getElementById('chatForm');
 
+    // File Upload Variables
+    const fileInput = document.getElementById('fileInput');
+    const filePreviewContainer = document.getElementById('filePreviewContainer');
+    const fileList = document.getElementById('fileList');
+    const fileCountText = document.getElementById('fileCountText');
+    const clearFilesBtn = document.getElementById('clearFilesBtn');
+    let uploadedFiles = [];
+    // Drag and Drop Events on Container
+    const container = document.querySelector('.messages-container');
+    if (container) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            container.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            container.addEventListener(eventName, () => {
+                activeChatArea.style.opacity = '0.6';
+                activeChatArea.style.backgroundColor = 'rgba(34, 159, 223, 0.05)';
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            container.addEventListener(eventName, () => {
+                activeChatArea.style.opacity = '1';
+                activeChatArea.style.backgroundColor = '#fff';
+            }, false);
+        });
+
+        container.addEventListener('drop', handleDrop, false);
+    }
+    
+    fileInput.addEventListener('change', function() { handleFiles(this.files); });
+
+    function handleDrop(e) {
+        let dt = e.dataTransfer;
+        let files = dt.files;
+        handleFiles(files);
+    }
+
+    function handleFiles(files) {
+        const newFiles = Array.from(files).map(file => ({
+            id: Date.now() + Math.random(),
+            file: file,
+            name: file.name,
+            size: formatFileSize(file.size)
+        }));
+        uploadedFiles = [...uploadedFiles, ...newFiles];
+        updateFileUI();
+    }
+
+    function removeFile(id) {
+        uploadedFiles = uploadedFiles.filter(f => f.id !== id);
+        updateFileUI();
+    }
+
+    clearFilesBtn.addEventListener('click', () => {
+        uploadedFiles = [];
+        fileInput.value = '';
+        updateFileUI();
+    });
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'], i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function updateFileUI() {
+        if (uploadedFiles.length > 0) {
+            filePreviewContainer.style.display = 'block';
+            fileCountText.textContent = `Files ready to send (${uploadedFiles.length})`;
+            fileList.innerHTML = '';
+            uploadedFiles.forEach(f => {
+                const div = document.createElement('div');
+                div.className = 'col-sm-6 col-md-4';
+                div.innerHTML = `
+                    <div class="d-flex align-items-center p-2 rounded border bg-light">
+                        <i class="fa-solid fa-file text-muted me-2"></i>
+                        <div class="flex-grow-1 overflow-hidden" style="min-width: 0;">
+                            <div class="text-truncate small fw-bold">${f.name}</div>
+                            <div class="text-muted" style="font-size: 11px;">${f.size}</div>
+                        </div>
+                        <button type="button" class="btn btn-link text-danger p-0 ms-2" onclick="removeFile(${f.id})"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                `;
+                fileList.appendChild(div);
+            });
+        } else {
+            filePreviewContainer.style.display = 'none';
+        }
+    }
+    
+    // Make removeFile globally accessible
+    window.removeFile = removeFile;
+
     function loadChat(partnerId) {
         fetch(`/ajax/get_chat_history/?partner_id=${partnerId}`)
             .then(response => response.json())
@@ -533,9 +643,36 @@ document.addEventListener('DOMContentLoaded', function() {
                         const bubble = document.createElement('div');
                         bubble.className = `message-bubble ${msg.is_sent ? 'sent' : 'received'}`;
                         
+                        let attachmentHtml = '';
+                        if (msg.attachment_url) {
+                            const isImage = msg.attachment_name.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                            if (isImage) {
+                                attachmentHtml = `
+                                    <div class="attachment-preview mb-2">
+                                        <a href="${msg.attachment_url}" target="_blank">
+                                            <img src="${msg.attachment_url}" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                                        </a>
+                                    </div>
+                                `;
+                            } else {
+                                attachmentHtml = `
+                                    <div class="attachment-file mb-2">
+                                        <a href="${msg.attachment_url}" target="_blank" class="d-flex align-items-center p-2 rounded border bg-light text-decoration-none">
+                                            <i class="fa-solid fa-file-arrow-down me-2 fs-4" style="color: var(--primary-color);"></i>
+                                            <div class="overflow-hidden">
+                                                <div class="small fw-bold text-dark text-truncate">${msg.attachment_name}</div>
+                                                <div class="text-muted" style="font-size: 10px;">Click to open</div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                `;
+                            }
+                        }
+
                         bubble.innerHTML = `
                             <div class="bubble-text">
-                                ${msg.message}
+                                ${attachmentHtml}
+                                ${msg.message ? `<div>${msg.message}</div>` : ''}
                             </div>
                             <div class="bubble-time">
                                 ${msg.time} 
@@ -574,11 +711,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const message = messageInput.value.trim();
         const receiverId = receiverIdInput.value;
 
-        if (!message || !receiverId) return;
+        // Must have at least a message or an attachment
+        if (!message && uploadedFiles.length === 0) return;
 
         const formData = new FormData();
         formData.append('receiver_id', receiverId);
         formData.append('message', message);
+        uploadedFiles.forEach(f => {
+            formData.append('attachments', f.file);
+        });
         formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
         fetch('/ajax/send_message/', {
@@ -589,6 +730,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.status === 'success') {
                 messageInput.value = '';
+                // Clear files
+                uploadedFiles = [];
+                fileInput.value = '';
+                updateFileUI();
+                
                 loadChat(receiverId); // Reload chat to show new message
             }
         });

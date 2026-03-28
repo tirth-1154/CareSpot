@@ -6,31 +6,33 @@
 {% block css %}
 <style>
     :root {
-        --primary-teal: #2E7D72;
-        --light-teal: rgba(46, 125, 114, 0.1);
+        --primary-blue: #0F6DB6;
+        --light-blue: rgba(15, 109, 182, 0.08);
+        --teal: #23B6B3;
         --border-color: #E2E8F0;
         --text-dark: #1A202C;
         --text-muted: #718096;
+        --green: #22c55e;
+        --yellow: #f59e0b;
+        --red: #ef4444;
     }
 
     .appointments-header {
         margin-bottom: 2rem;
     }
-
     .appointments-header h1 {
         font-weight: 700;
         color: var(--text-dark);
         font-size: 1.8rem;
         margin-bottom: 0.25rem;
     }
-
     .appointments-header p {
         color: var(--text-muted);
         font-size: 0.95rem;
     }
 
     .btn-teal {
-        background-color: var(--primary-teal);
+        background-color: #2E7D72;
         color: white;
         border: none;
         padding: 0.6rem 1.2rem;
@@ -40,112 +42,57 @@
         align-items: center;
         gap: 0.5rem;
         transition: all 0.2s;
+        text-decoration: none;
     }
-
     .btn-teal:hover {
         background-color: #24635a;
         color: white;
         transform: translateY(-1px);
     }
 
-    .controls-row {
-        background: white;
-        padding: 1rem;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-        border: 1px solid var(--border-color);
-    }
-
-    .search-container {
-        position: relative;
-        flex: 1;
-        max-width: 400px;
-    }
-
-    .search-container i {
-        position: absolute;
-        left: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-muted);
-    }
-
-    .search-container input {
-        width: 100%;
-        padding: 0.6rem 1rem 0.6rem 2.8rem;
-        border-radius: 10px;
-        border: 1px solid var(--border-color);
-        background-color: #F8FAFC;
-        font-size: 0.9rem;
-    }
-
-    .view-controls {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .view-selector {
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        background: white;
-        font-size: 0.9rem;
-        font-weight: 500;
-        cursor: pointer;
-    }
-
-    .view-toggles {
-        display: flex;
-        background: #F1F5F9;
-        padding: 0.3rem;
-        border-radius: 8px;
-    }
-
-    .view-toggle-btn {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-        border: none;
-        background: transparent;
-        color: var(--text-muted);
-        cursor: pointer;
-    }
-
-    .view-toggle-btn.active {
-        background: white;
-        color: var(--primary-teal);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    /* Calendar Grid */
+    /* Calendar Container */
     .calendar-container {
         background: white;
         border-radius: 16px;
         border: 1px solid var(--border-color);
         overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        min-height: 600px;
+        display: flex;
+        flex-direction: column;
     }
 
     .calendar-nav {
         display: flex;
         align-items: center;
-        gap: 1.5rem;
-        padding: 1.5rem;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
         border-bottom: 1px solid var(--border-color);
+        background: #FAFBFC;
+    }
+    
+    .picker-display {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        margin: 0 5px;
     }
 
-    .month-display {
+    .picker-btn {
         font-weight: 700;
-        font-size: 1.1rem;
+        font-size: 1rem;
         color: var(--text-dark);
-        min-width: 60px;
-        text-align: center;
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+
+    .picker-btn:hover {
+        background: var(--light-blue);
+        color: var(--primary-blue);
+        border-color: rgba(15, 109, 182, 0.2);
     }
 
     .nav-arrow {
@@ -159,328 +106,348 @@
         background: white;
         color: var(--text-dark);
         cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.85rem;
+    }
+    .nav-arrow:hover {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+        transform: translateY(-1px);
+    }
+
+    .btn-today {
+        margin-left: auto;
+        background: var(--light-blue);
+        color: var(--primary-blue);
+        border: none;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-today:hover {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    /* Grid Layouts */
+    .calendar-content {
+        flex: 1;
+        position: relative;
     }
 
     .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
+        height: 100%;
+    }
+
+    .picker-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        padding: 30px;
+        height: 100%;
+        background: white;
     }
 
     .calendar-header-cell {
-        padding: 1rem;
+        padding: 14px;
         text-align: center;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--text-muted);
         font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
         border-bottom: 1px solid var(--border-color);
-        background-color: #F8FAFC;
+        background: #F8FAFC;
     }
 
     .calendar-cell {
-        min-height: 140px;
-        border-right: 1px solid var(--border-color);
-        border-bottom: 1px solid var(--border-color);
-        padding: 0.75rem;
+        min-height: 100px;
+        border-right: 1px solid #f0f4f8;
+        border-bottom: 1px solid #f0f4f8;
+        padding: 10px;
         position: relative;
+        cursor: pointer;
+        transition: background 0.2s;
     }
-
-    .calendar-cell:nth-child(7n) {
-        border-right: none;
+    .calendar-cell:nth-child(7n) { border-right: none; }
+    .calendar-cell:hover { background: #f8fbff; }
+    .calendar-cell.other-month { background: #FBFCFD; }
+    .calendar-cell.other-month .day-number { color: #CBD5E0; }
+    
+    .calendar-cell.is-today { background: var(--light-blue); }
+    .calendar-cell.is-today .day-number {
+        background: var(--primary-blue);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .day-number {
         font-size: 0.9rem;
-        font-weight: 500;
-        color: #94A3B8;
-        margin-bottom: 0.5rem;
-        display: block;
-        text-align: right;
-    }
-
-    .day-number.active-month {
+        font-weight: 700;
         color: var(--text-dark);
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: flex-end;
     }
 
-    /* Appointment Cards */
-    .apt-card {
+    /* Review Section */
+    .review-section {
+        margin-bottom: 2rem;
+        background: #F8FAFC;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        display: none; /* Shown via JS if pending exists */
+    }
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+    .review-header h3 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    .review-count {
+        background: var(--primary-blue);
+        color: white;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+    .request-list {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+    .request-card {
+        min-width: 280px;
         background: white;
-        border: 1px solid #EDF2F7;
-        border-radius: 8px;
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        cursor: pointer;
-        transition: transform 0.1s;
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        transition: transform 0.2s, opacity 0.2s;
     }
-
-    .apt-card:hover {
-        transform: scale(1.02);
-        border-color: var(--primary-teal);
-    }
-
-    .apt-time {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        margin-bottom: 0.3rem;
-    }
-
-    .apt-info {
+    .request-item-header {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 12px;
+        margin-bottom: 12px;
     }
-
-    .apt-avatar {
-        width: 24px;
-        height: 24px;
+    .request-avatar {
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         object-fit: cover;
     }
-
-    .apt-name {
-        font-size: 0.75rem;
-        font-weight: 600;
+    .request-avatar-fallback {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: white;
+        font-size: 0.9rem;
+    }
+    .request-info h4 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        margin: 0;
         color: var(--text-dark);
+    }
+    .request-info p {
+        font-size: 0.8rem;
+        margin: 0;
+        color: var(--text-muted);
+    }
+    .request-actions {
+        display: flex;
+        gap: 8px;
+    }
+    .btn-action {
+        flex: 1;
+        padding: 6px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-accept { background: #dcfce7; color: #15803d; }
+    .btn-accept:hover { background: #bbf7d0; }
+    .btn-reject { background: #fee2e2; color: #991b1b; }
+    .btn-reject:hover { background: #fecaca; }
+    
+    /* Scrollbar for horizontal list */
+    .request-list::-webkit-scrollbar { height: 6px; }
+    .request-list::-webkit-scrollbar-track { background: transparent; }
+    .request-list::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 10px; }
+
+    /* Selection items (Months/Years) */
+    .selection-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 25px;
+        border-radius: 12px;
+        background: #F8FAFC;
+        border: 1px solid var(--border-color);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .selection-item:hover {
+        background: var(--light-blue);
+        color: var(--primary-blue);
+        border-color: var(--primary-blue);
+        transform: scale(1.05);
+    }
+    .selection-item.active {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+
+    /* Appointment indicators */
+    .apt-indicators { display: flex; flex-direction: column; gap: 4px; }
+    .apt-indicator {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    .apt-indicator.status-accepted { background: #dcfce7; color: #15803d; }
+    .apt-indicator.status-pending  { background: #fef3c7; color: #92400e; }
+    .apt-indicator.status-rejected { background: #fee2e2; color: #991b1b; }
+    .apt-indicator.status-completed { background: #dbeafe; color: #1e40af; }
+    
+    .apt-dot-sm { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-accepted .apt-dot-sm { background: var(--green); }
+    .status-pending .apt-dot-sm  { background: var(--yellow); }
+    .status-rejected .apt-dot-sm { background: var(--red); }
+    .status-completed .apt-dot-sm { background: #3b82f6; }
 
-    .apt-dots {
+    .apt-more { font-size: 0.7rem; color: var(--primary-blue); font-weight: 800; padding: 2px 8px; }
+
+    /* Legend */
+    .calendar-stats {
         display: flex;
-        gap: 2px;
-        margin-left: auto;
+        gap: 24px;
+        padding: 16px 24px;
+        border-top: 1px solid var(--border-color);
+        background: #FAFBFC;
     }
+    .stat-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #64748b; }
+    .stat-dot { width: 12px; height: 12px; border-radius: 50%; }
 
-    .apt-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        font-size: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 700;
-    }
+    /* Modal */
+    .modal-content { border: none; border-radius: 20px; box-shadow: 0 25px 70px rgba(0,0,0,0.2); }
+    .modal-header { border-bottom: 1px solid #f1f5f9; padding: 24px; }
+    .modal-header .modal-title { font-weight: 800; font-size: 20px; }
+    .modal-body { padding: 0; max-height: 450px; overflow-y: auto; }
+    .modal-apt-item { display: flex; align-items: center; gap: 16px; padding: 18px 24px; border-bottom: 1px solid #f8fafc; }
+    .modal-apt-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #e2e8f0; object-fit: cover; }
+    .modal-apt-avatar-fallback { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; flex-shrink: 0; }
+    .modal-apt-info { flex: 1; min-width: 0; }
+    .modal-apt-name { font-weight: 800; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .modal-apt-meta { display: flex; gap: 14px; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .modal-status-badge { padding: 5px 14px; border-radius: 30px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .modal-status-badge.accepted { background: #dcfce7; color: #15803d; }
+    .modal-status-badge.pending  { background: #fef3c7; color: #92400e; }
+    .modal-status-badge.rejected { background: #fee2e2; color: #991b1b; }
+    .modal-status-badge.completed { background: #dbeafe; color: #1e40af; }
 
-    .dot-blue { background-color: #3182CE; }
-    .dot-green { background-color: #38A169; }
-    .dot-red { background-color: #E53E3E; }
-
-    @media (max-width: 1200px) {
-        .calendar-cell { min-height: 120px; }
-    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid p-0">
-    <!-- Header Section -->
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-end appointments-header">
         <div>
             <h1>Appointments</h1>
-            <p>there is the latest update for the last 7 days. check now</p>
+            <p>Interactive calendar with drill-down month and year selection.</p>
         </div>
-        <a class="btn btn-teal" href="{% url 'doctorSchedule' %}">
-            <i class="fa-solid fa-plus"></i>
-            Set Schedule
+        <a class="btn btn-teal" href="{% url 'doctorSchedule' %}?next=doctorSetSchedule">
+            <i class="fa-solid fa-plus"></i> Set Schedule
         </a>
     </div>
 
-    <!-- Controls Row -->
-    <div class="controls-row">
-        <div class="search-container">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search anything here">
+    <!-- Review Section -->
+    <div class="review-section" id="reviewContainer">
+        <div class="review-header">
+            <h3>Pending Requests <span class="review-count" id="pendingCount">0</span></h3>
         </div>
-        <div class="view-controls">
-            <select class="view-selector">
-                <option>Week</option>
-                <option>Month</option>
-                <option>Day</option>
-            </select>
-            <div class="view-toggles">
-                <button class="view-toggle-btn"><i class="fa-solid fa-list-ul"></i></button>
-                <button class="view-toggle-btn active"><i class="fa-solid fa-calendar-days"></i></button>
-            </div>
+        <div class="request-list" id="requestList">
+            <!-- Dynamic request cards -->
         </div>
     </div>
 
-    <!-- Calendar Container -->
+    <!-- Calendar -->
     <div class="calendar-container">
         <div class="calendar-nav">
-            <button class="nav-arrow"><i class="fa-solid fa-chevron-left"></i></button>
-            <span class="month-display">May</span>
-            <button class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></button>
-            <div class="ms-auto">
-                <span class="text-muted small">Showing 26 Apr - 5 June 2023</span>
+            <button class="nav-arrow" id="prevBtn"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="picker-display">
+                <span class="picker-btn" id="monthPickerBtn"></span>
+                <span class="picker-btn" id="yearPickerBtn"></span>
+            </div>
+            <button class="nav-arrow" id="nextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+            <button class="btn-today" id="todayBtn"><i class="fa-regular fa-calendar-check me-1"></i> Today</button>
+        </div>
+
+        <div class="calendar-content">
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Days header and content inserted by JS -->
             </div>
         </div>
 
-        <div class="calendar-grid">
-            <!-- Header Days -->
-            <div class="calendar-header-cell">Sun</div>
-            <div class="calendar-header-cell">Mon</div>
-            <div class="calendar-header-cell">Tue</div>
-            <div class="calendar-header-cell">Wed</div>
-            <div class="calendar-header-cell">Thu</div>
-            <div class="calendar-header-cell">Fri</div>
-            <div class="calendar-header-cell">Sat</div>
+        <div class="calendar-stats">
+            <div class="stat-item"><div class="stat-dot" style="background:var(--green);"></div> Accepted</div>
+            <div class="stat-item"><div class="stat-dot" style="background:#3b82f6;"></div> Completed</div>
+            <div class="stat-item"><div class="stat-dot" style="background:var(--yellow);"></div> Pending</div>
+            <div class="stat-item"><div class="stat-dot" style="background:var(--red);"></div> Rejected</div>
+        </div>
+    </div>
+</div>
 
-            <!-- Empty Cells for previous month -->
-            <div class="calendar-cell"><span class="day-number">26</span></div>
-            <div class="calendar-cell"><span class="day-number">27</span></div>
-            <div class="calendar-cell"><span class="day-number">28</span></div>
-            <div class="calendar-cell"><span class="day-number">29</span></div>
-            <div class="calendar-cell"><span class="day-number">30</span></div>
-            <div class="calendar-cell"><span class="day-number">31</span></div>
-            <div class="calendar-cell"><span class="day-number active-month">1</span></div>
-
-            <!-- Week 1 -->
-            <div class="calendar-cell"><span class="day-number active-month">2</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">3</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <img src="https://ui-avatars.com/api/?name=Isagi+Yoichi&background=random" class="apt-avatar">
-                        <span class="apt-name">Isagi Yoichi</span>
-                    </div>
-                </div>
+<!-- Modal -->
+<div class="modal fade" id="appointmentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa-regular fa-calendar-days me-2" style="color:var(--primary-blue);"></i> Appointments — <span id="modalDate"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="calendar-cell"><span class="day-number active-month">4</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">5</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <div class="d-flex overlap-avatars">
-                            <img src="https://ui-avatars.com/api/?name=Nagi+Seishiro&background=random" class="apt-avatar">
-                            <div class="apt-dot dot-red ms-1">PO</div>
-                            <div class="apt-dot dot-green ms-1">VN</div>
-                        </div>
-                    </div>
-                    <div class="apt-name mt-1">Nagi Seishiro, Peter...</div>
-                </div>
-            </div>
-            <div class="calendar-cell"><span class="day-number active-month">6</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">7</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <img src="https://ui-avatars.com/api/?name=Kaiser+Brown&background=random" class="apt-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Jhon&background=random" class="apt-avatar">
-                        <div class="apt-dot dot-red ms-auto"></div>
-                    </div>
-                    <div class="apt-name mt-1">Kaiser Brown, Jhon...</div>
-                </div>
-            </div>
-            <div class="calendar-cell"><span class="day-number active-month">8</span></div>
-
-            <!-- Week 2 -->
-            <div class="calendar-cell"><span class="day-number active-month">9</span></div>
-            <div class="calendar-cell"><span class="day-number active-month">10</span></div>
-            <div class="calendar-cell"><span class="day-number active-month">11</span></div>
-            <div class="calendar-cell"><span class="day-number active-month">12</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">13</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <img src="https://ui-avatars.com/api/?name=Alexandro+Bernard&background=random" class="apt-avatar">
-                        <img src="https://ui-avatars.com/api/?name=User&background=random" class="apt-avatar">
-                    </div>
-                    <div class="apt-name mt-1">Alexandro Bernard...</div>
-                </div>
-            </div>
-            <div class="calendar-cell"><span class="day-number active-month">14</span></div>
-            <div class="calendar-cell"><span class="day-number active-month">15</span></div>
-
-            <!-- Week 3 -->
-            <div class="calendar-cell"><span class="day-number active-month">16</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">17</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <img src="https://ui-avatars.com/api/?name=Romanov+Ely&background=random" class="apt-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Betty&background=random" class="apt-avatar">
-                    </div>
-                    <div class="apt-name mt-1">Romanov Ely, Betty..</div>
-                </div>
-            </div>
-            <div class="calendar-cell"><span class="day-number active-month">18</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">19</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <img src="https://ui-avatars.com/api/?name=Kitty+Lily&background=random" class="apt-avatar">
-                    </div>
-                    <div class="apt-name mt-1">Kitty Lily</div>
-                </div>
-            </div>
-            <div class="calendar-cell"><span class="day-number active-month">20</span></div>
-            <div class="calendar-cell"><span class="day-number active-month">21</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">22</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <img src="https://ui-avatars.com/api/?name=Lily+Alexa&background=random" class="apt-avatar">
-                    </div>
-                    <div class="apt-name mt-1">Lily Alexa</div>
-                </div>
-            </div>
-
-            <!-- Week 4 -->
-            <div class="calendar-cell"><span class="day-number active-month">23</span></div>
-            <div class="calendar-cell"><span class="day-number active-month">24</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">25</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <img src="https://ui-avatars.com/api/?name=Shasa+Brown&background=random" class="apt-avatar">
-                    </div>
-                    <div class="apt-name mt-1">Shasa Brown</div>
-                </div>
-            </div>
-            <div class="calendar-cell"><span class="day-number active-month">26</span></div>
-            <div class="calendar-cell"><span class="day-number active-month">27</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">28</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <div class="apt-dot dot-blue me-1">AL</div>
-                        <span class="apt-name">Ahmed Lali</span>
-                    </div>
-                </div>
-            </div>
-            <div class="calendar-cell"><span class="day-number active-month">29</span></div>
-
-            <!-- Week 5 -->
-            <div class="calendar-cell"><span class="day-number active-month">30</span></div>
-            <div class="calendar-cell">
-                <span class="day-number active-month">31</span>
-                <div class="apt-card">
-                    <div class="apt-time">10:00 am - 11:00 am</div>
-                    <div class="apt-info">
-                        <div class="apt-dot dot-green me-1">BD</div>
-                        <img src="https://ui-avatars.com/api/?name=Saimon&background=random" class="apt-avatar">
-                    </div>
-                    <div class="apt-name mt-1">Budiman Dio, Saimon..</div>
-                </div>
-            </div>
-            <div class="calendar-cell"><span class="day-number">1</span></div>
-            <div class="calendar-cell"><span class="day-number">2</span></div>
-            <div class="calendar-cell"><span class="day-number">3</span></div>
-            <div class="calendar-cell"><span class="day-number">4</span></div>
-            <div class="calendar-cell"><span class="day-number">5</span></div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer"><button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Close</button></div>
         </div>
     </div>
 </div>
@@ -488,12 +455,251 @@
 
 {% block js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add active state to sidebar
-        const scheduleLink = document.querySelector('a[href="{% url "doctorSetSchedule" %}"]');
-        if (scheduleLink) {
-            scheduleLink.classList.add('active');
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Current user CSRF token (needed for AJAX POST)
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+
+    const allAppointments = JSON.parse('{{ appointments_json|escapejs }}');
+    let pendingAppointments = JSON.parse('{{ pending_json|escapejs }}');
+    
+    const appointmentsByDate = {};
+    allAppointments.forEach(apt => {
+        if (!appointmentsByDate[apt.date]) appointmentsByDate[apt.date] = [];
+        appointmentsByDate[apt.date].push(apt);
     });
+
+    const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const avatarColors = ['#0F6DB6','#23B6B3','#6f42c1','#e17055','#00b894','#d63031','#0984e3','#e84393'];
+    
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
+    let viewMode = 'days'; 
+
+    const grid = document.getElementById('calendarGrid');
+    const monthPickerBtn = document.getElementById('monthPickerBtn');
+    const yearPickerBtn = document.getElementById('yearPickerBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    // Review Section Elements
+    const reviewContainer = document.getElementById('reviewContainer');
+    const requestList = document.getElementById('requestList');
+    const pendingCount = document.getElementById('pendingCount');
+
+    function updateNav() {
+        monthPickerBtn.textContent = MONTH_NAMES[currentMonth];
+        yearPickerBtn.textContent = currentYear;
+        prevBtn.style.visibility = viewMode === 'days' ? 'visible' : 'hidden';
+        nextBtn.style.visibility = viewMode === 'days' ? 'visible' : 'hidden';
+    }
+
+    function render() {
+        grid.innerHTML = '';
+        updateNav();
+        renderReviewSection();
+
+        if (viewMode === 'days') renderDays();
+        else if (viewMode === 'months') renderMonths();
+        else if (viewMode === 'years') renderYears();
+    }
+
+    function renderReviewSection() {
+        if (pendingAppointments.length === 0) {
+            reviewContainer.style.display = 'none';
+            return;
+        }
+        reviewContainer.style.display = 'block';
+        pendingCount.textContent = pendingAppointments.length;
+        
+        requestList.innerHTML = pendingAppointments.map(a => {
+            const color = avatarColors[a.patient.length % avatarColors.length];
+            const dateObj = new Date(a.date + 'T00:00:00');
+            const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            
+            return `
+                <div class="request-card" id="card-${a.id}">
+                    <div class="request-item-header">
+                        ${a.profile ? `<img src="${a.profile}" class="request-avatar">` : `<div class="request-avatar-fallback" style="background:${color}">${a.patient.charAt(0)}</div>`}
+                        <div class="request-info">
+                            <h4>${a.patient}</h4>
+                            <p>${dateStr} • ${a.time}</p>
+                        </div>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn-action btn-accept" onclick="handleAction(${a.id}, 'accept')">Accept</button>
+                        <button class="btn-action btn-reject" onclick="handleAction(${a.id}, 'reject')">Reject</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.handleAction = async function(appointmentId, action) {
+        const formData = new FormData();
+        formData.append('appointment_id', appointmentId);
+        formData.append('action', action);
+        formData.append('csrfmiddlewaretoken', csrfToken);
+
+        try {
+            const response = await fetch("{% url 'updateAppointmentStatusAjax' %}", {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                // Update local data
+                const apt = pendingAppointments.find(a => a.id === appointmentId);
+                if (apt) {
+                    apt.status = action === 'accept' ? 'Accepted' : 'Rejected';
+                    // Update main appointments lookup for calendar
+                    const dayApts = appointmentsByDate[apt.date];
+                    const target = dayApts.find(a => a.id === appointmentId);
+                    if (target) target.status = apt.status;
+                }
+                
+                // Remove from pending
+                pendingAppointments = pendingAppointments.filter(a => a.id !== appointmentId);
+                
+                // UI feedback
+                const card = document.getElementById(`card-${appointmentId}`);
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => render(), 200);
+                } else {
+                    render();
+                }
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            alert('Failed to update status. Please try again.');
+        }
+    };
+
+    function renderDays() {
+        grid.className = 'calendar-grid';
+        // Headers
+        DAY_NAMES.forEach(day => {
+            const h = document.createElement('div');
+            h.className = 'calendar-header-cell';
+            h.textContent = day;
+            grid.appendChild(h);
+        });
+
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+        // Prev month padding
+        for (let i = firstDay - 1; i >= 0; i--) {
+            grid.appendChild(createDayCell(daysInPrevMonth - i, true));
+        }
+
+        // Current month
+        for (let d = 1; d <= daysInMonth; d++) {
+            const ds = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            grid.appendChild(createDayCell(d, false, appointmentsByDate[ds] || [], ds === todayStr, ds));
+        }
+
+        // Next month padding
+        const remainder = (grid.children.length - 7) % 7;
+        if (remainder > 0) {
+            for (let i = 1; i <= (7 - remainder); i++) grid.appendChild(createDayCell(i, true));
+        }
+    }
+
+    function createDayCell(num, other, apts, isToday, ds) {
+        const c = document.createElement('div');
+        c.className = 'calendar-cell';
+        if (other) c.classList.add('other-month');
+        if (isToday) c.classList.add('is-today');
+        
+        c.innerHTML = `<span class="day-number">${num}</span>`;
+        
+        if (apts && apts.length > 0) {
+            const container = document.createElement('div');
+            container.className = 'apt-indicators';
+            apts.slice(0, 2).forEach(a => {
+                const ind = document.createElement('div');
+                ind.className = `apt-indicator status-${a.status.toLowerCase()}`;
+                ind.innerHTML = `<span class="apt-dot-sm"></span>${a.time} ${a.patient.split(' ')[0]}`;
+                container.appendChild(ind);
+            });
+            if (apts.length > 2) {
+                const more = document.createElement('div');
+                more.className = 'apt-more';
+                more.textContent = `+${apts.length - 2} more`;
+                container.appendChild(more);
+            }
+            c.appendChild(container);
+            c.addEventListener('click', () => openModal(ds, apts));
+        }
+        return c;
+    }
+
+    function renderMonths() {
+        grid.className = 'picker-grid';
+        MONTH_NAMES.forEach((m, i) => {
+            const item = document.createElement('div');
+            item.className = 'selection-item';
+            if (i === currentMonth) item.classList.add('active');
+            item.textContent = m;
+            item.onclick = () => { currentMonth = i; viewMode = 'days'; render(); };
+            grid.appendChild(item);
+        });
+    }
+
+    function renderYears() {
+        grid.className = 'picker-grid';
+        const start = currentYear - 7;
+        for (let y = start; y < start + 16; y++) {
+            const item = document.createElement('div');
+            item.className = 'selection-item';
+            if (y === currentYear) item.classList.add('active');
+            item.textContent = y;
+            item.onclick = () => { currentYear = y; viewMode = 'months'; render(); };
+            grid.appendChild(item);
+        }
+    }
+
+    // Modal
+    const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+    function openModal(ds, apts) {
+        document.getElementById('modalDate').textContent = new Date(ds + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const body = document.getElementById('modalBody');
+        body.innerHTML = apts.map(a => {
+            const color = avatarColors[a.patient.length % avatarColors.length];
+            return `
+                <div class="modal-apt-item">
+                    ${a.profile ? `<img src="${a.profile}" class="modal-apt-avatar">` : `<div class="modal-apt-avatar-fallback" style="background:${color}">${a.patient.charAt(0)}</div>`}
+                    <div class="modal-apt-info">
+                        <div class="modal-apt-name">${a.patient}</div>
+                        <div class="modal-apt-meta"><span><i class="fa-regular fa-clock"></i> ${a.time}</span><span><i class="fa-solid ${a.mode === 'online' ? 'fa-video' : 'fa-hospital'}"></i> ${a.mode}</span></div>
+                    </div>
+                    <span class="modal-status-badge ${a.status.toLowerCase()}">${a.status}</span>
+                </div>
+            `;
+        }).join('');
+        modal.show();
+    }
+
+    // Controls
+    monthPickerBtn.onclick = () => { viewMode = viewMode === 'months' ? 'days' : 'months'; render(); };
+    yearPickerBtn.onclick = () => { viewMode = viewMode === 'years' ? 'days' : 'years'; render(); };
+    
+    prevBtn.onclick = () => { currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } render(); };
+    nextBtn.onclick = () => { currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } render(); };
+    
+    document.getElementById('todayBtn').onclick = () => { 
+        const d = new Date(); currentYear = d.getFullYear(); currentMonth = d.getMonth(); viewMode = 'days'; render(); 
+    };
+
+    render();
+});
 </script>
 {% endblock %}
