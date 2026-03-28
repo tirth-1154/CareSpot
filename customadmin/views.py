@@ -73,7 +73,6 @@ def admin_dashboard(request):
     avg_rating = tblReview.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     avg_rating = round(avg_rating, 1)
 
-    # Recent appointments
     recent_appointments = tblAppointment.objects.select_related(
         'clientID', 'doctorID'
     ).order_by('-createdDT')[:10]
@@ -87,21 +86,60 @@ def admin_dashboard(request):
         review_count=Count('tblreview')
     ).order_by('-avg_rating')[:5]
 
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    top_docs_list = []
+    for doc in top_doctors:
+        pic_url = doc.userID.profilePic.url if (doc.userID and doc.userID.profilePic) else ''
+        top_docs_list.append({
+            'doctorID': doc.doctorID,
+            'displayName': doc.displayName,
+            'subcategory': doc.subcategoryID.subcategoryName if doc.subcategoryID else 'General',
+            'profilePicUrl': pic_url,
+            'avg_rating': round(doc.avg_rating, 1) if doc.avg_rating else 0.0,
+            'review_count': doc.review_count,
+        })
+
+    recent_appts_list = []
+    for app in recent_appointments:
+        recent_appts_list.append({
+            'appointmentID': app.appointmentID,
+            'patientName': app.clientID.name if app.clientID else 'Unknown',
+            'doctorName': app.doctorID.displayName if app.doctorID else 'Unknown',
+            'date': app.appointmentDate.strftime('%b %d, %Y') if app.appointmentDate else '',
+            'time': app.appointmentTime.strftime('%I:%M %p') if app.appointmentTime else '',
+            'status': 'Accepted' if app.isAccepted else ('Rejected' if app.isRejected else 'Pending')
+        })
+
+    dashboard_data = {
+        'stats': {
+            'totalDoctors': total_doctors,
+            'totalPatients': total_patients,
+            'totalAppointments': total_appointments,
+            'totalReviews': total_reviews,
+            'totalUsers': total_users,
+            'totalBlogs': total_blogs,
+            'todayAppointments': today_appointments,
+            'pendingAppointments': pending_appointments,
+            'acceptedAppointments': accepted_appointments,
+            'rejectedAppointments': rejected_appointments,
+            'avgRating': avg_rating,
+        },
+        'topDoctors': top_docs_list,
+        'recentAppointments': recent_appts_list,
+    }
+
     context = {
         'total_doctors': total_doctors,
         'total_patients': total_patients,
         'total_appointments': total_appointments,
-        'total_reviews': total_reviews,
-        'total_users': total_users,
-        'total_blogs': total_blogs,
         'today_appointments': today_appointments,
-        'pending_appointments': pending_appointments,
-        'accepted_appointments': accepted_appointments,
-        'rejected_appointments': rejected_appointments,
         'avg_rating': avg_rating,
-        'recent_appointments': recent_appointments,
-        'recent_users': recent_users,
+        'total_reviews': total_reviews,
         'top_doctors': top_doctors,
+        'recent_appointments': recent_appointments,
+        'dashboard_data_json': json.dumps(dashboard_data, cls=DjangoJSONEncoder)
     }
     return render(request, 'customadmin/admin_dashboard.html', context)
 
@@ -184,13 +222,34 @@ def admin_users(request):
     elif role_filter == 'patient':
         users = users.filter(IsDoctor=False)
 
-    context = {
-        'users': users,
+    user_list = []
+    for u in users:
+        user_list.append({
+            'userID': u.userID,
+            'userName': u.userName,
+            'email': u.email,
+            'mobileNumber': u.mobileNumber,
+            'IsDoctor': u.IsDoctor,
+            'registrationDate': u.registrationDT.strftime('%b %d, %Y') if u.registrationDT else '',
+            'registrationTime': u.registrationDT.strftime('%I:%M %p') if u.registrationDT else ''
+        })
+
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    page_data = {
+        'users': user_list,
         'query': query,
         'role_filter': role_filter,
         'total_count': users.count(),
+        'page_title': 'User Management',
     }
-    return render(request, 'customadmin/admin_users.html', context)
+
+    context = {
+        'page_title': 'Users | Admin',
+        'admin_data_json': json.dumps(page_data, cls=DjangoJSONEncoder)
+    }
+    return render(request, 'customadmin/admin_react_root.html', context)
 
 
 @admin_login_required
@@ -214,14 +273,42 @@ def admin_doctors(request):
         doctors = doctors.filter(subcategoryID=spec_filter)
 
     subcategories = tblSubcategory.objects.all()
-    context = {
-        'doctors': doctors,
+    subcats_list = [{'id': c.subcategoryID, 'name': c.subcategoryName} for c in subcategories]
+    
+    docs_list = []
+    for d in doctors:
+        docs_list.append({
+            'doctorID': d.doctorID,
+            'displayName': d.displayName,
+            'email': d.userID.email if d.userID else '',
+            'profilePicUrl': d.userID.profilePic.url if (d.userID and d.userID.profilePic) else '',
+            'subcategory': d.subcategoryID.subcategoryName if d.subcategoryID else 'General',
+            'displayContact': d.displayContact,
+            'yearOfExperience': d.yearOfExperience,
+            'mode': d.mode, # 1=online, 2=offline, 3=both
+            'approval_status': d.approval_status,
+            'avg_rating': round(d.avg_rating, 1) if d.avg_rating else 0.0,
+            'review_count': d.review_count,
+            'patient_count': d.patient_count,
+        })
+
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+    
+    page_data = {
+        'doctors': docs_list,
+        'subcategories': subcats_list,
         'query': query,
         'spec_filter': spec_filter,
-        'subcategories': subcategories,
         'total_count': doctors.count(),
+        'page_title': 'Doctors Directory',
     }
-    return render(request, 'customadmin/admin_doctors.html', context)
+    
+    context = {
+        'page_title': 'Doctors | Admin',
+        'admin_data_json': json.dumps(page_data, cls=DjangoJSONEncoder)
+    }
+    return render(request, 'customadmin/admin_react_root.html', context)
 
 
 @admin_login_required
@@ -242,14 +329,45 @@ def admin_patients(request):
     if blood_filter:
         patients = patients.filter(bloodGroup__iexact=blood_filter)
 
-    context = {
-        'patients': patients,
+    from datetime import date
+    today = date.today()
+    
+    patient_list = []
+    for p in patients:
+        # Calculate age
+        age = 0
+        if p.dob:
+            age = today.year - p.dob.year - ((today.month, today.day) < (p.dob.month, p.dob.day))
+            
+        patient_list.append({
+            'clientID': p.clientID,
+            'name': p.name,
+            'email': p.userID.email if p.userID else '',
+            'avatarLetter': p.name.upper()[0] if p.name else 'P',
+            'contactNo': p.userID.mobileNumber if p.userID else '',
+            'gender': p.gender,
+            'age': age,
+            'bloodGroup': p.bloodGroup,
+            'address': p.address,
+        })
+
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    page_data = {
+        'patients': patient_list,
         'query': query,
         'gender_filter': gender_filter,
         'blood_filter': blood_filter,
         'total_count': patients.count(),
+        'page_title': 'Patients Directory',
     }
-    return render(request, 'customadmin/admin_patients.html', context)
+
+    context = {
+        'page_title': 'Patients | Admin',
+        'admin_data_json': json.dumps(page_data, cls=DjangoJSONEncoder)
+    }
+    return render(request, 'customadmin/admin_react_root.html', context)
 
 
 @admin_login_required
@@ -280,15 +398,40 @@ def admin_appointments(request):
     if date_to:
         appointments = appointments.filter(appointmentDate__lte=date_to)
 
-    context = {
-        'appointments': appointments,
+    appt_list = []
+    for app in appointments:
+        appt_list.append({
+            'appointmentID': app.appointmentID,
+            'clientName': app.clientID.name if app.clientID else 'Unknown',
+            'clientPicUrl': app.clientID.userID.profilePic.url if (app.clientID and app.clientID.userID and app.clientID.userID.profilePic) else '',
+            'doctorName': app.doctorID.displayName if app.doctorID else 'Unknown',
+            'doctorSubcategory': app.doctorID.subcategoryID.subcategoryName if (app.doctorID and app.doctorID.subcategoryID) else '',
+            'doctorPicUrl': app.doctorID.userID.profilePic.url if (app.doctorID and app.doctorID.userID and app.doctorID.userID.profilePic) else '',
+            'appointmentDate': app.appointmentDate.strftime('%b %d, %Y') if app.appointmentDate else '',
+            'appointmentTime': app.appointmentTime.strftime('%I:%M %p') if app.appointmentTime else '',
+            'isAccepted': app.isAccepted,
+            'isRejected': app.isRejected,
+            'createdDT': app.createdDT.strftime('%b %d, %Y') if app.createdDT else '',
+        })
+
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    page_data = {
+        'appointments': appt_list,
         'query': query,
         'status_filter': status_filter,
         'date_from': date_from,
         'date_to': date_to,
         'total_count': appointments.count(),
+        'page_title': 'Appointments',
     }
-    return render(request, 'customadmin/admin_appointments.html', context)
+
+    context = {
+        'page_title': 'Appointments | Admin',
+        'admin_data_json': json.dumps(page_data, cls=DjangoJSONEncoder)
+    }
+    return render(request, 'customadmin/admin_react_root.html', context)
 
 
 @admin_login_required
@@ -310,13 +453,34 @@ def admin_reviews(request):
         except ValueError:
             pass
 
-    context = {
-        'reviews': reviews,
+    review_list = []
+    for r in reviews:
+        review_list.append({
+            'reviewID': r.reviewID,
+            'doctorName': r.doctorID.displayName if r.doctorID else 'Unknown',
+            'userName': r.userID.userName if r.userID else 'Anonymous',
+            'userPicUrl': r.userID.profilePic.url if (r.userID and r.userID.profilePic) else '',
+            'rating': r.rating,
+            'review': r.review,
+            'createdDT': r.createdDT.strftime('%b %d, %Y') if r.createdDT else '',
+        })
+
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    page_data = {
+        'reviews': review_list,
         'query': query,
         'rating_filter': rating_filter,
         'total_count': reviews.count(),
+        'page_title': 'Patient Reviews',
     }
-    return render(request, 'customadmin/admin_reviews.html', context)
+
+    context = {
+        'page_title': 'Reviews | Admin',
+        'admin_data_json': json.dumps(page_data, cls=DjangoJSONEncoder)
+    }
+    return render(request, 'customadmin/admin_react_root.html', context)
 
 
 @admin_login_required
@@ -332,24 +496,56 @@ def admin_blogs(request):
             Q(description__icontains=query)
         )
 
-    context = {
-        'blogs': blogs,
+    blog_list = []
+    for b in blogs:
+        blog_list.append({
+            'postID': b.doctorPostID,
+            'title': b.title,
+            'doctorName': b.doctorID.displayName if b.doctorID else 'Unknown',
+            'doctorPicUrl': b.doctorID.userID.profilePic.url if (b.doctorID and b.doctorID.userID and b.doctorID.userID.profilePic) else '',
+            'description': b.description,
+            'createDT': b.createDT.strftime('%b %d, %Y') if b.createDT else '',
+        })
+
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    page_data = {
+        'blogs': blog_list,
         'query': query,
         'total_count': blogs.count(),
+        'page_title': 'Health Blogs',
     }
-    return render(request, 'customadmin/admin_blogs.html', context)
+
+    context = {
+        'page_title': 'Blogs | Admin',
+        'admin_data_json': json.dumps(page_data, cls=DjangoJSONEncoder)
+    }
+    return render(request, 'customadmin/admin_react_root.html', context)
 
 
 @admin_login_required
 def admin_categories(request):
-    categories = tblCategory.objects.all().order_by('categoryName')
-    subcategories = tblSubcategory.objects.select_related('CategoryID').all().order_by('subcategoryName')
+    cats = tblCategory.objects.all().order_by('categoryName')
+    subcats = tblSubcategory.objects.select_related('CategoryID').all().order_by('subcategoryName')
+
+    cat_list = [{'id': c.categoryID, 'name': c.categoryName} for c in cats]
+    subcat_list = [{'id': s.subcategoryID, 'name': s.subcategoryName, 'category': s.CategoryID.categoryName if s.CategoryID else ''} for s in subcats]
+
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    page_data = {
+        'page_title': 'Specializations & Categories',
+        'categories': cat_list,
+        'subcategories': subcat_list,
+    }
 
     context = {
-        'categories': categories,
-        'subcategories': subcategories,
+        'page_title': 'Categories | Admin',
+        'admin_data_json': json.dumps(page_data, cls=DjangoJSONEncoder)
     }
-    return render(request, 'customadmin/admin_categories.html', context)
+    return render(request, 'customadmin/admin_react_root.html', context)
 
 
 @admin_login_required
@@ -357,11 +553,23 @@ def admin_locations(request):
     states = tblState.objects.all().order_by('stateName')
     cities = tblCity.objects.select_related('stateID').all().order_by('cityName')
 
-    context = {
-        'states': states,
-        'cities': cities,
+    state_list = [{'id': s.stateID, 'name': s.stateName} for s in states]
+    city_list = [{'id': c.cityID, 'name': c.cityName, 'state': c.stateID.stateName if c.stateID else ''} for c in cities]
+
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    page_data = {
+        'page_title': 'Locations Management',
+        'states': state_list,
+        'cities': city_list,
     }
-    return render(request, 'customadmin/admin_locations.html', context)
+
+    context = {
+        'page_title': 'Locations | Admin',
+        'admin_data_json': json.dumps(page_data, cls=DjangoJSONEncoder)
+    }
+    return render(request, 'customadmin/admin_react_root.html', context)
 
 
 # ═══════════════════════════════════════════════════════════════

@@ -116,18 +116,26 @@
                 <button class="sidebar-toggle" id="sidebarToggle">
                     <i class="fa-solid fa-bars"></i>
                 </button>
+                <div class="topbar-search d-none d-md-block">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search across CareSpot...">
+                </div>
             </div>
 
             <div class="topbar-right">
                 <a href="{% url 'home' %}" target="_blank" class="topbar-icon-btn" title="View Site">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <i class="fa-solid fa-globe"></i>
                 </a>
+                <button class="topbar-icon-btn" title="Notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge-dot"></span>
+                </button>
                 
-                <div class="admin-avatar">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=0ea5e9&color=fff&size=100" alt="Admin">
+                <div class="admin-avatar ms-2">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=4F46E5&color=fff&size=100" alt="Admin">
                     <div class="admin-avatar-info">
                         <span class="name">Super Admin</span>
-                        <span class="role">{{ request.session.admin_email }}</span>
+                        <span class="role">{{ request.session.admin_email|default:"admin@carespot.com" }}</span>
                     </div>
                 </div>
             </div>

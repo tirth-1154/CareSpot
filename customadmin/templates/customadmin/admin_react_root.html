@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - CareSpot Admin</title>
+    <title>{{ page_title|default:"CareSpot Admin" }}</title>
     
     <!-- React Refresh Preamble -->
     <script type="module">
@@ -16,6 +16,12 @@
     </script>
     <link rel="stylesheet" href="http://127.0.0.1:5174/src/index.css">
     
+    <!-- Original Admin CSS so that table classes work identically -->
+    <link rel="stylesheet" href="{% static 'customadmin/css/admin_panel.css' %}">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         body { margin: 0; padding: 0; overflow-x: hidden; background: #f8fafc; font-family: 'Inter', sans-serif; }
         #react-admin-dashboard-root { display: flex; width: 100vw; min-height: 100vh; }
@@ -23,14 +29,12 @@
 </head>
 <body>
     
-    <!-- Pass server side data to React -->
     <script type="application/json" id="adminCoreData">
-        {{ dashboard_data_json|safe }}
+        {{ admin_data_json|safe }}
     </script>
-    
-    <form style="display: none;">
-        {% csrf_token %}
-    </form>
+    <script type="application/json" id="adminCsrfToken">
+        "{{ csrf_token }}"
+    </script>
 
     <div id="react-admin-dashboard-root"></div>
 

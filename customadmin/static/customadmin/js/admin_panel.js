@@ -235,11 +235,11 @@ function loadCharts(url) {
                         datasets: [{
                             label: 'Appointments',
                             data: data.appointments,
-                            borderColor: '#0ea5e9',
-                            backgroundColor: 'rgba(14, 165, 233, 0.08)',
+                            borderColor: '#4F46E5', /* Indigo */
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
                             fill: true,
                             tension: 0.4,
-                            pointBackgroundColor: '#0ea5e9',
+                            pointBackgroundColor: '#4F46E5',
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2,
                             pointRadius: 4,
@@ -319,7 +319,7 @@ function loadCharts(url) {
                         datasets: [{
                             label: 'New Users',
                             data: data.users,
-                            backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                            backgroundColor: 'rgba(79, 70, 229, 0.8)',
                             borderRadius: 8,
                             borderSkipped: false,
                             barThickness: 28,
