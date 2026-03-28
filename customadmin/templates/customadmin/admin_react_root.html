@@ -24,7 +24,11 @@
     
     <style>
         body { margin: 0; padding: 0; overflow-x: hidden; background: #f8fafc; font-family: 'Inter', sans-serif; }
-        #react-admin-dashboard-root { display: flex; width: 100vw; min-height: 100vh; }
+        #react-admin-dashboard-root { display: flex; width: 100vw; min-height: 100vh; justify-content: center; align-items: center; }
+        .loading-screen { text-align: center; color: #64748b; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top: 3px solid #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #vite-error { display: none; max-width: 400px; margin: 20px auto; padding: 20px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 12px; color: #991b1b; text-align: center; }
     </style>
 </head>
 <body>
@@ -36,7 +40,28 @@
         "{{ csrf_token }}"
     </script>
 
-    <div id="react-admin-dashboard-root"></div>
+    <div id="react-admin-dashboard-root">
+        <div class="loading-screen" id="loading-state">
+            <div class="spinner"></div>
+            <p>Gathering Application Data...</p>
+        </div>
+        <div id="vite-error">
+            <h3 style="margin-top:0">Frontend Not Ready</h3>
+            <p>The admin panel requires the Vite development server to be running.</p>
+            <code style="display:block; padding:10px; background:#f8fafc; border-radius:6px; font-size:12px; margin:10px 0">cd frontend && npm run dev</code>
+            <p style="font-size:13px; margin-bottom:0">Please start the server and refresh this page.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Check if Vite is actually serving
+        fetch('http://127.0.0.1:5174/@vite/client')
+            .catch(err => {
+                console.error("Vite server not found:", err);
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('vite-error').style.display = 'block';
+            });
+    </script>
 
     <script type="module" src="http://127.0.0.1:5174/@vite/client"></script>
     <script type="module" src="http://127.0.0.1:5174/src/main.tsx"></script>

@@ -58,7 +58,7 @@ if (adminContainer) {
   
   if (path === '/register' || path === '/register/') {
     ComponentToRender = <RegisterPage />;
-  } else if (path.includes('/site-admin/login')) {
+  } else if (path === '/site-admin/' || path === '/site-admin' || path.includes('/site-admin/login')) {
     ComponentToRender = <AdminLogin />;
   }
 
