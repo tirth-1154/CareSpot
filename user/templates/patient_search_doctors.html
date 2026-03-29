@@ -4,413 +4,645 @@
 {% block title %}Find a Doctor | CareSpot{% endblock %}
 
 {% block content %} 
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- Custom CSS Styling -->
     <style>
         :root {
-            --primary-color: #0d6efd; /* Medical Blue */
-            --secondary-color: #198754; /* Success Green */
-            --bg-light: #f4f7f6;
-            --sidebar-width: 260px;
-            
-            /* Search Page specifics */
-            --primary-blue: #0d6efd;
-            --soft-green: #198754;
-            --card-radius: 12px;
+            --primary-blue: #076FC5; /* Official Website Blue */
+            --primary-hover: #065da5;
+            --secondary-teal: #10B9B0;
+            --bg-light: #F8FAFB;
+            --text-main: #1A1C1E;
+            --text-muted: #64748B;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --card-radius: 20px;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-light);
-            overflow-x: hidden;
+            color: var(--text-main);
         }
 
-        /* --- Main Content Area --- */
-        .main-content {
-            padding: 85px 30px 30px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        /* --- Page Header --- */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        .page-header h2 {
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
 
-        /* --- Search Page Specific Elements --- */
+        /* --- Search Container --- */
         .search-container {
-            border-radius: var(--card-radius);
-            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
-        }
-
-        .filter-panel {
             background: #fff;
-            border-radius: var(--card-radius);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            border: 1px solid #f0f2f5;
+            border-radius: 24px;
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+            border: 1px solid rgba(0,0,0,0.03);
         }
 
-        .filter-panel h6 {
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 13px;
+        .search-input-group {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 0.5rem 1.25rem;
+            flex-grow: 1;
         }
 
-        .filter-checkbox {
-            accent-color: var(--primary-blue);
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
+        .search-input-group i {
+            color: var(--text-muted);
+            font-size: 1.1rem;
         }
 
-        .doctor-card {
+        .search-input-group input {
+            background: transparent;
             border: none;
-            border-radius: var(--card-radius);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            background: #ffffff;
-            overflow: hidden;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-weight: 500;
+            outline: none;
+            font-size: 0.95rem;
         }
 
-        .doctor-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        .search-inner-form {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
         }
 
-        .doctor-img-wrapper {
-            position: relative;
-            padding-top: 20px;
-            text-align: center;
+        .search-btn {
+            background: var(--primary-blue);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 16px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(7, 111, 197, 0.2);
         }
 
-        .doctor-img-wrapper img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid #e7f1ff;
+        .search-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(7, 111, 197, 0.3);
         }
 
-        .doctor-rating {
-            color: #ffd700;
-            font-size: 14px;
-        }
-        
-        .fee-badge {
-            background-color: #e8f5e9;
-            color: var(--soft-green);
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-        }
-
-        /* Override bootstrap focus rings for a cleaner look */
-        .form-control:focus, .form-select:focus {
-            border-color: #8dbbf8;
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-        }
-
-        /* Footer */
-        .dashboard-footer {
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-            color: #6c757d;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .main-content {
-                padding-top: 80px;
-            }
-        }
-
-        /* Clear Search Button */
         .clear-search-btn {
-            background-color: white !important;
-            color: #6c757d !important;
-            border: 1px solid #dee2e6 !important;
-            transition: none !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 48px !important;
-            height: 48px !important;
-            padding: 0 !important;
+            background: #fff;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
 
         .clear-search-btn:hover {
-            background-color: white !important;
-            color: #6c757d !important;
-            transform: none !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+            background: #f8fafc;
+            color: var(--text-main);
+            border-color: #cbd5e1;
+        }
+
+        /* --- Filter Panel --- */
+        .filter-panel {
+            background: #fff;
+            border-radius: var(--card-radius);
+            padding: 1.75rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.02);
+            position: sticky;
+            top: 100px;
+        }
+
+        .filter-section-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-panel .form-select {
+            border-radius: 12px;
+            padding: 0.6rem 1rem;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+            font-size: 0.9rem;
+            background-color: #f8fafc;
+        }
+
+        .filter-panel .form-check-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .filter-panel .form-check-input:checked {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .apply-filter-btn {
+            background: var(--primary-blue);
+            color: #fff;
+            border-radius: 14px;
+            font-weight: 700;
+            padding: 0.8rem;
+            width: 100%;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .apply-filter-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .reset-filter-btn {
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border-radius: 14px;
+            font-weight: 600;
+            padding: 0.8rem;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: all 0.2s ease;
+            margin-top: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .reset-filter-btn:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        /* --- Doctor Cards (Exact copy logic from booking page) --- */
+        .doctor-card {
+            background: #fff;
+            border-radius: var(--card-radius);
+            padding: 1.25rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        .doctor-card-header {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .doctor-card-img {
+            width: 85px;
+            height: 85px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .doctor-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .rating-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2px 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            color: #FACC15;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .doctor-card-info {
+            flex-grow: 1;
+        }
+
+        .doctor-name {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 2px;
+            color: var(--text-main);
+        }
+
+        .doctor-specialty {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--secondary-teal);
+            margin-bottom: 6px;
+        }
+
+        .doctor-meta-tag {
+            background: #f1f5f9;
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-details-list {
+            background: #F8FAFB;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+            list-style: none;
+            padding-left: 0;
+            flex-grow: 1;
+        }
+
+        .card-details-list li {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .card-details-list li i {
+            margin-top: 3px;
+            font-size: 0.85rem;
+            color: var(--primary-blue);
+        }
+
+        .card-footer-custom {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fee-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .fee-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .action-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 0.5rem;
+        }
+
+        .btn-action-primary {
+            background: var(--primary-blue);
+            color: #fff;
+            border: none;
+            padding: 0.6rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-action-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-action-outline {
+            background: #fff;
+            color: var(--primary-blue);
+            border: 1.5px solid var(--primary-blue);
+            padding: 0.6rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-action-outline:hover {
+            background: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        .btn-action-icon {
+            background: #f1f5f9;
+            color: var(--text-muted);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-action-icon:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        /* --- Sorting Bar --- */
+        .sorting-bar {
+            background: #fff;
+            border-radius: 16px;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .sorting-bar .result-count {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .sorting-bar .result-count strong {
+            color: var(--text-main);
+        }
+
+        .sort-select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sort-select-wrapper span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .sort-select {
+            border: none;
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        /* Responsive Settings */
+        @media (max-width: 991px) {
+            .filter-panel {
+                position: static;
+                margin-bottom: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .action-group {
+                grid-template-columns: 1fr;
+            }
+            .search-inner-form {
+                flex-direction: column;
+            }
+            .clear-search-btn {
+                width: 100%;
+                height: 48px;
+            }
         }
     </style>
 
-
+    <div class="container-fluid px-lg-5 py-4">
         
-        <div class="container-fluid py-0 px-0">
+        <!-- 1. Page Header -->
+        <div class="page-header">
+            <h2 class="text-dark"><i class="fa-solid fa-stethoscope text-primary me-2"></i>Find a Specialist</h2>
+            <p class="text-muted">Discover top-rated doctors and book your mental health consultation in minutes.</p>
+        </div>
 
-            <!-- 1. Page Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-stethoscope text-primary me-2"></i>Find a Doctor</h2>
-                    <p class="text-muted mb-0">Search doctors by specialization, department, or name to book your next appointment.</p>
+        <!-- 2. Modern Search Bar (Premium Style) -->
+        <div class="search-container">
+            <form method="GET" action="{% url 'patientDoctorsList' %}" class="search-inner-form">
+                <div class="search-input-group">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" name="search_query" id="liveSearchInput" placeholder="Search by name, specialty, or clinic..." value="{{ search_query }}" autocomplete="off">
                 </div>
-            </div>
-
-            <!-- 2. Main Search Bar Section -->
-            <div class="search-container bg-white p-3 mb-4">
-                <form method="GET" action="{% url 'patientDoctorsList' %}">
-                    <div class="row g-2 align-items-center">
-                        <div class="col-md-9 position-relative">
-                            <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                            <input type="text" name="search_query" id="liveSearchInput" class="form-control form-control-lg ps-5 border-0 bg-light rounded-pill" placeholder="Search by Doctor Name, Specialization, or City..." value="{{ search_query }}" autocomplete="off">
-                        </div>
-                        <div class="col-md-3 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-pill flex-grow-1 fw-medium shadow-sm">Search</button>
-                            <a href="{% url 'patientDoctorsList' %}" class="btn btn-lg rounded-pill clear-search-btn shadow-sm" title="Clear Search">
-                                <i class="fa-solid fa-xmark"></i>
-                            </a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="row g-4">
+                <!-- Keep existing filters on search -->
+                {% if selected_subcategory %}<input type="hidden" name="subcategory" value="{{ selected_subcategory }}">{% endif %}
+                {% if selected_city %}<input type="hidden" name="city" value="{{ selected_city }}">{% endif %}
                 
-                <!-- 3. Filter Panel (Left Side) -->
-                <div class="col-lg-3">
-                    <div class="filter-panel p-4 position-sticky" style="top: 100px;">
-                        <form method="GET" action="{% url 'patientDoctorsList' %}">
-                            
-                            <!-- Keep search query on filter apply -->
-                            {% if search_query %}
-                            <input type="hidden" name="search_query" value="{{ search_query }}">
-                            {% endif %}
+                <button type="submit" class="search-btn">Search Doctors</button>
+                <a href="{% url 'patientDoctorsList' %}" class="clear-search-btn" title="Clear Search">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
+            </form>
+        </div>
 
-                            <!-- Specialization (Subcategory) Filter -->
-                            <div class="mb-4">
-                                <h6>Specialization</h6>
-                                <select class="form-select text-muted" name="subcategory">
-                                    <option value="">All Specializations</option>
-                                    {% for sc in subcategories %}
-                                    <option value="{{ sc.subcategoryID }}" {% if selected_subcategory == sc.subcategoryID|stringformat:"d" %}selected{% endif %}>{{ sc.subcategoryName }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+        <div class="row g-4">
+            
+            <!-- 3. Filter Sidebar (Preserved) -->
+            <div class="col-lg-3">
+                <div class="filter-panel">
+                    <form method="GET" action="{% url 'patientDoctorsList' %}">
+                        {% if search_query %}<input type="hidden" name="search_query" value="{{ search_query }}">{% endif %}
 
-                            <hr class="text-muted opacity-25">
-
-                            <!-- City Filter -->
-                            <div class="mb-4">
-                                <h6>City</h6>
-                                <select class="form-select text-muted" name="city">
-                                    <option value="">All Cities</option>
-                                    {% for city in cities %}
-                                    <option value="{{ city.cityID }}" {% if selected_city == city.cityID|stringformat:"d" %}selected{% endif %}>{{ city.cityName }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <hr class="text-muted opacity-25">
-
-                            <!-- Experience Filter -->
-                            <div class="mb-4">
-                                <h6>Experience</h6>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="experience" value="" id="exp_all" {% if not selected_experience %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="exp_all">All</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="experience" value="1-5" id="exp_1" {% if selected_experience == '1-5' %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="exp_1">1 - 5 Years</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="experience" value="5-10" id="exp_5" {% if selected_experience == '5-10' %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="exp_5">5 - 10 Years</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="experience" value="10+" id="exp_10" {% if selected_experience == '10+' %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="exp_10">10+ Years</label>
-                                </div>
-                            </div>
-
-                            <hr class="text-muted opacity-25">
-
-                            <!-- Rating Filter -->
-                            <div class="mb-4">
-                                <h6>Rating</h6>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="rating" value="" id="rating_all" {% if not selected_rating %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="rating_all">All Ratings</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="rating" value="4.5" id="rating_45" {% if selected_rating == '4.5' %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="rating_45"><span class="doctor-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></span> 4.5 & up</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="rating" value="4" id="rating_4" {% if selected_rating == '4' %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="rating_4"><span class="doctor-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></span> 4.0 & up</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="rating" value="3" id="rating_3" {% if selected_rating == '3' %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="rating_3"><span class="doctor-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></span> 3.0 & up</label>
-                                </div>
-                            </div>
-
-                            <hr class="text-muted opacity-25">
-
-                            <!-- Consultation Mode Filter -->
-                            <div class="mb-4">
-                                <h6>Consultation Mode</h6>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="mode" value="" id="mode_all" {% if not selected_mode %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="mode_all">All Modes</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="mode" value="1" id="mode_online" {% if selected_mode == '1' %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="mode_online"><i class="fa-solid fa-video text-success me-1"></i> Online</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="mode" value="2" id="mode_offline" {% if selected_mode == '2' %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="mode_offline"><i class="fa-solid fa-hospital text-primary me-1"></i> Offline</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input filter-checkbox" type="radio" name="mode" value="3" id="mode_both" {% if selected_mode == '3' %}checked{% endif %}>
-                                    <label class="form-check-label text-muted" for="mode_both"><i class="fa-solid fa-arrows-left-right text-info me-1"></i> Both</label>
-                                </div>
-                            </div>
-
-                            <!-- Filter Actions -->
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-primary rounded-pill fw-medium">Apply Filters</button>
-                                <a href="{% url 'patientDoctorsList' %}" class="btn btn-outline-secondary rounded-pill fw-medium border-0 bg-light">Reset Filters</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Right Side Content -->
-                <div class="col-lg-9">
-                    
-                    <!-- 5. Sorting Options & Result Count -->
-                    <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm border border-light">
-                        <div class="text-muted fw-medium">
-                            Found <span class="text-dark fw-bold" id="doctorCount">{{ doctors|length }}</span> doctors
-                            {% if search_query %}<span class="ms-2">for "<strong>{{ search_query }}</strong>"</span>{% endif %}
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="text-muted small whitespace-nowrap">Sort by:</span>
-                            <select class="form-select form-select-sm rounded-pill border-0 bg-light fw-medium focus-ring-none" style="width: auto;" id="sortSelect" onchange="applySort(this.value)">
-                                <option value="recommended" {% if selected_sort == 'recommended' or not selected_sort %}selected{% endif %}>Recommended</option>
-                                <option value="rating" {% if selected_sort == 'rating' %}selected{% endif %}>Highest Rating</option>
-                                <option value="experience" {% if selected_sort == 'experience' %}selected{% endif %}>Most Experience</option>
+                        <div class="filter-section mb-4">
+                            <h6 class="filter-section-title">Specialization</h6>
+                            <select class="form-select" name="subcategory">
+                                <option value="">All Specialties</option>
+                                {% for sc in subcategories %}
+                                <option value="{{ sc.subcategoryID }}" {% if selected_subcategory == sc.subcategoryID|stringformat:"d" %}selected{% endif %}>{{ sc.subcategoryName }}</option>
+                                {% endfor %}
                             </select>
                         </div>
-                    </div>
 
-                    <!-- 4. Doctor Results Grid -->
-                    <div class="row g-4" id="doctorGrid">
-                        
-                        {% for doctor in doctors %}
-                        <div class="col-md-6 col-xl-4 doctor-card-wrapper" data-name="{{ doctor.displayName|lower }}" data-specialization="{{ doctor.subcategoryID.subcategoryName|lower }}" data-city="{{ doctor.userID.cityID.cityName|lower }}" data-address="{{ doctor.displayAddress|lower }}">
-                            <div class="card doctor-card h-100 p-3">
-                                <!-- Profile Image -->
-                                <div class="doctor-img-wrapper">
-                                    {% if doctor.userID.profilePic %}
-                                    <img src="{{ doctor.userID.profilePic.url }}" alt="{{ doctor.displayName }}">
-                                    {% else %}
-                                    <img src="https://ui-avatars.com/api/?name={{ doctor.displayName }}&background=random" alt="{{ doctor.displayName }}">
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="card-body text-center px-1 pb-1">
-                                    <h5 class="card-title fw-bold text-dark mb-1">{{ doctor.displayName }}</h5>
-                                    <p class="text-primary fw-medium small mb-2">{{ doctor.subcategoryID.subcategoryName }}</p>
-                                    
-                                    <!-- Rating -->
-                                    <div class="doctor-rating mb-2">
-                                        {% if doctor.avg_rating %}
-                                            {% with rating=doctor.avg_rating %}
-                                                {% if rating >= 1 %}<i class="fa-solid fa-star"></i>{% elif rating >= 0.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
-                                                {% if rating >= 2 %}<i class="fa-solid fa-star"></i>{% elif rating >= 1.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
-                                                {% if rating >= 3 %}<i class="fa-solid fa-star"></i>{% elif rating >= 2.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
-                                                {% if rating >= 4 %}<i class="fa-solid fa-star"></i>{% elif rating >= 3.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
-                                                {% if rating >= 5 %}<i class="fa-solid fa-star"></i>{% elif rating >= 4.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
-                                            {% endwith %}
-                                            <span class="text-muted ms-1 small fw-medium">({{ doctor.avg_rating|floatformat:1 }})</span>
-                                        {% else %}
-                                            <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
-                                            <span class="text-muted ms-1 small fw-medium">(No ratings)</span>
-                                        {% endif %}
-                                    </div>
+                        <div class="filter-section mb-4">
+                            <h6 class="filter-section-title">Location / City</h6>
+                            <select class="form-select" name="city">
+                                <option value="">All Regions</option>
+                                {% for city in cities %}
+                                <option value="{{ city.cityID }}" {% if selected_city == city.cityID|stringformat:"d" %}selected{% endif %}>{{ city.cityName }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-                                    <!-- Meta info list -->
-                                    <ul class="list-unstyled text-muted small text-start mb-4 mt-3 bg-light rounded-3 p-3">
-                                        <li class="mb-2"><i class="fa-regular fa-hospital mt-1 me-2 text-primary w-15px text-center"></i> {{ doctor.displayAddress }}</li>
-                                        <li class="mb-2"><i class="fa-solid fa-briefcase-medical mt-1 me-2 text-warning w-15px text-center"></i> {{ doctor.yearOfExperience }} Years Experience</li>
-                                        <li class="mb-2"><i class="fa-solid fa-phone mt-1 me-2 text-info w-15px text-center"></i> {{ doctor.displayContact }}</li>
-                                        <li class="mb-2"><i class="fa-solid fa-stethoscope mt-1 me-2 text-success w-15px text-center"></i> Mode: {% if doctor.mode == 1 %}Online{% elif doctor.mode == 2 %}Offline{% else %}Both{% endif %}</li>
-                                    </ul>
-                                    
-                                    <!-- Action Buttons -->
-                                    <div class="d-flex gap-2">
-                                        <a href="{% url 'viewDoctorProfile' doctor.doctorID %}" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-medium">View Profile</a>
-                                        <a href="{% url 'patientAppointments' %}?doctor_id={{ doctor.doctorID }}" class="btn btn-primary btn-sm rounded-pill flex-grow-1 fw-medium shadow-sm">Book</a>
-                                        <a href="{% url 'patientMessages' %}?partner={{ doctor.userID.userID }}" class="btn btn-success btn-sm rounded-pill px-3 fw-medium shadow-sm" title="Message Doctor"><i class="fa-solid fa-comment"></i></a>
-                                    </div>
-                                </div>
+                        <div class="filter-section mb-4">
+                            <h6 class="filter-section-title">Experience Level</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="experience" value="" id="exp_all" {% if not selected_experience %}checked{% endif %}>
+                                <label class="form-check-label" for="exp_all">Junior to Senior</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="experience" value="5-10" id="exp_5" {% if selected_experience == '5-10' %}checked{% endif %}>
+                                <label class="form-check-label" for="exp_5">5 - 10 Years</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="experience" value="10+" id="exp_10" {% if selected_experience == '10+' %}checked{% endif %}>
+                                <label class="form-check-label" for="exp_10">10+ Years</label>
                             </div>
                         </div>
-                        {% empty %}
-                        
-                        <!-- No Result UI (server-side) -->
-                        <div class="col-12 text-center py-5 my-5" id="serverNoResult">
-                            <div class="mb-4">
-                                <i class="fa-solid fa-user-doctor text-muted opacity-25" style="font-size: 80px;"></i>
+
+                        <div class="filter-section mb-4">
+                            <h6 class="filter-section-title">Consultation Mode</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="mode" value="1" id="mode_online" {% if selected_mode == '1' %}selected{% endif %}>
+                                <label class="form-check-label" for="mode_online">Online Only</label>
                             </div>
-                            <h4 class="fw-bold text-dark">No doctors found{% if search_query %} matching "{{ search_query }}"{% endif %}.</h4>
-                            <p class="text-muted fs-5">Try adjusting your filters or clearing your search query.</p>
-                            <a href="{% url 'patientAppointments' %}?doctor_id={{ doctor.doctorID }}" class="btn btn-primary btn-sm rounded-pill w-50 fw-medium shadow-sm">Book Appt.</a>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="mode" value="2" id="mode_offline" {% if selected_mode == '2' %}selected{% endif %}>
+                                <label class="form-check-label" for="mode_offline">In-Clinic Only</label>
+                            </div>
                         </div>
-                        
-                        {% endfor %}
 
-                    </div>
-
-                    <!-- 6. Pagination -->
-                    {% if doctors.has_other_pages or True %} <!-- Added True to show static pagination -->
-                    <nav aria-label="Doctor search pagination" class="mt-5">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link rounded-pill px-3 me-2 border-0 shadow-sm text-secondary" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                            </li>
-                            <li class="page-item active" aria-current="page">
-                                <a class="page-link rounded-circle border-0 shadow-sm mx-1" href="#" style="background-color: var(--primary-blue);">1</a>
-                            </li>
-                            <li class="page-item"><a class="page-link rounded-circle border-0 text-dark mx-1 fw-medium bg-white shadow-sm" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link rounded-circle border-0 text-dark mx-1 fw-medium bg-white shadow-sm" href="#">3</a></li>
-                            <li class="page-item">
-                                <a class="page-link rounded-pill px-3 ms-2 border-0 text-primary shadow-sm bg-white fw-medium" href="#">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    {% endif %}
-
+                        <div class="pt-2">
+                            <button type="submit" class="apply-filter-btn">Apply Filters</button>
+                            <a href="{% url 'patientDoctorsList' %}" class="reset-filter-btn">Reset Filters</a>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
 
-    <!-- No Result (JS live search) - hidden by default -->
-    <div class="col-12 text-center py-5 my-5 d-none" id="liveNoResult">
-        <div class="mb-4">
-            <i class="fa-solid fa-user-doctor text-muted opacity-25" style="font-size: 80px;"></i>
+            <!-- 4. Result Grid (Premium Cards) -->
+            <div class="col-lg-9">
+                
+                <div class="sorting-bar">
+                    <div class="result-count">
+                        Found <strong><span id="doctorCount">{{ doctors|length }}</span> Specialist{{ doctors|pluralize }}</strong>
+                    </div>
+                    <div class="sort-select-wrapper">
+                        <span>Sort by</span>
+                        <select class="sort-select" onchange="applySort(this.value)">
+                            <option value="recommended" {% if selected_sort == 'recommended' or not selected_sort %}selected{% endif %}>Recommended</option>
+                            <option value="rating" {% if selected_sort == 'rating' %}selected{% endif %}>Top Rated</option>
+                            <option value="experience" {% if selected_sort == 'experience' %}selected{% endif %}>Experience</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-4" id="doctorGrid">
+                    {% for doc in doctors %}
+                    <div class="col-md-6 col-xl-4 doctor-card-wrapper" 
+                         data-name="{{ doc.displayName|lower }}" 
+                         data-specialization="{{ doc.subcategoryID.subcategoryName|lower }}" 
+                         data-city="{{ doc.userID.cityID.cityName|lower }}" 
+                         data-address="{{ doc.displayAddress|lower }}">
+                        
+                        <div class="doctor-card">
+                            <div class="doctor-card-header">
+                                <div class="doctor-card-img">
+                                    {% if doc.userID.profilePic %}
+                                    <img src="{{ doc.userID.profilePic.url }}" alt="{{ doc.displayName }}">
+                                    {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ doc.displayName }}&background=076FC5&color=fff" alt="{{ doc.displayName }}">
+                                    {% endif %}
+                                    <div class="rating-badge">
+                                        <i class="fa-solid fa-star"></i>
+                                        {{ doc.avg_rating|default:"4.5"|floatformat:1 }}
+                                    </div>
+                                </div>
+                                <div class="doctor-card-info">
+                                    <h3 class="doctor-name">{{ doc.displayName }}</h3>
+                                    <p class="doctor-specialty">{{ doc.subcategoryID.subcategoryName }}</p>
+                                    <div class="doctor-meta-tag">
+                                        <i class="fa-solid fa-briefcase-medical"></i>
+                                        {{ doc.yearOfExperience }}Y Exp.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ul class="card-details-list">
+                                <li>
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    {{ doc.displayAddress|truncatechars:45 }}
+                                </li>
+                                <li>
+                                    <i class="fa-solid fa-video"></i>
+                                    Mode: {% if doc.mode == 1 %}Online{% elif doc.mode == 2 %}Offline{% else %}Both{% endif %}
+                                </li>
+                                <li>
+                                    <i class="fa-solid fa-language"></i>
+                                    Spoken: English, Hindi
+                                </li>
+                            </ul>
+
+                            <div class="card-footer-custom">
+                                <div class="fee-row">
+                                    <span class="fee-label">Consultation Fee</span>
+                                    <span class="fee-value">₹{{ doc.consultationFee }}</span>
+                                </div>
+                                <div class="action-group">
+                                    <a href="{% url 'patientAppointments' %}?doctor_id={{ doc.doctorID }}" class="btn-action-primary">Book</a>
+                                    <a href="{% url 'viewDoctorProfile' doc.doctorID %}" class="btn-action-outline">Profile</a>
+                                    <a href="{% url 'patientMessages' %}?partner={{ doc.userID.userID }}" class="btn-action-icon" title="Message"><i class="fa-solid fa-comment"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <img src="/media/images/no-results.png" alt="No Result" style="width: 120px; opacity: 0.5; margin-bottom: 1.5rem;">
+                        <h4 class="fw-bold">No Specialists Found</h4>
+                        <p class="text-muted">Try removing some filters to find more experts.</p>
+                        <a href="{% url 'patientDoctorsList' %}" class="btn-action-primary d-inline-block px-4 mt-2">View All Doctors</a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
         </div>
-        <h4 class="fw-bold text-dark">No doctors match your search.</h4>
-        <p class="text-muted fs-5">Try a different keyword.</p>
     </div>
 
-    <!-- Sort & Live Search JS -->
+    <!-- No Result UI for JS Search -->
+    <div id="liveNoResult" class="col-12 text-center py-5 d-none">
+        <h4 class="fw-bold">No specialists match your search.</h4>
+        <p class="text-muted">Try a different keyword or name.</p>
+    </div>
+
     <script>
         function applySort(sortVal) {
             const url = new URL(window.location.href);
@@ -418,7 +650,7 @@
             window.location.href = url.toString();
         }
 
-        // Live search as you type
+        // Live search implementation
         const searchInput = document.getElementById('liveSearchInput');
         const doctorCards = document.querySelectorAll('.doctor-card-wrapper');
         const doctorCount = document.getElementById('doctorCount');
@@ -437,8 +669,7 @@
                 const address = card.dataset.address || '';
                 const fullText = name + ' ' + spec + ' ' + city + ' ' + address;
 
-                // Every typed word must match somewhere in the card's text
-                const matches = words.length === 0 || words.every(word => fullText.includes(word));
+                const matches = words.every(word => fullText.includes(word));
 
                 if (matches) {
                     card.style.display = '';
@@ -448,17 +679,20 @@
                 }
             });
 
-            // Update count
             doctorCount.textContent = visibleCount;
 
-            // Show/hide no-result message
             if (visibleCount === 0 && doctorCards.length > 0) {
                 liveNoResult.classList.remove('d-none');
-                doctorGrid.appendChild(liveNoResult);
+                if (!document.getElementById('liveNoResultInGrid')) {
+                    const clone = liveNoResult.cloneNode(true);
+                    clone.id = 'liveNoResultInGrid';
+                    clone.classList.remove('d-none');
+                    doctorGrid.appendChild(clone);
+                }
             } else {
-                liveNoResult.classList.add('d-none');
+                const clone = document.getElementById('liveNoResultInGrid');
+                if (clone) clone.remove();
             }
         });
     </script>
-
 {% endblock %}

@@ -1,618 +1,424 @@
 {% extends 'patient_base.html' %}
+{% load static %}
 
 {% block title %}Book Appointment | CareSpot{% endblock %}
 
 {% block content %}
+<!-- Google Fonts for modern typography -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
 <style>
     :root {
-        --primary-color: #0d6efd;
-        --secondary-color: #198754;
-        --bg-light: #f4f7f6;
-        --sidebar-width: 260px;
+        --primary-blue: #076FC5;
+        --primary-blue-dark: #004b91;
+        --bg-body: #F8FAFB;
+        --text-main: #1E293B;
+        --text-muted: #64748B;
+        --card-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
     }
 
     body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-light);
-        overflow-x: hidden;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-main);
     }
 
-    .main-content {
-        padding: 85px 30px 30px;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .premium-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        background: #fff;
-        overflow: hidden;
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: #495057;
-        margin-bottom: 0.5rem;
-    }
-
-    .form-control,
-    .form-select {
-        border-radius: 10px;
-        padding: 0.75rem 1.25rem;
-        border: 1px solid #e9ecef;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.05);
-    }
-
-    .summary-card {
-        background: #f8fbff;
-        border-radius: 12px;
-        border: 1px dashed #0d6efd;
-    }
-
-    /* Payment Method Cards */
-    .payment-method-card {
-        border: 2px solid #e9ecef;
-        border-radius: 12px;
-        padding: 18px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: white;
-    }
-    .payment-method-card:hover {
-        border-color: #0d6efd;
-        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
-    }
-    .payment-radio:checked + .payment-method-card {
-        border-color: #0d6efd;
-        background: linear-gradient(135deg, #f0f7ff 0%, #e8f1ff 100%);
-        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.15);
-    }
-    .payment-radio {
-        display: none;
-    }
-    .payment-method-card .icon-circle {
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
+    .booking-wrapper {
+        min-height: calc(100vh - 100px);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
-    }
-    
-    /* Fee Breakdown */
-    .fee-breakdown {
-        background: linear-gradient(135deg, #f8fbff 0%, #f0f4ff 100%);
-        border-radius: 12px;
-        border: 1px solid #e0e8f5;
-        padding: 20px;
-    }
-    .fee-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px dashed #e0e8f5;
-    }
-    .fee-row:last-child {
-        border-bottom: none;
-    }
-    .fee-total {
-        background: #0d6efd;
-        color: white;
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-top: 10px;
+        padding: 40px 20px;
     }
 
-    @media (max-width: 768px) {
-        .main-content {
-            padding-top: 80px;
-        }
+    .booking-standalone-card {
+        background: white;
+        width: 100%;
+        max-width: 1000px;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        min-height: 650px;
+        border: 1px solid rgba(0, 0, 0, 0.03);
     }
 
-    /* Custom Premium Alerts */
-    .messages-container {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+    /* Left Section */
+    .booking-left {
+        flex: 1.1;
+        padding: 50px;
+        border-right: 1px solid #EEF2F6;
     }
-    .custom-alert {
-        display: flex;
-        align-items: start;
-        padding: 16px 20px;
-        border-radius: 12px;
-        background: #fff;
-        border-left: 5px solid transparent;
-        position: relative;
-        animation: slideInDown 0.4s ease-out;
-        transition: all 0.3s ease;
+
+    .booking-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--primary-blue);
+        margin-bottom: 30px;
+        letter-spacing: -1px;
     }
-    .fade-in {
-        animation: fadeIn 0.5s ease-in;
+
+    /* Specialist Selection Container */
+    .specialist-selector {
+        margin-bottom: 35px;
     }
-    @keyframes slideInDown {
-        from { transform: translateY(-20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
+    .selector-label {
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #94A3B8;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        display: block;
     }
-    .custom-alert.error, .custom-alert.danger {
-        border-left-color: #ef4444; 
-        background: #fef2f2;
-    }
-    .custom-alert.success {
-        border-left-color: #10b981;
-        background: #ecfdf5;
-    }
-    .custom-alert.info {
-        border-left-color: #3b82f6;
-        background: #eff6ff;
-    }
-    .alert-icon {
-        margin-right: 15px;
-        font-size: 1.25rem;
-    }
-    .error .alert-icon { color: #ef4444; }
-    .success .alert-icon { color: #10b981; }
-    .info .alert-icon { color: #3b82f6; }
     
-    .alert-content {
-        flex-grow: 1;
-        padding-right: 20px;
-    }
-    .alert-title {
+    /* Selector UI */
+    .custom-select-wrapper { position: relative; }
+    .doctor-picker {
+        width: 100%;
+        padding: 18px 25px;
+        border-radius: 18px;
+        border: 2px solid #F1F5F9;
         font-weight: 700;
-        margin-bottom: 2px;
-        color: #1a1a1a;
-        font-size: 0.95rem;
-    }
-    .alert-text {
-        font-size: 0.88rem;
-        color: #4b5563;
-        margin: 0;
-    }
-    .alert-close {
-        background: none;
-        border: none;
-        color: #9ca3af;
+        color: var(--text-main);
+        appearance: none;
+        background: #F8FAFB url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") no-repeat right 20px center;
         cursor: pointer;
-        padding: 5px;
-        border-radius: 5px;
-        transition: background 0.2s;
-        align-self: flex-start;
+        transition: 0.3s;
     }
-    .alert-close:hover {
-        background: rgba(0,0,0,0.05);
-        color: #4b5563;
+    .doctor-picker:focus { border-color: var(--primary-blue); outline: none; }
+
+    /* Badge UI */
+    .selected-doc-badge {
+        display: none;
+        align-items: center;
+        gap: 20px;
+        background: #F0F7FF;
+        padding: 20px;
+        border-radius: 20px;
+        border: 1px solid rgba(7, 111, 197, 0.1);
     }
+    .badge-img { width: 60px; height: 60px; border-radius: 15px; object-fit: cover; }
+    .badge-info h4 { margin: 0; font-weight: 800; font-size: 1.1rem; color: var(--primary-blue); }
+    .badge-info p { margin: 0; font-size: 0.9rem; font-weight: 600; color: #64748B; }
+
+    /* Mode Toggles */
+    .mode-pills { background: #F1F5F9; padding: 6px; border-radius: 20px; display: flex; margin-bottom: 30px; }
+    .m-pill { flex: 1; padding: 12px; text-align: center; font-weight: 700; font-size: 1rem; border-radius: 16px; cursor: pointer; transition: 0.2s; color: #64748B; border: none; background: transparent; }
+    .m-pill.active { background: white; color: var(--primary-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+    .m-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-blue); margin-bottom: 8px; }
+    .m-desc { color: #64748B; font-size: 0.95rem; line-height: 1.5; margin-bottom: 30px; }
+
+    /* Calendar */
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .cal-label { font-weight: 800; font-size: 1.1rem; color: var(--text-main); }
+    .cal-btn-grp { display: flex; gap: 8px; }
+    .cal-btn { width: 34px; height: 34px; border: 1.5px solid #E2E8F0; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748B; cursor: pointer; }
+    .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.85rem; font-weight: 800; color: #94A3B8; margin-bottom: 15px; }
+    .cal-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; color: #64748B; border-radius: 50%; transition: 0.2s; }
+    .cal-day-cell:hover:not(.disabled) { background: #F1F5F9; color: var(--text-main); }
+    .cal-day-cell.selected { background: var(--primary-blue) !important; color: white !important; }
+    .cal-day-cell.disabled { opacity: 0.3; cursor: not-allowed; }
+    .cal-day-cell.today { color: var(--primary-blue); font-weight: 800; position: relative; }
+    .cal-day-cell.today::after { content: ''; position: absolute; bottom: 8px; width: 4px; height: 4px; background: var(--primary-blue); border-radius: 50%; }
+
+    /* Right Section */
+    .booking-right { flex: 0.9; padding: 50px; background: #fff; display: flex; flex-direction: column; }
+    .section-heading { font-size: 0.85rem; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 25px; }
+    .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 40px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
+    .slots-grid::-webkit-scrollbar { width: 4px; }
+    .slots-grid::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+    .slot-item { padding: 16px 15px; border: 2px solid #F1F5F9; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+    .slot-item.active { border-color: var(--primary-blue); background: #F0F7FF; }
+    .radio-ui { width: 22px; height: 22px; border: 2.5px solid #CBD5E1; border-radius: 50%; position: relative; }
+    .slot-item.active .radio-ui { border-color: var(--primary-blue); }
+    .slot-item.active .radio-ui::after { content: ''; position: absolute; inset: 4px; background: var(--primary-blue); border-radius: 50%; }
+    .slot-time { font-weight: 800; font-size: 1.1rem; color: var(--text-main); }
+
+    .summary-card { background: #fff; border: 2px solid #F1F5F9; border-radius: 25px; padding: 30px; margin-top: auto; }
+    .s-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 600; color: #64748B; font-size: 0.95rem; }
+    .s-row .amt { font-weight: 800; color: var(--text-main); }
+    .s-divider { border-top: 2px dashed #F1F5F9; margin: 20px 0; }
+    .s-total { display: flex; justify-content: space-between; font-size: 1.35rem; font-weight: 900; color: var(--text-main); }
+
+    .book-final-btn { width: 100%; background: var(--primary-blue); color: white; padding: 20px; border-radius: 20px; font-weight: 800; font-size: 1.15rem; border: none; margin-top: 30px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .book-final-btn:hover:not(:disabled) { background: var(--primary-blue-dark); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(7, 111, 197, 0.2); }
+    .book-final-btn:disabled { background: #E2E8F0; cursor: not-allowed; }
+
+    .trust-footer { text-align: center; margin-top: 25px; color: #94A3B8; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+    @media (max-width: 900px) { .booking-standalone-card { flex-direction: column; } .booking-left { border-right: none; border-bottom: 2px solid #F1F5F9; } }
 </style>
 
-    <!-- MAIN CONTENT -->
-        <div class="container-fluid">
+<div class="booking-wrapper">
+    <div class="booking-standalone-card">
+        <!-- Left Pane -->
+        <div class="booking-left">
+            <h2 class="booking-title">Book Appointment</h2>
 
-            <!-- Page Header -->
-            <div class="mb-4">
-                <h2 class="fw-bold mb-1" style="color:#0F6DB6;">Book Appointment</h2>
-                <p class="text-muted">Schedule an appointment with your preferred doctor.</p>
+            <div class="specialist-selector">
+                <span class="selector-label">Choose Specialist</span>
+                
+                <!-- Dynamic Selector State -->
+                <div id="pickerContainer" class="custom-select-wrapper" style="display: {% if selected_doctor %}none{% else %}block{% endif %};">
+                    <select class="doctor-picker" id="docPicker" onchange="onSpecialistChange(this.value)">
+                        <option value="">Select a Doctor...</option>
+                        {% for d in doctor %}
+                            <option value="{{ d.doctorID }}" {% if selected_doctor and selected_doctor.doctorID == d.doctorID %}selected{% endif %}>
+                                {{ d.displayName }} ({{ d.subcategoryID.subcategoryName }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="badgeContainer" class="selected-doc-badge" style="display: {% if selected_doctor %}flex{% else %}none{% endif %};">
+                    <img id="badgeImg" src="{% if selected_doctor.userID.profilePic %}{{ selected_doctor.userID.profilePic.url }}{% else %}https://ui-avatars.com/api/?name={{ selected_doctor.displayName }}&background=076FC5&color=fff{% endif %}" class="badge-img">
+                    <div class="badge-info">
+                        <h4 id="badgeName">{{ selected_doctor.displayName|default:"" }}</h4>
+                        <p id="badgeSpec">{{ selected_doctor.subcategoryID.subcategoryName|default:"" }}</p>
+                    </div>
+                    <button onclick="resetSpecialist()" class="ms-auto btn btn-link text-primary fw-bold small text-decoration-none p-0 border-0 bg-transparent">Change</button>
+                </div>
             </div>
 
-            <div class="row g-4">
-                <!-- Left Column: Form -->
-                <div class="col-lg-8">
+            <span class="selector-label">Preferred Mode</span>
+            <div class="mode-pills">
+                <button class="m-pill active" id="mOff" onclick="updateMode('offline')">Offline</button>
+                <button class="m-pill" id="mOn" onclick="updateMode('online')">Online</button>
+            </div>
 
-                    <!-- Booking Form -->
-                    <div class="premium-card p-4 p-md-5 mb-5">
-                        <form method="POST" class="needs-validation" novalidate id="bookingForm">
-                            {% csrf_token %}
+            <div class="mode-desc-box">
+                <h4 class="m-title" id="modeTitle">Offline consultation with a doctor</h4>
+                <p class="m-desc" id="modeDesc">Visit the doctor at their clinic for a physical consultation. The address will be provided in your booking confirmation.</p>
+            </div>
 
-                            {% if msg or messages %}
-                            <div class="messages-container mb-4">
-                                {% if msg %}
-                                <div class="custom-alert error fade-in shadow-sm">
-                                    <div class="alert-icon">
-                                        <i class="fa-solid fa-circle-exclamation"></i>
-                                    </div>
-                                    <div class="alert-content">
-                                        <h6 class="alert-title">Oops! Something went wrong</h6>
-                                        <p class="alert-text">{{ msg }}</p>
-                                    </div>
-                                    <button type="button" class="alert-close" onclick="this.parentElement.style.display='none';">
-                                        <i class="fa-solid fa-xmark"></i>
-                                    </button>
-                                </div>
-                                {% endif %}
-
-                                {% if messages %}
-                                {% for message in messages %}
-                                <div class="custom-alert {{ message.tags }} fade-in shadow-sm">
-                                    <div class="alert-icon">
-                                        {% if message.tags == 'success' %}
-                                            <i class="fa-solid fa-circle-check"></i>
-                                        {% elif message.tags == 'error' %}
-                                            <i class="fa-solid fa-circle-exclamation"></i>
-                                        {% else %}
-                                            <i class="fa-solid fa-circle-info"></i>
-                                        {% endif %}
-                                    </div>
-                                    <div class="alert-content">
-                                        <h6 class="alert-title">
-                                            {% if message.tags == 'success' %}Success{% elif message.tags == 'error' %}Validation Error{% else %}Notification{% endif %}
-                                        </h6>
-                                        <p class="alert-text">{{ message }}</p>
-                                    </div>
-                                    <button type="button" class="alert-close" onclick="this.parentElement.style.display='none';">
-                                        <i class="fa-solid fa-xmark"></i>
-                                    </button>
-                                </div>
-                                {% endfor %}
-                                {% endif %}
-                            </div>
-                            {% endif %}
-
-                            <h5 class="fw-bold mb-4 border-bottom pb-2">Select Doctor</h5>
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-12">
-                                    <label class="form-label">Choose Doctor *</label>
-                                    <select class="form-select" name="doctor" id="doctorSelect" required>
-                                        <option value="" disabled selected>-- Select a Doctor --</option>
-                                        {% for doc in doctor %}
-                                            <option value="{{ doc.doctorID }}" 
-                                                    data-fees="{{ doc.consultationFees|floatformat:0 }}"
-                                                    {% if request.GET.doctor_id == doc.doctorID|stringformat:"i" %}selected{% endif %}>
-                                                {{ doc.displayName }} — {{ doc.subcategoryID.subcategoryName }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                    <div class="invalid-feedback">Please select a doctor.</div>
-                                </div>
-                            </div>
-                            
-                            <!-- Mode Selection -->
-                            <h5 class="fw-bold mb-4 border-bottom pb-2 mt-4">Appointment Mode</h5>
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-12">
-                                    <div class="d-flex gap-4">
-                                        <div class="form-check custom-radio">
-                                            <input class="form-check-input" type="radio" name="appointment_mode" id="modeOffline" value="offline" checked>
-                                            <label class="form-check-label fw-bold" for="modeOffline">
-                                                <i class="fa-solid fa-hospital-user text-primary me-2"></i> In-Clinic Visit
-                                            </label>
-                                        </div>
-                                        <div class="form-check custom-radio">
-                                            <input class="form-check-input" type="radio" name="appointment_mode" id="modeOnline" value="online">
-                                            <label class="form-check-label fw-bold" for="modeOnline">
-                                                <i class="fa-solid fa-video text-success me-2"></i> Online Video Consult
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h5 class="fw-bold mb-4 border-bottom pb-2">Schedule</h5>
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <label class="form-label">Appointment Date *</label>
-                                    <input type="date" class="form-control" name="app_date" id="app_date" required>
-                                    <div class="invalid-feedback">Please select a date.</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Select Time Slot *</label>
-                                    <select class="form-select" name="time_slot" id="time_slot" required>
-                                        <option value="" disabled selected>-- Select a Date First --</option>
-                                    </select>
-                                    <div class="invalid-feedback">Please select a time slot.</div>
-                                </div>
-                            </div>
-
-                            <!-- Payment Method Section -->
-                            <h5 class="fw-bold mb-4 border-bottom pb-2 mt-4" id="paymentMethodTitle">
-                                <i class="fa-solid fa-credit-card me-2 text-primary"></i>Payment Method
-                            </h5>
-                            <div class="row g-3 mb-4" id="paymentMethodSection">
-                                <div class="col-md-6" id="onlinePayOption">
-                                    <input type="radio" name="payment_method" id="payOnline" value="razorpay" class="payment-radio" checked>
-                                    <label for="payOnline" class="payment-method-card d-flex align-items-center gap-3 w-100">
-                                        <div class="icon-circle bg-primary bg-opacity-10 text-primary">
-                                            <i class="fa-solid fa-mobile-screen"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="fw-bold mb-0">Pay Online</h6>
-                                            <small class="text-muted">UPI, Card, Net Banking</small>
-                                        </div>
-                                    </label>
-                                </div>
-                                <div class="col-md-6" id="cashPayOption">
-                                    <input type="radio" name="payment_method" id="payCash" value="cash" class="payment-radio">
-                                    <label for="payCash" class="payment-method-card d-flex align-items-center gap-3 w-100">
-                                        <div class="icon-circle bg-success bg-opacity-10 text-success">
-                                            <i class="fa-solid fa-money-bill-wave"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="fw-bold mb-0">Cash at Clinic</h6>
-                                            <small class="text-muted">Pay during your visit</small>
-                                        </div>
-                                    </label>
-                                </div>
-                                <!-- Online mode forced message -->
-                                <div class="col-12" id="onlineModeMessage" style="display:none;">
-                                    <div class="alert alert-info border-0 d-flex align-items-center">
-                                        <i class="fa-solid fa-circle-info me-2 fs-5"></i>
-                                        <span>Online consultations require <strong>online payment</strong>. Please pay via UPI or Card.</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex gap-3">
-                                <input type="submit" name="btnBook" value="Book Appointment"
-                                    class="btn btn-primary px-5 py-3 rounded-pill fw-bold shadow-sm" id="bookBtn">
-                                <a href="{% url 'patientDoctorsList' %}"
-                                    class="btn btn-outline-secondary px-4 py-3 rounded-pill fw-bold border-0 bg-light">Cancel</a>
-                            </div>
-                        </form>
+            <div class="calendar-sec">
+                <div class="cal-header">
+                    <div class="cal-label" id="calMonthYear"></div>
+                    <div class="cal-btn-grp">
+                        <button class="cal-btn" onclick="moveMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="cal-btn" onclick="moveMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                 </div>
-
-                <!-- Right Column: Summary -->
-                <div class="col-lg-4">
-                    <div class="position-sticky" style="top: 85px;">
-                        <div class="premium-card p-4">
-                            <h5 class="fw-bold mb-4">Appointment Summary</h5>
-                            <div class="summary-card p-3 mb-4">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <span class="text-muted">Doctor:</span>
-                                    <span class="fw-bold" id="summDoctor">Not Selected</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-3 border-top pt-3">
-                                    <span class="text-muted">Date:</span>
-                                    <span class="fw-bold" id="summDate">-- / -- / ----</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-3">
-                                    <span class="text-muted">Time:</span>
-                                    <span class="fw-bold" id="summTime">-- : -- --</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-3 border-top pt-3">
-                                    <span class="text-muted">Mode:</span>
-                                    <span class="fw-bold text-primary" id="summMode"><i class="fa-solid fa-hospital-user me-1"></i> In-Clinic</span>
-                                </div>
-                            </div>
-
-                            <!-- Fee Breakdown -->
-                            <div class="fee-breakdown mb-3" id="feeBreakdown" style="display:none;">
-                                <h6 class="fw-bold mb-3"><i class="fa-solid fa-receipt me-2 text-primary"></i>Fee Breakdown</h6>
-                                <div class="fee-row">
-                                    <span class="text-muted">Doctor's Fees</span>
-                                    <span class="fw-bold" id="summDoctorFees">₹0</span>
-                                </div>
-                                <div class="fee-row">
-                                    <span class="text-muted">Platform Fee</span>
-                                    <span class="fw-bold" id="summPlatformFee">₹{{ PLATFORM_FEE }}</span>
-                                </div>
-                                <div class="fee-total d-flex justify-content-between">
-                                    <span class="fw-bold">Total Amount</span>
-                                    <span class="fw-bold fs-5" id="summTotal">₹0</span>
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-between mb-3" id="payMethodDisplay" style="display:none;">
-                                <span class="text-muted">Payment:</span>
-                                <span class="fw-bold" id="summPayMethod">
-                                    <i class="fa-solid fa-mobile-screen me-1 text-primary"></i> Online
-                                </span>
-                            </div>
-
-                            <div class="alert alert-primary border-0 small" id="paymentAlert">
-                                <i class="fa-solid fa-circle-info me-2"></i> Select a doctor to see the fee breakdown.
-                            </div>
-                        </div>
-                    </div>
+                <div class="cal-weekdays">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                 </div>
+                <div id="calGrid" class="cal-days-grid"></div>
             </div>
         </div>
 
+        <!-- Right Pane -->
+        <div class="booking-right">
+            <span class="section-heading">Available Time Slot</span>
+            <div class="slots-grid" id="slotsContainer">
+                <div class="text-center py-5" style="opacity: 0.5;">
+                    <i class="fa-regular fa-clock fs-1 mb-3"></i>
+                    <p class="fw-bold">Please select a date first</p>
+                </div>
+            </div>
 
-    <!-- UI Logic Scripts -->
-    <script>
-        // Validation logic
-        (function () {
-            'use strict'
-            var forms = document.querySelectorAll('.needs-validation')
-            Array.prototype.slice.call(forms).forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
-        })()
+            <div class="summary-card">
+                <div class="s-row">
+                    <span>Consultation Fee</span>
+                    <span class="amt" id="sumFee">₹0</span>
+                </div>
+                <div class="s-row">
+                    <span>Tax / Platform Fee</span>
+                    <span class="amt">₹{{ PLATFORM_FEE|default:100 }}</span>
+                </div>
+                <div class="s-divider"></div>
+                <div class="s-total">
+                    <span>Total</span>
+                    <span id="sumTotal">₹0</span>
+                </div>
+            </div>
 
-        const dateInput = document.getElementById('app_date');
-        const summDate = document.getElementById('summDate');
-        const summTime = document.getElementById('summTime');
-        const summDoctor = document.getElementById('summDoctor');
-        const doctorSelect = document.getElementById('doctorSelect');
-        const timeSlot = document.getElementById('time_slot');
-        const modeRadios = document.querySelectorAll('input[name="appointment_mode"]');
-        const summMode = document.getElementById('summMode');
-        const paymentAlert = document.getElementById('paymentAlert');
-        const feeBreakdown = document.getElementById('feeBreakdown');
-        const payMethodDisplay = document.getElementById('payMethodDisplay');
-        const onlineModeMessage = document.getElementById('onlineModeMessage');
-        const cashPayOption = document.getElementById('cashPayOption');
-        const payOnline = document.getElementById('payOnline');
-        const payCash = document.getElementById('payCash');
-        const summPayMethod = document.getElementById('summPayMethod');
+            <form method="POST" id="bookingForm">
+                {% csrf_token %}
+                <input type="hidden" name="doctor" id="hDoc" value="{{ selected_doctor.doctorID|default:'' }}" />
+                <input type="hidden" name="app_date" id="hDate" />
+                <input type="hidden" name="time_slot" id="hSlot" />
+                <input type="hidden" name="appointment_mode" id="hMode" value="offline" />
+                <input type="hidden" name="payment_method" id="hPay" value="cash" />
+                <input type="hidden" name="btnBook" value="Book Appointment" />
 
-        const PLATFORM_FEE = {{ PLATFORM_FEE }};
-        let currentDoctorFees = 0;
+                <button type="submit" class="book-final-btn" id="finishBtn" disabled>Proceed to Booking <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
 
-        // Update fees on doctor select
-        function updateFeeDisplay() {
-            if (currentDoctorFees > 0) {
-                const total = currentDoctorFees + PLATFORM_FEE;
-                document.getElementById('summDoctorFees').textContent = '₹' + currentDoctorFees;
-                document.getElementById('summPlatformFee').textContent = '₹' + PLATFORM_FEE;
-                document.getElementById('summTotal').textContent = '₹' + total;
-                feeBreakdown.style.display = 'block';
-                payMethodDisplay.style.display = 'flex';
-                paymentAlert.innerHTML = '<i class="fa-solid fa-shield-check me-2"></i> Secure payment via Razorpay.';
-                paymentAlert.className = 'alert alert-success border-0 small';
-            }
+            <div class="trust-footer"><i class="fa-solid fa-shield-check"></i> Secure booking with CareSpot</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Injection of Doctor Data
+    const doctorsData = {
+        {% for d in doctor %}
+            "{{ d.doctorID }}": {
+                name: "{{ d.displayName|escapejs }}",
+                specialization: "{{ d.subcategoryID.subcategoryName|escapejs }}",
+                fee: parseInt("{{ d.consultationFees|default:0 }}"),
+                pic: "{% if d.userID.profilePic %}{{ d.userID.profilePic.url }}{% else %}https://ui-avatars.com/api/?name={{ d.displayName|escapejs }}&background=076FC5&color=fff{% endif %}"
+            },
+        {% endfor %}
+    };
+
+    const platFee = parseInt("{{ PLATFORM_FEE|default:100 }}");
+    let currentDocId = "{{ selected_doctor.doctorID|default:'' }}";
+    let curMonth = new Date().getMonth();
+    let curYear = new Date().getFullYear();
+    let selDate = null, selSlot = null, curMode = 'offline';
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    function init() {
+        if(currentDocId) {
+            onSpecialistChange(currentDocId, false);
+        } else {
+            renderCal();
         }
+    }
 
-        // Update payment method summary
-        function updatePayMethodSummary() {
-            if (payOnline.checked) {
-                summPayMethod.innerHTML = '<i class="fa-solid fa-mobile-screen me-1 text-primary"></i> Online (UPI/Card)';
-            } else {
-                summPayMethod.innerHTML = '<i class="fa-solid fa-money-bill-wave me-1 text-success"></i> Cash at Clinic';
-            }
+    function onSpecialistChange(docId, resetUI = true) {
+        if(!docId) return;
+        currentDocId = docId;
+        const data = doctorsData[docId];
+        
+        // Update State
+        document.getElementById('hDoc').value = docId;
+        
+        // Update UI Badge
+        document.getElementById('badgeName').innerText = data.name;
+        document.getElementById('badgeSpec').innerText = data.specialization;
+        document.getElementById('badgeImg').src = data.pic;
+        document.getElementById('badgeContainer').style.display = 'flex';
+        document.getElementById('pickerContainer').style.display = 'none';
+
+        // Update Fees
+        document.getElementById('sumFee').innerText = '₹' + data.fee;
+        document.getElementById('sumTotal').innerText = '₹' + (data.fee + platFee);
+
+        if(resetUI) {
+            resetSelections();
+            renderCal();
+        } else {
+            renderCal();
         }
+    }
 
-        // Mode Change Listener
-        modeRadios.forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                if(e.target.value === 'online') {
-                    summMode.innerHTML = '<i class="fa-solid fa-video me-1 text-success"></i> <span class="text-success">Online Consult</span>';
-                    // Force online payment
-                    cashPayOption.style.display = 'none';
-                    onlineModeMessage.style.display = 'block';
-                    payOnline.checked = true;
-                    updatePayMethodSummary();
-                    paymentAlert.innerHTML = '<i class="fa-solid fa-lock me-2"></i> Online consultation requires online payment via UPI or Card.';
-                    paymentAlert.className = 'alert alert-info border-0 small';
-                } else {
-                    summMode.innerHTML = '<i class="fa-solid fa-hospital-user me-1"></i> In-Clinic';
-                    // Show both payment options
-                    cashPayOption.style.display = 'block';
-                    onlineModeMessage.style.display = 'none';
-                    updatePayMethodSummary();
-                    if (currentDoctorFees > 0) {
-                        paymentAlert.innerHTML = '<i class="fa-solid fa-shield-check me-2"></i> Secure payment via Razorpay.';
-                        paymentAlert.className = 'alert alert-success border-0 small';
-                    }
-                }
-            });
-        });
+    function resetSpecialist() {
+        currentDocId = "";
+        document.getElementById('hDoc').value = "";
+        document.getElementById('badgeContainer').style.display = 'none';
+        document.getElementById('pickerContainer').style.display = 'block';
+        document.getElementById('docPicker').value = "";
+        
+        document.getElementById('sumFee').innerText = '₹0';
+        document.getElementById('sumTotal').innerText = '₹0';
+        resetSelections();
+        renderCal();
+    }
 
-        // Payment method change
-        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                updatePayMethodSummary();
-                if (payCash.checked) {
-                    paymentAlert.innerHTML = '<i class="fa-solid fa-money-bill-wave me-2"></i> You can pay the fees at the clinic during your visit.';
-                    paymentAlert.className = 'alert alert-warning border-0 small';
-                } else {
-                    paymentAlert.innerHTML = '<i class="fa-solid fa-shield-check me-2"></i> Secure payment via Razorpay.';
-                    paymentAlert.className = 'alert alert-success border-0 small';
-                }
-            });
-        });
+    function resetSelections() {
+        selDate = null;
+        selSlot = null;
+        document.getElementById('hDate').value = "";
+        document.getElementById('hSlot').value = "";
+        document.getElementById('slotsContainer').innerHTML = '<div class="text-center py-5" style="opacity: 0.5;"><i class="fa-regular fa-clock fs-1 mb-3"></i><p class="fw-bold">Please select a date first</p></div>';
+        updateBtn();
+    }
 
-        // Set min date to today
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.setAttribute('min', today);
+    function updateMode(mode) {
+        curMode = mode;
+        document.getElementById('mOff').classList.toggle('active', mode === 'offline');
+        document.getElementById('mOn').classList.toggle('active', mode === 'online');
+        document.getElementById('hMode').value = mode;
+        document.getElementById('hPay').value = (mode === 'online') ? 'razorpay' : 'cash';
+        document.getElementById('modeTitle').innerText = (mode === 'online') ? 'Online consultation with a doctor' : 'Offline consultation with a doctor';
+        document.getElementById('modeDesc').innerText = (mode === 'online') ? 'The doctor will provide a consultation link via message.' : 'Visit the doctor at their clinic for a physical consultation.';
+    }
 
-        function fetchAvailableSlots() {
-            const doctorId = doctorSelect.value;
-            const selectedDate = dateInput.value;
+    function renderCal() {
+        const grid = document.getElementById('calGrid');
+        grid.innerHTML = '';
+        document.getElementById('calMonthYear').innerText = `${monthNames[curMonth]} ${curYear}`;
+        const first = new Date(curYear, curMonth, 1).getDay();
+        const days = new Date(curYear, curMonth + 1, 0).getDate();
+        const today = new Date(); today.setHours(0,0,0,0);
 
-            timeSlot.innerHTML = '<option value="" disabled selected>-- Select a Date & Doctor First --</option>';
-            summTime.textContent = '-- : -- --';
+        for (let i = 0; i < first; i++) grid.appendChild(createCell('', 'disabled'));
 
-            if (!doctorId || !selectedDate) return;
+        for (let d = 1; d <= days; d++) {
+            const dateObj = new Date(curYear, curMonth, d);
+            const ds = `${curYear}-${String(curMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const cell = createCell(d, dateObj < today ? 'disabled' : '');
+            
+            if(dateObj >= today) {
+                cell.onclick = () => {
+                    if(!currentDocId) { alert('Please select a doctor first'); return; }
+                    selDate = ds;
+                    document.getElementById('hDate').value = ds;
+                    document.querySelectorAll('.cal-day-cell').forEach(c => c.classList.remove('selected'));
+                    cell.classList.add('selected');
+                    loadSlots(ds);
+                };
+                if(ds === selDate) cell.classList.add('selected');
+                if(dateObj.getTime() === today.getTime()) cell.classList.add('today');
+            }
+            grid.appendChild(cell);
+        }
+    }
 
-            timeSlot.innerHTML = '<option value="" disabled selected>Loading slots...</option>';
+    function createCell(text, className) {
+        const div = document.createElement('div');
+        div.className = 'cal-day-cell ' + className;
+        div.innerText = text;
+        return div;
+    }
 
-            fetch(`/ajax/get_available_slots/?doctor_id=${doctorId}&date=${selectedDate}`)
-                .then(response => response.json())
-                .then(data => {
-                    timeSlot.innerHTML = '';
+    function moveMonth(n) {
+        curMonth += n;
+        if(curMonth < 0) { curMonth = 11; curYear--; }
+        if(curMonth > 11) { curMonth = 0; curYear++; }
+        renderCal();
+    }
 
-                    if (!data.available) {
-                        const opt = document.createElement('option');
-                        opt.value = '';
-                        opt.textContent = data.message || 'Doctor is not available on this day.';
-                        opt.disabled = true;
-                        opt.selected = true;
-                        timeSlot.appendChild(opt);
-                        return;
-                    }
-
-                    if (data.slots.length === 0) {
-                        const opt = document.createElement('option');
-                        opt.value = '';
-                        opt.textContent = data.message || 'No slots available.';
-                        opt.disabled = true;
-                        opt.selected = true;
-                        timeSlot.appendChild(opt);
-                        return;
-                    }
-
-                    const defaultOpt = document.createElement('option');
-                    defaultOpt.value = '';
-                    defaultOpt.textContent = '-- Select Time --';
-                    defaultOpt.disabled = true;
-                    defaultOpt.selected = true;
-                    timeSlot.appendChild(defaultOpt);
-
-                    data.slots.forEach(slot => {
-                        const opt = document.createElement('option');
-                        opt.value = slot.value;
-                        opt.textContent = slot.label;
-                        timeSlot.appendChild(opt);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching slots:', error);
-                    timeSlot.innerHTML = '<option value="" disabled selected>Error loading slots</option>';
+    async function loadSlots(date) {
+        const cont = document.getElementById('slotsContainer');
+        selSlot = null;
+        document.getElementById('hSlot').value = '';
+        updateBtn();
+        cont.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+        try {
+            const res = await fetch(`/ajax/get_available_slots/?doctor_id=${currentDocId}&date=${date}`);
+            const data = await res.json();
+            if(data.available && data.slots && data.slots.length > 0) {
+                cont.innerHTML = '';
+                data.slots.forEach(s => {
+                    const el = document.createElement('div');
+                    el.className = 'slot-item';
+                    el.innerHTML = `<div class="radio-ui"></div><span class="slot-time">${s.label}</span>`;
+                    el.onclick = () => {
+                        document.querySelectorAll('.slot-item').forEach(o => o.classList.remove('active'));
+                        el.classList.add('active');
+                        selSlot = s.value;
+                        document.getElementById('hSlot').value = s.value;
+                        updateBtn();
+                    };
+                    cont.appendChild(el);
                 });
-        }
-
-        // Doctor select change — update fees and fetch slots
-        doctorSelect.addEventListener('change', (e) => {
-            const selectedOption = e.target.options[e.target.selectedIndex];
-            summDoctor.textContent = selectedOption.text || 'Not Selected';
-            
-            // Get fees from data attribute
-            const fees = parseFloat(selectedOption.getAttribute('data-fees')) || 0;
-            currentDoctorFees = fees;
-            updateFeeDisplay();
-            
-            fetchAvailableSlots();
-        });
-
-        dateInput.addEventListener('change', (e) => {
-            summDate.textContent = e.target.value || '-- / -- / ----';
-            fetchAvailableSlots();
-        });
-
-        timeSlot.addEventListener('change', (e) => {
-            const selectedOption = e.target.options[e.target.selectedIndex];
-            summTime.textContent = selectedOption ? selectedOption.text : '-- : -- --';
-        });
-
-        // Auto-select doctor from URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const preselectedDoctorId = urlParams.get('doctor_id');
-        if (preselectedDoctorId && doctorSelect) {
-            for (let i = 0; i < doctorSelect.options.length; i++) {
-                if (doctorSelect.options[i].value === preselectedDoctorId) {
-                    doctorSelect.selectedIndex = i;
-                    summDoctor.textContent = doctorSelect.options[i].text;
-                    const fees = parseFloat(doctorSelect.options[i].getAttribute('data-fees')) || 0;
-                    currentDoctorFees = fees;
-                    updateFeeDisplay();
-                    break;
-                }
+            } else {
+                const msg = data.message || 'No slots available for this day.';
+                cont.innerHTML = `<div class="text-center py-5 text-muted fw-bold">${msg}</div>`;
             }
-        }
-    </script>
+        } catch(e) { cont.innerHTML = '<div class="text-center py-5 text-danger">Error loading availability.</div>'; }
+    }
+
+    function updateBtn() {
+        document.getElementById('finishBtn').disabled = !(selDate && selSlot && currentDocId);
+    }
+
+    window.onload = init;
+</script>
 {% endblock %}

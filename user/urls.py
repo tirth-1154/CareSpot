@@ -24,7 +24,6 @@ urlpatterns = [
     path('doctorSearch/',views.doctorSearch , name='doctorSearch'),
     path('rejectAppointment/<int:id>/', views.rejectAppointment, name='rejectAppointment'),
     path('acceptAppointment/<int:id>/', views.acceptAppointment, name='acceptAppointment'),
-    path('doctorAppointments/',views.doctorAppointments,name='doctorAppointments'), 
     path('doctorReviews/',views.doctorReviews,name='doctorReviews'),
     path('doctorMessages/',views.doctorMessages,name='doctorMessages'),
     path('doctorManageBlogs/',views.doctorManageBlogs,name='doctorManageBlogs'),

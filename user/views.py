@@ -754,21 +754,6 @@ def doctorDashboard(request):
 
     return render(request, 'doctor_dashboard.html', data)
 
-def doctorAppointments(request):
-    if 'doctorID' not in request.session:
-        return redirect('Login')
-    doctor_id=request.session['doctorID']
-    today = date.today()
-    now_time = dt.now().time()
-    # Only show future appointments (future date OR today with time still ahead)
-    future_filter = models.Q(appointmentDate__gt=today) | models.Q(appointmentDate=today, appointmentTime__gte=now_time)
-    appointments = tblAppointment.objects.filter(future_filter, doctorID=doctor_id).order_by('isRejected', 'isAccepted', '-appointmentID')
-    data={
-        "doctor":tblDoctor.objects.filter(doctorID=doctor_id).first(),
-        "Appointments":appointments
-    }        
-    return render(request,'doctor_myAppointments.html',data)
-
 def acceptAppointment(request, id):
     if 'doctorID' not in request.session:
         return redirect('Login')
@@ -1060,12 +1045,33 @@ def patientAppointments(request):
             # Redirect to payment page for online payment
             return redirect('paymentPage', appointment_id=p.appointmentID)
             
+    # Fetch only active subcategories that have approved doctors
+    categories = tblSubcategory.objects.filter(tbldoctor__approval_status='approved').distinct().order_by('subcategoryName')
+    
+    # Check for direct booking (via doctor_id in URL)
+    doctor_id = request.GET.get('doctor_id')
+    selected_doctor = None
+    if doctor_id:
+        selected_doctor = tblDoctor.objects.filter(doctorID=doctor_id, approval_status='approved').annotate(
+            avg_rating=Avg('tblreview__rating')
+        ).select_related('subcategoryID', 'userID').first()
+    
+    # Fetch all doctors for selection if none selected
+    doctors = tblDoctor.objects.filter(approval_status='approved').annotate(
+        avg_rating=Avg('tblreview__rating'),
+        review_count=Count('tblreview')
+    ).select_related('subcategoryID', 'userID')
+
     data={
-        "doctor":tblDoctor.objects.filter(approval_status='approved'),
+        "doctor": doctors,
+        "selected_doctor": selected_doctor,
+        "categories": categories,
         "RAZORPAY_KEY_ID": settings.RAZORPAY_KEY_ID,
         "PLATFORM_FEE": settings.PLATFORM_FEE,
     }        
     return render(request,'patient_book_appointment.html',data)
+
+
 
 
 def doctorReviews(request):
