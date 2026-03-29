@@ -1,394 +1,578 @@
-patient_my_appointments.html
-
-
 {% extends 'patient_base.html' %}
 {% load static %}
 
 {% block title %}My Appointments | CareSpot{% endblock %}
 
 {% block content %}
+<style>
+    /* ============================================================
+       REFINED APPOINTMENTS DASHBOARD — PREMIUM TEAL THEME
+    ============================================================ */
+    :root {
+        --dash-teal: #076FC5;
+        --dash-teal-light: #e8f1f9;
+        --dash-bg: #F8FAFB;
+        --dash-border: #EDF2F7;
+        --dash-text: #4A5568;
+        --dash-heading: #1A202C;
+    }
 
-        
-        <!-- PAGE HEADER -->
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold mb-1" style="color:#0F6DB6;">My Appointments</h2>
-                <p class="text-muted mb-0">View and manage all your booked appointments with doctors.</p>
-            </div>
-            <div>
-                <a href="{% url 'patientAppointments' %}" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
-                    <i class="fa-solid fa-plus me-2"></i>Book New
-                </a>
-            </div>
+    body {
+        background-color: var(--dash-bg);
+    }
+
+    /* Page Header */
+    .dash-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    .dash-header h1 {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--dash-heading);
+        margin-bottom: 4px;
+    }
+    .dash-header p {
+        font-size: 13px;
+        color: #718096;
+        margin-bottom: 0;
+    }
+    .btn-new-apt {
+        background-color: var(--dash-teal);
+        color: #fff;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-new-apt:hover {
+        background-color: #065fa8;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(7, 111, 197, 0.2);
+    }
+
+    /* Table Container Card */
+    .dash-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        border: 1px solid var(--dash-border);
+        overflow: hidden;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--dash-border);
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .filter-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        color: var(--dash-heading);
+    }
+    .filter-title i { color: var(--dash-teal); }
+
+    .filter-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .search-input-group {
+        position: relative;
+        width: 280px;
+    }
+    .search-input-group i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #A0AEC0;
+    }
+    .search-input {
+        width: 100%;
+        padding: 10px 14px 10px 40px;
+        border: 1px solid var(--dash-border);
+        border-radius: 10px;
+        font-size: 13px;
+        background-color: #F8FAFC;
+        transition: border-color 0.2s;
+    }
+    .search-input:focus {
+        outline: none;
+        border-color: var(--dash-teal);
+    }
+
+    .btn-filter-icon {
+        padding: 10px 18px;
+        border: 1px solid var(--dash-border);
+        background: #fff;
+        border-radius: 10px;
+        color: var(--dash-text);
+        font-weight: 600;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-filter-icon:hover { background: #F8FAFC; }
+
+    .view-toggle {
+        display: flex;
+        background: #F8FAFC;
+        padding: 4px;
+        border-radius: 8px;
+        gap: 4px;
+    }
+    .view-toggle-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        color: #A0AEC0;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .view-toggle-btn.active {
+        background: #fff;
+        color: var(--dash-teal);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    /* Table Styles */
+    .apt-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .apt-table thead th {
+        background-color: #fff;
+        padding: 18px 20px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #A0AEC0;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 1px solid var(--dash-border);
+    }
+    .apt-table tbody td {
+        padding: 16px 20px;
+        font-size: 14px;
+        color: var(--dash-text);
+        border-bottom: 1px solid var(--dash-border);
+        vertical-align: middle;
+    }
+    .apt-table tbody tr:hover {
+        background-color: #FAFBFC;
+    }
+
+    /* Doctor Component */
+    .doctor-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .doctor-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .doctor-name {
+        font-weight: 600;
+        color: var(--dash-heading);
+    }
+
+    /* Status Badges */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 90px;
+    }
+    .status-completed { background-color: #EBF8FF; color: #076FC5; } /* Medical Blue */
+    .status-today     { background-color: #FFF9E6; color: #B7791F; } /* Orange/Gold */
+    .status-progress  { background-color: #EBF8FF; color: #3182CE; } /* Blue */
+    .status-cancelled { background-color: #FFF5F5; color: #E53E3E; } /* Red */
+
+    /* Action Icons */
+    .action-group {
+        display: flex;
+        gap: 10px;
+    }
+    .action-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        border: none;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .action-view   { background-color: #EBF8FF; color: #076FC5; }
+    .action-edit   { background-color: #EBF8FF; color: #3182CE; }
+    .action-delete { background-color: #FFF5F5; color: #E53E3E; }
+    .action-btn:hover { opacity: 0.8; transform: translateY(-1px); }
+
+    /* Footer / Pagination */
+    .dash-footer {
+        padding: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    .pagination-nav {
+        display: flex;
+        gap: 8px;
+    }
+    .pg-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--dash-border);
+        border-radius: 8px;
+        color: var(--dash-text);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .pg-btn.active {
+        background-color: var(--dash-teal);
+        color: #fff;
+        border-color: var(--dash-teal);
+    }
+    .pg-btn:hover:not(.active) { background: #F8FAFC; }
+    
+    .entry-info {
+        color: #A0AEC0;
+        font-size: 13px;
+    }
+    .show-entries {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--dash-text);
+    }
+    .show-select {
+        border: 1px solid var(--dash-border);
+        border-radius: 8px;
+        padding: 6px 12px;
+        background: #fff;
+    }
+
+    /* Checkbox Styles */
+    .custom-check {
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--dash-border);
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .filter-bar { justify-content: center; }
+        .search-input-group { width: 100%; }
+        .apt-table thead { display: none; }
+        .apt-table tbody td { display: block; text-align: right; padding-left: 50%; position: relative; }
+        .apt-table tbody td::before { 
+            content: attr(data-label); 
+            position: absolute; 
+            left: 20px; 
+            font-weight: 700; 
+            color: #A0AEC0; 
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+    }
+</style>
+
+<div class="dash-header">
+    <div>
+        <h1>Appointments</h1>
+        <p>there is the latest update for the last 7 days. check now</p>
+    </div>
+    <a href="{% url 'patientAppointments' %}" class="btn-new-apt">
+        <i class="fa-solid fa-plus"></i> New Appointment
+    </a>
+</div>
+
+<div class="dash-card">
+    <!-- Filter Section (Combined Header) -->
+    <div class="filter-bar">
+        <div class="filter-title">
+            <i class="fa-solid fa-calendar-days"></i>
+            All Appointments
         </div>
 
-        <!-- APPOINTMENT SUMMARY CARDS -->
-        <div class="row g-4 mb-5">
-            <!-- Total Appointments -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card custom-card p-3 stat-card border-primary border-start border-4 text-center">
-                    <div class="card-body p-2 d-flex align-items-center">
-                        <div class="icon-box bg-light-blue mb-0 me-3"><i class="fa-solid fa-list-ul"></i></div>
-                        <div class="text-start">
-                            <p class="text-muted mb-1 text-uppercase fs-7 fw-bold">Total Appointments</p>
-                            <h4 class="mb-0 fw-bold">{{ total_count|default:"0" }}</h4>
-                        </div>
-                    </div>
-                </div>
+        <form method="GET" action="" id="filterForm" class="filter-actions">
+            <div class="search-input-group">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="search" class="search-input" placeholder="Search anything here" value="{{ request.GET.search }}">
+                <input type="hidden" name="show" value="{{ show_entries }}">
             </div>
-            <!-- Upcoming Appointments -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card custom-card p-3 stat-card border-info border-start border-4 text-center" style="border-left-color: #0dcaf0 !important;">
-                    <div class="card-body p-2 d-flex align-items-center">
-                        <div class="icon-box bg-light-blue mb-0 me-3"><i class="fa-regular fa-clock"></i></div>
-                        <div class="text-start">
-                            <p class="text-muted mb-1 text-uppercase fs-7 fw-bold">Upcoming</p>
-                            <h4 class="mb-0 fw-bold">{{ upcoming_count|default:"0" }}</h4>
-                        </div>
-                    </div>
+            
+            <button type="button" class="btn-filter-icon" data-bs-toggle="collapse" data-bs-target="#advancedFilters" aria-expanded="false">
+                <i class="fa-solid fa-sliders"></i> Filter
+            </button>
+        </form>
+    </div>
+
+    <!-- Collapsible Advanced Filters (from original functionality) -->
+    <div class="collapse" id="advancedFilters">
+        <div class="p-4 border-bottom bg-light bg-opacity-50">
+            <form method="GET" action="" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted">Filter by Date</label>
+                    <input type="date" name="date" class="form-control" value="{{ request.GET.date }}">
                 </div>
-            </div>
-            <!-- Completed Appointments -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card custom-card p-3 stat-card border-success border-start border-4 text-center">
-                    <div class="card-body p-2 d-flex align-items-center">
-                        <div class="icon-box bg-light-green mb-0 me-3"><i class="fa-solid fa-check-double"></i></div>
-                        <div class="text-start">
-                            <p class="text-muted mb-1 text-uppercase fs-7 fw-bold">Completed</p>
-                            <h4 class="mb-0 fw-bold">{{ completed_count|default:"0" }}</h4>
-                        </div>
-                    </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-muted">Doctor Name</label>
+                    <select name="doctor" class="form-select">
+                        <option value="">All Doctors</option>
+                        {% for doc in doctor_list %}
+                            <option value="{{ doc.doctorID }}" {% if request.GET.doctor == doc.doctorID|stringformat:"s" %}selected{% endif %}>{{ doc.displayName }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </div>
-            <!-- Cancelled Appointments -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card custom-card p-3 stat-card border-danger border-start border-4 text-center">
-                    <div class="card-body p-2 d-flex align-items-center">
-                        <div class="icon-box bg-light-danger mb-0 me-3"><i class="fa-solid fa-ban"></i></div>
-                        <div class="text-start">
-                            <p class="text-muted mb-1 text-uppercase fs-7 fw-bold">Cancelled</p>
-                            <h4 class="mb-0 fw-bold">{{ cancelled_count|default:"0" }}</h4>
-                        </div>
-                    </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="Upcoming" {% if request.GET.status == 'Upcoming' %}selected{% endif %}>Upcoming</option>
+                        <option value="Completed" {% if request.GET.status == 'Completed' %}selected{% endif %}>Completed</option>
+                        <option value="Cancelled" {% if request.GET.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
                 </div>
-            </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <input type="hidden" name="show" value="{{ show_entries }}">
+                    <button type="submit" class="btn btn-primary w-100">Apply</button>
+                    <a href="{% url 'patientMyAppointments' %}" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <!-- FILTER OPTIONS -->
-        <div class="card custom-card mb-4 shadow-sm">
-            <div class="card-body p-4">
-                <form method="GET" action="" class="row g-3 align-items-end" id="filterForm">
-                    <!-- Search Bar -->
-                    <div class="col-12 col-lg-3">
-                        <label class="form-label text-muted small fw-bold">Search</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                            <input type="text" name="search" class="form-control border-start-0 bg-light" placeholder="Search by doctor name..." value="{{ request.GET.search }}">
-                        </div>
-                    </div>
-                    <!-- Date Filter -->
-                    <div class="col-12 col-md-4 col-lg-2">
-                        <label class="form-label text-muted small fw-bold">Filter by Date</label>
-                        <input type="date" name="date" class="form-control bg-light" value="{{ request.GET.date }}">
-                    </div>
-                    <!-- Doctor Filter -->
-                    <div class="col-12 col-md-4 col-lg-3">
-                        <label class="form-label text-muted small fw-bold">Doctor Name</label>
-                        <select name="doctor" class="form-select bg-light">
-                            <option value="">All Doctors</option>
-                            {% for doc in doctor_list %}
-                                <option value="{{ doc.doctorID }}" {% if request.GET.doctor == doc.doctorID|stringformat:"s" %}selected{% endif %}>{{ doc.displayName }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <!-- Status Filter -->
-                    <div class="col-12 col-md-4 col-lg-2">
-                        <label class="form-label text-muted small fw-bold">Status</label>
-                        <select name="status" class="form-select bg-light">
-                            <option value="">All</option>
-                            <option value="Upcoming" {% if request.GET.status == 'Upcoming' %}selected{% endif %}>Upcoming</option>
-                            <option value="Completed" {% if request.GET.status == 'Completed' %}selected{% endif %}>Completed</option>
-                            <option value="Cancelled" {% if request.GET.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
-                        </select>
-                    </div>
-                    <!-- Filter & Reset Buttons -->
-                    <div class="col-12 col-md-4 col-lg-2 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary rounded-pill px-3 py-2 fw-bold"><i class="fa-solid fa-filter me-1"></i>Filter</button>
-                        <a href="{% url 'patientMyAppointments' %}" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-bold"><i class="fa-solid fa-rotate-left me-1"></i>Reset</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <script>
-            // Auto-submit filter form when dropdown/date changes
-            document.querySelectorAll('#filterForm select, #filterForm input[type="date"]').forEach(el => {
-                el.addEventListener('change', () => document.getElementById('filterForm').submit());
-            });
-        </script>
-
-        <!-- APPOINTMENT TABLE -->
-        <div class="card custom-card mb-4 shadow-sm">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4 py-3">Appointment ID</th>
-                                <th>Doctor Name</th>
-                                <th>Specialization</th>
-                                <th>Mode</th>
-                                <th>Date &amp; Time</th>
-                                <th>Fees</th>
-                                <th>Payment</th>
-                                <th>Status</th>
-                                <th class="text-end pe-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for appointment in appointments %}
-                            <tr>
-                                <td class="ps-4 fw-medium text-muted">#APT-{{ appointment.appointmentID }}</td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-light rounded-circle p-2 me-3 text-primary"><i class="fa-solid fa-user-doctor fs-5"></i></div>
-                                        <div>
-                                            <h6 class="mb-0 fw-bold">{{ appointment.doctorID.displayName }}</h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ appointment.doctorID.subcategoryID.subcategoryName }}</td>
-                                <td>
-                                    {% if appointment.mode == 'online' %}
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1"><i class="fa-solid fa-video me-1"></i> Online</span>
-                                    {% else %}
-                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-1"><i class="fa-solid fa-hospital-user me-1"></i> In-Clinic</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <div class="fw-medium text-dark">{{ appointment.appointmentDate|date:"M d, Y" }}</div>
-                                    <small class="text-muted"><i class="fa-regular fa-clock me-1"></i> {{ appointment.appointmentTime|time:"h:i A" }}</small>
-                                </td>
-                                <td>
-                                    {% if appointment.payment %}
-                                        <span class="fw-bold text-dark">₹{{ appointment.payment.totalAmount|floatformat:0 }}</span>
-                                        <br><small class="text-muted">Dr: ₹{{ appointment.payment.doctorFees|floatformat:0 }} + ₹{{ appointment.payment.platformFee|floatformat:0 }}</small>
-                                    {% else %}
-                                        <span class="text-muted">—</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if appointment.payment %}
-                                        {% if appointment.payment.paymentStatus == 'paid' %}
-                                            <span class="badge bg-success rounded-pill px-3 py-2 fw-medium"><i class="fa-solid fa-check-circle me-1"></i>Paid</span>
-                                        {% elif appointment.payment.paymentStatus == 'cash' %}
-                                            <span class="badge bg-info text-dark rounded-pill px-3 py-2 fw-medium"><i class="fa-solid fa-money-bill-wave me-1"></i>Cash</span>
-                                        {% elif appointment.payment.paymentStatus == 'pending' %}
-                                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-medium"><i class="fa-solid fa-clock me-1"></i>Pending</span>
-                                        {% elif appointment.payment.paymentStatus == 'failed' %}
-                                            <span class="badge bg-danger rounded-pill px-3 py-2 fw-medium"><i class="fa-solid fa-xmark me-1"></i>Failed</span>
-                                        {% endif %}
-                                    {% else %}
-                                        <span class="text-muted">—</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <!-- STATUS BADGES -->
-                                    {% if appointment.isAccepted %}
-                                        <span class="badge bg-success rounded-pill px-3 py-2 fw-medium">Confirmed</span>
-                                    {% elif appointment.isRejected %}
-                                        <span class="badge bg-danger rounded-pill px-3 py-2 fw-medium">Cancelled</span>
-                                    {% else %}
-                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-medium">Pending</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-end pe-4">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <!-- View Details -->
-                                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#appointmentModal{{ appointment.appointmentID }}" title="View Details">
-                                            <i class="fa-regular fa-eye me-1"></i> View
-                                        </button>
-                                        
-                                        <!-- Join Meeting (Online accepted appointments) -->
-                                        {% if appointment.isAccepted and appointment.mode == 'online' and appointment.meetLink %}
-                                        <a href="{% url 'videoMeeting' appointment.appointmentID %}" class="btn btn-sm btn-success" title="Join Video Meeting">
-                                            <i class="fa-solid fa-video me-1"></i> Join Meeting
-                                        </a>
-                                        {% endif %}
-                                        
-                                        <!-- Cancel Appointment (Only if purely pending or upcoming) -->
-                                        {% if not appointment.isRejected and not appointment.isAccepted %}
-                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Cancel Appointment">
-                                            <i class="fa-solid fa-xmark me-1"></i> Cancel
-                                        </button>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <!-- NO APPOINTMENT MESSAGE -->
-                            <tr>
-                                <td colspan="9" class="text-center py-5">
-                                    <div class="empty-state py-4">
-                                        <div class="icon-box bg-light-blue mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; border-radius: 50%;">
-                                            <i class="fa-regular fa-calendar-xmark text-primary" style="font-size: 32px;"></i>
-                                        </div>
-                                        <h4 class="fw-bold text-dark mt-3">No appointments found.</h4>
-                                        <p class="text-muted mb-4">You haven't scheduled any appointments yet.</p>
-                                        <a href="{% url 'patientAppointments' %}" class="btn btn-primary px-4 py-2 mt-2 rounded-pill shadow-sm">
-                                            Book Your First Appointment
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODALS (Rendered outside table to prevent CSS flickering) -->
-        {% for appointment in appointments %}
-        <div class="modal fade" id="appointmentModal{{ appointment.appointmentID }}" tabindex="-1" aria-labelledby="modalLabel{{ appointment.appointmentID }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-                    <div class="modal-header bg-light border-0" style="border-radius: 12px 12px 0 0;">
-                        <h5 class="modal-title fw-bold" id="modalLabel{{ appointment.appointmentID }}">Appointment Details (#APT-{{ appointment.appointmentID }})</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-                            <div class="bg-light-blue rounded-circle p-3 me-3 text-primary"><i class="fa-solid fa-user-doctor fs-3"></i></div>
-                            <div>
-                                <h5 class="mb-0 fw-bold">{{ appointment.doctorID.displayName }}</h5>
-                                <p class="text-muted mb-0">{{ appointment.doctorID.subcategoryID.subcategoryName }}</p>
-                            </div>
-                        </div>
-                        <div class="row g-4">
-                            <div class="col-4">
-                                <p class="text-muted small mb-1 fw-bold text-uppercase">Date</p>
-                                <p class="fw-medium text-dark"><i class="fa-regular fa-calendar text-primary me-2"></i>{{ appointment.appointmentDate|date:"F d, Y" }}</p>
-                            </div>
-                            <div class="col-4">
-                                <p class="text-muted small mb-1 fw-bold text-uppercase">Time</p>
-                                <p class="fw-medium text-dark"><i class="fa-regular fa-clock text-primary me-2"></i>{{ appointment.appointmentTime|time:"h:i A" }}</p>
-                            </div>
-                            <div class="col-4">
-                                <p class="text-muted small mb-1 fw-bold text-uppercase">Mode</p>
-                                {% if appointment.mode == 'online' %}
-                                    <p class="fw-medium text-success"><i class="fa-solid fa-video me-2"></i>Online</p>
-                                {% else %}
-                                    <p class="fw-medium text-primary"><i class="fa-solid fa-hospital-user me-2"></i>In-Clinic</p>
-                                {% endif %}
-                            </div>
-                            
-                            <!-- Payment Info in Modal -->
-                            {% if appointment.payment %}
-                            <div class="col-12">
-                                <p class="text-muted small mb-1 fw-bold text-uppercase">Payment Details</p>
-                                <div class="bg-light rounded p-3">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted">Doctor's Fee:</span>
-                                        <span class="fw-bold">₹{{ appointment.payment.doctorFees|floatformat:0 }}</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted">Platform Fee:</span>
-                                        <span class="fw-bold">₹{{ appointment.payment.platformFee|floatformat:0 }}</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between pt-2 border-top">
-                                        <span class="fw-bold">Total:</span>
-                                        <span class="fw-bold text-primary">₹{{ appointment.payment.totalAmount|floatformat:0 }}</span>
-                                    </div>
-                                    <div class="mt-2 text-center">
-                                        {% if appointment.payment.paymentStatus == 'paid' %}
-                                            <span class="badge bg-success rounded-pill px-3 py-2"><i class="fa-solid fa-check-circle me-1"></i>Paid Online</span>
-                                        {% elif appointment.payment.paymentStatus == 'cash' %}
-                                            <span class="badge bg-info text-dark rounded-pill px-3 py-2"><i class="fa-solid fa-money-bill-wave me-1"></i>Pay at Clinic</span>
-                                        {% elif appointment.payment.paymentStatus == 'pending' %}
-                                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2"><i class="fa-solid fa-clock me-1"></i>Payment Pending</span>
-                                            <a href="{% url 'paymentPage' appointment_id=appointment.appointmentID %}" class="btn btn-sm btn-primary mt-2 rounded-pill"><i class="fa-solid fa-credit-card me-1"></i>Pay Now</a>
-                                        {% elif appointment.payment.paymentStatus == 'failed' %}
-                                            <span class="badge bg-danger rounded-pill px-3 py-2"><i class="fa-solid fa-xmark me-1"></i>Payment Failed</span>
-                                            <a href="{% url 'paymentPage' appointment_id=appointment.appointmentID %}" class="btn btn-sm btn-primary mt-2 rounded-pill"><i class="fa-solid fa-redo me-1"></i>Retry Payment</a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
+    <div class="table-responsive">
+        <table class="apt-table">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">No</th>
+                    <th>ID Code</th>
+                    <th>Doctor Name</th>
+                    <th>Created Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td data-label="No" class="text-muted small fw-bold">{{ forloop.counter|add:appointments.start_index|add:"-1" }}</td>
+                    <td data-label="ID Code" class="fw-bold">#APT{{ appointment.appointmentID }}</td>
+                    <td data-label="Doctor Name">
+                        <div class="doctor-cell">
+                            {% if appointment.doctorID.userID.profilePic %}
+                                <img src="{{ appointment.doctorID.userID.profilePic.url }}" class="doctor-avatar" alt="">
+                            {% else %}
+                                <div class="doctor-avatar bg-light d-flex align-items-center justify-content-center text-primary fw-bold" style="font-size: 12px;">{{ appointment.doctorID.displayName|first }}</div>
                             {% endif %}
-                            
-                            <div class="col-12">
-                                <p class="text-muted small mb-1 fw-bold text-uppercase">Status</p>
-                                {% if appointment.isAccepted %}
-                                    <div class="bg-success bg-opacity-10 text-success p-3 rounded fw-bold fs-6 mb-3"><i class="fa-solid fa-check-circle me-2"></i>Confirmed by Doctor</div>
-                                    {% if appointment.mode == 'online' and appointment.meetLink %}
-                                        <p class="text-muted small mb-1 fw-bold text-uppercase mt-2">Video Consultation</p>
-                                        <a href="{% url 'videoMeeting' appointment.appointmentID %}" class="btn btn-success w-100 fw-bold py-2">
-                                            <i class="fa-solid fa-video me-2"></i>Join Meeting
-                                        </a>
-                                        <p class="small text-muted mt-2 text-center"><i class="fa-solid fa-envelope me-1"></i>Meeting link also sent to your email.</p>
-                                    {% endif %}
-                                {% elif appointment.isRejected %}
-                                    <div class="bg-danger bg-opacity-10 text-danger p-3 rounded fw-bold fs-6"><i class="fa-solid fa-xmark-circle me-2"></i>Cancelled by Doctor</div>
-                                {% else %}
-                                    <div class="bg-warning bg-opacity-10 text-dark p-3 rounded fw-bold fs-6"><i class="fa-solid fa-clock me-2"></i>Request Pending</div>
-                                {% endif %}
-                            </div>
+                            <span class="doctor-name">{{ appointment.doctorID.displayName }}</span>
                         </div>
-                    </div>
-                    <div class="modal-footer border-0 bg-light" style="border-radius: 0 0 12px 12px;">
-                        <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAGINATION -->
-        {% if appointments.has_other_pages %}
-        <nav aria-label="Appointments pagination" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <!-- Previous Page -->
-                {% if appointments.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link shadow-sm" href="?page={{ appointments.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <a class="page-link shadow-sm" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                    </li>
-                {% endif %}
-
-                <!-- Page Numbers -->
-                {% for num in appointments.paginator.page_range %}
-                    {% if appointments.number == num %}
-                        <li class="page-item active" aria-current="page">
-                            <a class="page-link shadow-sm" href="#">{{ num }}</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item">
-                            <a class="page-link shadow-sm" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
-                        </li>
-                    {% endif %}
+                    </td>
+                    <td data-label="Created Date">{{ appointment.createdDT|date:"d M Y" }}</td>
+                    <td data-label="Time">{{ appointment.appointmentTime|time:"h:i a" }}</td>
+                    <td data-label="Status">
+                        {% if appointment.appointmentDate == today_date %}
+                            <span class="status-badge status-today">Today</span>
+                        {% elif appointment.isAccepted %}
+                            <span class="status-badge status-completed">Completed</span>
+                        {% elif appointment.isRejected %}
+                            <span class="status-badge status-cancelled">Cancelled</span>
+                        {% else %}
+                            <span class="status-badge status-progress">Progress</span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Payment">
+                        {% if appointment.payment %}
+                            <span class="badge {% if appointment.payment.paymentStatus == 'paid' %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning{% endif %} rounded-pill px-2" style="font-size: 11px;">{{ appointment.payment.paymentStatus|upper }}</span>
+                        {% else %}
+                            <span class="text-muted small">N/A</span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Action">
+                        <div class="action-group">
+                            <!-- View Details -->
+                            <button class="action-btn action-view" data-bs-toggle="modal" data-bs-target="#appointmentModal{{ appointment.appointmentID }}" title="View Details">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            
+                            {% comment %} <!-- Join/Edit/Meeting (Using blue circle for context) -->
+                            {% if appointment.isAccepted and appointment.mode == 'online' and appointment.meetLink %}
+                            <a href="{% url 'videoMeeting' appointment.appointmentID %}" class="action-btn action-edit" title="Join Video Meeting">
+                                <i class="fa-solid fa-video"></i>
+                            </a>
+                            {% else %}
+                            <button class="action-btn action-edit" title="No Action Available">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                            {% endif %} {% endcomment %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5">
+                        <div class="text-muted">No appointments found matches your search.</div>
+                    </td>
+                </tr>
                 {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-                <!-- Next Page -->
-                {% if appointments.has_next %}
-                    <li class="page-item">
-                        <a class="page-link shadow-sm" href="?page={{ appointments.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <a class="page-link shadow-sm" href="#" tabindex="-1" aria-disabled="true">Next</a>
-                    </li>
+    <!-- Dashboard Footer -->
+    <div class="dash-footer">
+        {% if appointments.has_other_pages %}
+        <div class="pagination-nav">
+            {% if appointments.has_previous %}
+                <a href="?page={{ appointments.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.show %}&show={{ request.GET.show }}{% endif %}{% if request.GET.doctor %}&doctor={{ request.GET.doctor }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="pg-btn"><i class="fa-solid fa-chevron-left"></i></a>
+            {% endif %}
+
+            {% for num in appointments.paginator.page_range %}
+                {% if appointments.number == num %}
+                    <a href="#" class="pg-btn active">{{ num }}</a>
+                {% elif num > appointments.number|add:'-3' and num < appointments.number|add:'3' %}
+                    <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.show %}&show={{ request.GET.show }}{% endif %}{% if request.GET.doctor %}&doctor={{ request.GET.doctor }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="pg-btn">{{ num }}</a>
                 {% endif %}
-            </ul>
-        </nav>
+            {% endfor %}
+
+            {% if appointments.has_next %}
+                <a href="?page={{ appointments.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.show %}&show={{ request.GET.show }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="pg-btn"><i class="fa-solid fa-chevron-right"></i></a>
+            {% endif %}
+        </div>
+        {% else %}
+        <div></div> <!-- Spacer -->
         {% endif %}
+
+        <div class="d-flex align-items-center gap-4">
+            <div class="entry-info">
+                Showing {{ appointments.start_index }} to {{ appointments.end_index }} of {{ total_count }} entries
+            </div>
+            <div class="show-entries">
+                Show 
+                <select class="show-select" onchange="applyEntriesShow(this.value)">
+                    <option value="5" {% if show_entries == 5 %}selected{% endif %}>5</option>
+                    <option value="10" {% if show_entries == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if show_entries == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if show_entries == 50 %}selected{% endif %}>50</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function applyEntriesShow(val) {
+        let url = new URL(window.location.href);
+        url.searchParams.set('show', val);
+        url.searchParams.set('page', '1'); // Reset to first page when changing count
+        window.location.href = url.href;
+    }
+</script>
+
+<!-- MODALS (Hidden from original logic) -->
+{% for appointment in appointments %}
+<div class="modal fade" id="appointmentModal{{ appointment.appointmentID }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 p-4 pb-0">
+                <h5 class="fw-bold mb-0">Record Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex align-items-center mb-4 p-3 rounded-4 bg-light bg-opacity-50">
+                    <img src="{% if appointment.doctorID.userID.profilePic %}{{ appointment.doctorID.userID.profilePic.url }}{% else %}https://ui-avatars.com/api/?name={{ appointment.doctorID.displayName }}{% endif %}" 
+                         class="rounded-pill me-3" width="50" height="50" alt="">
+                    <div>
+                        <h6 class="mb-0 fw-bold">{{ appointment.doctorID.displayName }}</h6>
+                        <p class="small text-muted mb-0">{{ appointment.doctorID.subcategoryID.subcategoryName }}</p>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="small text-muted fw-bold text-uppercase">Date</label>
+                        <p class="fw-semibold">{{ appointment.appointmentDate|date:"D, d M Y" }}</p>
+                    </div>
+                    <div class="col-6">
+                        <label class="small text-muted fw-bold text-uppercase">Time</label>
+                        <p class="fw-semibold">{{ appointment.appointmentTime|time:"h:i A" }}</p>
+                    </div>
+                    <div class="col-6">
+                        <label class="small text-muted fw-bold text-uppercase">Mode</label>
+                        <p class="fw-semibold">{{ appointment.mode|title }}</p>
+                    </div>
+                    <div class="col-6">
+                        <label class="small text-muted fw-bold text-uppercase">Status</label>
+                        <p class="fw-semibold">
+                            {% if appointment.isAccepted %}Confirmed{% elif appointment.isRejected %}Cancelled{% else %}Pending{% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                {% if appointment.payment %}
+                <div class="mt-4 p-3 bg-teal bg-opacity-10 border border-teal border-opacity-20 rounded-4" style="background-color: var(--dash-teal-light);">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-bold text-teal" style="color: var(--dash-teal);">TOTAL AMOUNT</span>
+                        <span class="fw-bold text-teal" style="color: var(--dash-teal);">₹{{ appointment.payment.totalAmount }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="small text-muted">Status</span>
+                        <span class="badge bg-white text-teal border border-teal border-opacity-20 rounded-pill px-2" style="color: var(--dash-teal);">{{ appointment.payment.paymentStatus|upper }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-light w-100 rounded-pill py-2 fw-bold" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 {% endblock %}

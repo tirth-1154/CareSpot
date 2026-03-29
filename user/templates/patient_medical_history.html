@@ -405,7 +405,7 @@
                               <div class="d-flex align-items-center gap-3">
                                   <img src="{{ history.doctorID.userID.profilePic.url }}" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border: 2px solid #e2e8f0;" alt="doc">
                                   <div>
-                                      <div class="fw-bold text-dark" style="font-size:14px;">Dr. {{ history.doctorID.displayName }}</div>
+                                      <div class="fw-bold text-dark" style="font-size:14px;">{{ history.doctorID.displayName }}</div>
                                       <div class="text-muted" style="font-size:12px;">{{ history.subcategoryID.subcategoryName|default:"General Medicine" }}</div>
                                   </div>
                               </div>

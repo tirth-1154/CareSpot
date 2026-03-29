@@ -1254,7 +1254,10 @@ def patientMyAppointments(request):
     if filter_doctor:
         appointments = appointments.filter(doctorID=filter_doctor)
     
-    # Status filter
+    from django.core.paginator import Paginator
+    
+    # Filter by Status
+    filter_status = request.GET.get('status', '').strip()
     if filter_status == 'Upcoming':
         appointments = appointments.filter(isAccepted=False, isRejected=False)
     elif filter_status == 'Completed':
@@ -1264,18 +1267,32 @@ def patientMyAppointments(request):
     
     appointments = appointments.order_by('-appointmentDate', '-appointmentTime')
     
-    # Build doctor list for the dropdown (unique doctors this patient has appointments with)
+    # --- PAGINATION ---
+    show_entries = request.GET.get('show', '10')
+    try:
+        per_page = int(show_entries)
+    except ValueError:
+        per_page = 10
+        
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(appointments, per_page)
+    page_obj = paginator.get_page(page_number)
+    
+    # Build doctor list for the dropdown
     all_patient_appointments = tblAppointment.objects.filter(clientID=client_id)
     doctor_ids = all_patient_appointments.values_list('doctorID', flat=True).distinct()
     doctor_list = tblDoctor.objects.filter(doctorID__in=doctor_ids)
     
+    from datetime import date
     data = {
-        "appointments": appointments,
-        "total_count": total_count,
+        "appointments": page_obj,
+        "total_count": appointments.count(), # Full filtered count
         "upcoming_count": upcoming_count,
         "completed_count": completed_count,
         "cancelled_count": cancelled_count,
         "doctor_list": doctor_list,
+        "today_date": date.today(),
+        "show_entries": per_page,
     }
     
     return render(request, 'patient_my_appointments.html', data)
