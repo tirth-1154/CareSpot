@@ -496,12 +496,11 @@
 
     <!-- ======= LEFT: MAIN CONTENT ======= -->
     <div class="blog-content-main" id="dynamic-content">
-
       <!-- Category Filters -->
       <div class="blog-categories">
         <a href="?" class="blog-cat-pill {% if not category_filter and not search_query %}active{% endif %}">📑 All</a>
         {% for tag in dynamic_tags %}
-          <a href="?category={{ tag }}" class="blog-cat-pill {% if category_filter == tag %}active{% endif %}">{{ tag }}</a>
+          <a href="?category={{ tag|urlencode }}" class="blog-cat-pill {% if category_filter == tag %}active{% endif %}">{{ tag }}</a>
         {% endfor %}
       </div>
 
@@ -535,7 +534,7 @@
                   <div class="masonry-card-doctor-avatar-placeholder">{{ blog.doctorID.displayName|make_list|first|upper }}</div>
                 {% endif %}
                 <div>
-                  <div class="masonry-card-doctor-name">Dr. {{ blog.doctorID.displayName }}</div>
+                  <div class="masonry-card-doctor-name">{{ blog.doctorID.displayName }}</div>
                   {% if blog.doctorID.subcategoryID %}
                     <div class="masonry-card-doctor-spec">{{ blog.doctorID.subcategoryID.subcategoryName }}</div>
                   {% endif %}
@@ -573,7 +572,7 @@
         <h3 class="blog-widget-title"><i class="fa-solid fa-tag" style="color: var(--blog-primary);"></i> Explore Topics</h3>
         <div>
           {% for tag in dynamic_tags %}
-            <a href="?category={{ tag }}" class="sidebar-topic-item {% if category_filter == tag %}active{% endif %}">
+            <a href="?category={{ tag|urlencode }}" class="sidebar-topic-item {% if category_filter == tag %}active{% endif %}">
               <span>{{ tag }}</span>
               <i class="fa-solid fa-chevron-right"></i>
             </a>
@@ -596,7 +595,7 @@
             {% endif %}
             <div class="trending-item-info">
               <h4>{{ blog.title }}</h4>
-              <span class="trending-doctor">Dr. {{ blog.doctorID.displayName }}</span>
+              <span class="trending-doctor">{{ blog.doctorID.displayName }}</span>
               <br />
               <span class="trending-date"><i class="fa-regular fa-calendar" style="margin-right:3px;"></i>{{ blog.createDT|date:"M d, Y" }}</span>
             </div>
