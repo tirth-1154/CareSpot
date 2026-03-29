@@ -521,7 +521,6 @@
             <div class="dashboard-box">
                 <div class="box-header">
                     <h3><i class="fa-solid fa-clipboard-list"></i> Today's Appointments</h3>
-                    <a href="{% url 'doctorAppointments' %}" class="view-all-link">View All</a>
                 </div>
                 <div class="dash-table-container">
                     <table class="dash-table">
@@ -557,7 +556,6 @@
                                     {% endif %}
                                 </td>
                                 <td class="text-end">
-                                    <a href="{% url 'doctorAppointments' %}" class="tbl-action tbl-action-primary" title="View"><i class="fa-regular fa-eye"></i></a>
                                     {% if not appointment.isAccepted and not appointment.isRejected %}
                                     <a href="{% url 'acceptAppointment' appointment.appointmentID %}" class="tbl-action tbl-action-success" title="Accept"><i class="fa-solid fa-check"></i></a>
                                     <a href="{% url 'rejectAppointment' appointment.appointmentID %}" class="tbl-action tbl-action-danger" title="Reject"><i class="fa-solid fa-xmark"></i></a>
@@ -620,7 +618,6 @@
             <div class="dashboard-box">
                 <div class="box-header">
                     <h3><i class="fa-regular fa-calendar-days"></i> Upcoming Appointments</h3>
-                    <a href="{% url 'doctorAppointments' %}" class="view-all-link">View All</a>
                 </div>
                 <div class="dash-table-container">
                     <table class="dash-table">
@@ -685,7 +682,6 @@
                             <span><i class="fa-solid fa-droplet me-1"></i>{{ patient.bloodGroup|default:"N/A" }}</span>
                         </div>
                     </div>
-                    <a href="{% url 'doctorAppointments' %}" class="view-all-link">View</a>
                 </div>
                 {% empty %}
                 <div class="empty-state">
