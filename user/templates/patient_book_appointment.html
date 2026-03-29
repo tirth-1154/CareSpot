@@ -19,8 +19,42 @@
 
     body {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: var(--bg-body);
+        background: linear-gradient(135deg, #F0F7FF 0%, #E2E8F0 100%);
         color: var(--text-main);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Decorative Background Elements */
+    body::before, body::after {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: -1;
+        opacity: 0.4;
+    }
+
+    body::before {
+        background: radial-gradient(circle, var(--primary-blue) 0%, transparent 70%);
+        top: -100px;
+        right: -100px;
+        animation: float 20s infinite alternate;
+    }
+
+    body::after {
+        background: radial-gradient(circle, #60A5FA 0%, transparent 70%);
+        bottom: -200px;
+        left: -200px;
+        animation: float 25s infinite alternate-reverse;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(100px, 50px); }
     }
 
     .booking-wrapper {
@@ -28,7 +62,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 40px 20px;
+        padding: 60px 20px;
+        position: relative;
     }
 
     .booking-standalone-card {
@@ -393,6 +428,35 @@
         try {
             const res = await fetch(`/ajax/get_available_slots/?doctor_id=${currentDocId}&date=${date}`);
             const data = await res.json();
+
+            // --- Blocked: patient already has accepted/pending appointment ---
+            if(data.blocked) {
+                cont.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 30px 20px;">
+                        <div style="
+                            background: linear-gradient(135deg, #FFF5F5 0%, #FED7D7 100%);
+                            border: 2px solid #FC8181;
+                            border-radius: 20px;
+                            padding: 30px 25px;
+                            margin: 0 auto;
+                            max-width: 380px;
+                        ">
+                            <div style="
+                                width: 56px; height: 56px; margin: 0 auto 16px;
+                                background: #FEB2B2; border-radius: 50%;
+                                display: flex; align-items: center; justify-content: center;
+                            ">
+                                <i class="fa-solid fa-lock" style="font-size: 1.4rem; color: #C53030;"></i>
+                            </div>
+                            <h4 style="color: #C53030; font-weight: 800; margin: 0 0 10px; font-size: 1.05rem;">Booking Not Allowed</h4>
+                            <p style="color: #9B2C2C; font-weight: 600; font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                                ${data.message}
+                            </p>
+                        </div>
+                    </div>`;
+                return;
+            }
+
             if(data.available && data.slots && data.slots.length > 0) {
                 cont.innerHTML = '';
                 data.slots.forEach(s => {

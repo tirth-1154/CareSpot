@@ -548,7 +548,7 @@ def followDoctor(request, id):
         else:
             tblFollow.objects.create(userID=user, doctorID=doctor)  # Follow
 
-    return redirect('home')
+    return redirect('patientBlogs')
 
 def viewDoctorProfile(request, id):
     user_id = request.session.get('user_id')
@@ -826,7 +826,7 @@ def _process_appointment_acceptance(appointment):
     tblnotification.objects.create(
         userID=patient_user,
         senderID=doctor.userID.userID,
-        message=f"Dr. {doctor.displayName} accepted your appointment on {app_date} at {app_time}.",
+        message=f"{doctor.displayName} accepted your appointment on {app_date} at {app_time}.",
         isRead=False
     )
 
@@ -980,21 +980,31 @@ def patientAppointments(request):
         doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
         
         # --- Validation: One appointment per doctor per day per patient ---
-        existing_appointment = tblAppointment.objects.filter(
+        # Block if there is an ACCEPTED appointment on this date
+        accepted_exists = tblAppointment.objects.filter(
             clientID=c,
             doctorID=doctor,
             appointmentDate=date,
-            isRejected=False  # Only check non-rejected appointments
-        ).first()
+            isAccepted=True,
+            isRejected=False
+        ).exists()
         
-        if existing_appointment:
-            messages.error(request, f'You already have an appointment with {doctor.displayName} on this date. You can only book one appointment per doctor per day.')
-            data = {
-                "doctor": tblDoctor.objects.filter(approval_status='approved'),
-                "RAZORPAY_KEY_ID": settings.RAZORPAY_KEY_ID,
-                "PLATFORM_FEE": settings.PLATFORM_FEE,
-            }
-            return render(request, 'patient_book_appointment.html', data)
+        if accepted_exists:
+            messages.error(request, f'You already have an accepted appointment with {doctor.displayName} on this date. You cannot book more than one appointment per day with the same doctor.')
+            return redirect('patientAppointments')
+        
+        # Block if there is a PENDING appointment on this date
+        pending_exists = tblAppointment.objects.filter(
+            clientID=c,
+            doctorID=doctor,
+            appointmentDate=date,
+            isAccepted=False,
+            isRejected=False
+        ).exists()
+        
+        if pending_exists:
+            messages.error(request, f'You already have a pending appointment request with {doctor.displayName} on this date. Please wait for the doctor to respond.')
+            return redirect('patientAppointments')
         # --- End Validation ---
         
         p=tblAppointment(
@@ -1871,47 +1881,80 @@ def get_available_slots(request):
     except ValueError:
         return JsonResponse({'available': False, 'message': 'Invalid date format'})
     
-    day_of_week = sel_date.weekday()  # 0=Monday
+    # --- Check if logged-in patient already has an accepted/pending appointment ---
+    user_id = request.session.get('user_id')
+    if user_id:
+        client = tblClient.objects.filter(userID=user_id).first()
+        if client:
+            # Check for accepted appointment
+            if tblAppointment.objects.filter(clientID=client, doctorID=doctor_id, appointmentDate=sel_date, isAccepted=True, isRejected=False).exists():
+                return JsonResponse({'available': False, 'blocked': True, 'message': 'You already have an accepted appointment with this doctor on this date.'})
+            # Check for pending appointment
+            if tblAppointment.objects.filter(clientID=client, doctorID=doctor_id, appointmentDate=sel_date, isAccepted=False, isRejected=False).exists():
+                return JsonResponse({'available': False, 'blocked': True, 'message': 'You already have a pending appointment request. Please wait for the doctor to respond.'})
     
-    schedule = tblDoctorSchedule.objects.filter(
-        doctorID=doctor_id,
-        day_of_week=day_of_week,
-        is_available=True
-    ).first()
+    day_of_week = sel_date.weekday()
+    prev_day_of_week = (day_of_week - 1) % 7
     
-    if not schedule or not schedule.start_time or not schedule.end_time:
-        return JsonResponse({'available': False, 'message': 'Doctor is not available on this day.'})
-    
-    # Generate 30-min slots between start_time and end_time
     slots = []
-    current = dt.combine(sel_date, schedule.start_time)
-    end = dt.combine(sel_date, schedule.end_time)
     
-    while current < end:
-        slot_time = current.time()
-        slot_value = slot_time.strftime('%H:%M')
-        slot_label = slot_time.strftime('%I:%M %p')
-        slots.append({'value': slot_value, 'label': slot_label})
-        current += timedelta(minutes=30)
-    
+    # 1. Check current day's schedule for slots starting today
+    current_schedule = tblDoctorSchedule.objects.filter(doctorID=doctor_id, day_of_week=day_of_week, is_available=True).first()
+    if current_schedule and current_schedule.start_time:
+        start_dt = dt.combine(sel_date, current_schedule.start_time)
+        # If end_time < start_time, it crosses midnight into next day. End of "today" is midnight.
+        if current_schedule.end_time and current_schedule.end_time <= current_schedule.start_time:
+            end_dt = dt.combine(sel_date + timedelta(days=1), current_schedule.end_time)
+        elif current_schedule.end_time:
+            end_dt = dt.combine(sel_date, current_schedule.end_time)
+        else:
+            end_dt = start_dt
+            
+        temp_curr = start_dt
+        while temp_curr < end_dt:
+            # Only add if it's actually ON sel_date
+            if temp_curr.date() == sel_date:
+                slot_time = temp_curr.time()
+                slots.append({'value': slot_time.strftime('%H:%M'), 'label': slot_time.strftime('%I:%M %p')})
+            temp_curr += timedelta(minutes=30)
+
+    # 2. Check previous day's schedule for slots carrying over into today (midnight to end_time)
+    prev_schedule = tblDoctorSchedule.objects.filter(doctorID=doctor_id, day_of_week=prev_day_of_week, is_available=True).first()
+    if prev_schedule and prev_schedule.start_time and prev_schedule.end_time and prev_schedule.end_time <= prev_schedule.start_time:
+        # This shift started yesterday and ends today
+        prev_date = sel_date - timedelta(days=1)
+        start_dt = dt.combine(prev_date, prev_schedule.start_time)
+        end_dt = dt.combine(sel_date, prev_schedule.end_time)
+        
+        temp_curr = start_dt
+        while temp_curr < end_dt:
+            # Only add if it's already ON sel_date
+            if temp_curr.date() == sel_date:
+                slot_time = temp_curr.time()
+                slots.append({'value': slot_time.strftime('%H:%M'), 'label': slot_time.strftime('%I:%M %p')})
+            temp_curr += timedelta(minutes=30)
+
+    if not slots:
+        # Check if the doctor worked at all today according to schedule
+        if not current_schedule and not prev_schedule:
+             return JsonResponse({'available': False, 'message': 'Doctor is not available on this day.'})
+        return JsonResponse({'available': True, 'slots': [], 'message': 'No working hours scheduled for this date.'})
+
+    # Sort slots by time
+    slots.sort(key=lambda x: x['value'])
+
     # Filter out already booked slots
-    booked_times = tblAppointment.objects.filter(
-        doctorID=doctor_id,
-        appointmentDate=sel_date,
-        isRejected=False
-    ).values_list('appointmentTime', flat=True)
-    
+    booked_times = tblAppointment.objects.filter(doctorID=doctor_id, appointmentDate=sel_date, isRejected=False).values_list('appointmentTime', flat=True)
     booked_set = set(t.strftime('%H:%M') for t in booked_times)
     slots = [s for s in slots if s['value'] not in booked_set]
     
     # If today, filter out past times
-    today = date.today()
-    if sel_date == today:
+    if sel_date == date.today():
         now_time = dt.now().time()
         slots = [s for s in slots if dt.strptime(s['value'], '%H:%M').time() > now_time]
     
     if not slots:
-        return JsonResponse({'available': True, 'slots': [], 'message': 'All slots are booked for this day.'})
+        return JsonResponse({'available': True, 'slots': [], 'message': 'All slots are in the past or booked for this day.'})
     
     return JsonResponse({'available': True, 'slots': slots})
 
@@ -2105,7 +2148,7 @@ def videoMeeting(request, appointment_id):
     # Set display name and redirect URL based on role
     user = tblUser.objects.filter(userID=user_id).first()
     if is_doctor:
-        user_display_name = f"Dr. {doctor.displayName}"
+        user_display_name = f"{doctor.displayName}"
         back_url = '/doctorAppointments/'
     else:
         user_display_name = client.name
