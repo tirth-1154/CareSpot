@@ -567,7 +567,7 @@
     <!-- ======= RIGHT: SIDEBAR ======= -->
     <aside class="blog-content-sidebar">
 
-      <!-- Widget: Explore Topics -->
+      {% comment %} <!-- Widget: Explore Topics -->
       <div class="blog-widget">
         <h3 class="blog-widget-title"><i class="fa-solid fa-tag" style="color: var(--blog-primary);"></i> Explore Topics</h3>
         <div>
@@ -580,10 +580,10 @@
             <p style="color: var(--blog-muted); font-size: 13px; margin: 0;">No topics available yet.</p>
           {% endfor %}
         </div>
-      </div>
+      </div> {% endcomment %}
 
       <!-- Widget: Trending Now -->
-      <div class="blog-widget">
+      <div class="blog-widget" style="margin-top: 110px;">
         <h3 class="blog-widget-title"><i class="fa-solid fa-arrow-trend-up" style="color: var(--blog-secondary);"></i> Trending Now</h3>
         <div>
           {% for blog in trending_blogs|slice:":4" %}
