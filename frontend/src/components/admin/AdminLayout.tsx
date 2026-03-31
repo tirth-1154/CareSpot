@@ -121,7 +121,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div className="flex items-center gap-3 cursor-pointer group">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-semibold text-slate-800 leading-tight">Super Admin</p>
-                <p className="text-xs text-slate-500 font-medium tracking-wide">admin@carespot.com</p>
+                <p className="text-xs text-slate-500 font-medium tracking-wide">admin@docspot.com</p>
               </div>
               <img 
                 src="https://ui-avatars.com/api/?name=Admin&background=4F46E5&color=fff&size=40" 

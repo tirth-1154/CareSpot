@@ -551,17 +551,19 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (data.status === 'success') {
                 // Update local data
-                const apt = pendingAppointments.find(a => a.id === appointmentId);
+                const apt = pendingAppointments.find(a => String(a.id) === String(appointmentId));
                 if (apt) {
                     apt.status = action === 'accept' ? 'Accepted' : 'Rejected';
                     // Update main appointments lookup for calendar
                     const dayApts = appointmentsByDate[apt.date];
-                    const target = dayApts.find(a => a.id === appointmentId);
-                    if (target) target.status = apt.status;
+                    if (dayApts && Array.isArray(dayApts)) {
+                        const target = dayApts.find(a => String(a.id) === String(appointmentId));
+                        if (target) target.status = apt.status;
+                    }
                 }
                 
                 // Remove from pending
-                pendingAppointments = pendingAppointments.filter(a => a.id !== appointmentId);
+                pendingAppointments = pendingAppointments.filter(a => String(a.id) !== String(appointmentId));
                 
                 // UI feedback
                 const card = document.getElementById(`card-${appointmentId}`);
@@ -572,10 +574,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     render();
                 }
+            } else {
+                alert('Error from server: ' + (data.message || 'Unknown issue'));
+                console.error('Server error response:', data);
             }
         } catch (error) {
             console.error('Error updating status:', error);
-            alert('Failed to update status. Please try again.');
+            alert('Encountered an error. Please check console for details.');
         }
     };
 
