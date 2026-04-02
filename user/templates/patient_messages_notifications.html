@@ -279,6 +279,22 @@
     margin-bottom: 20px;
   }
 
+  @media (max-width: 768px) {
+    .messages-container {
+      flex-direction: column;
+      height: auto;
+    }
+    .messages-inbox {
+      width: 100% !important;
+      border-right: none;
+      border-bottom: 1px solid #eef2f5;
+      height: 300px;
+    }
+    .message-content {
+      height: 500px;
+    }
+  }
+
   /* Left Side: Inbox List */
   .messages-inbox {
     width: 350px;
@@ -586,6 +602,22 @@
     font-size: 50px;
     margin-bottom: 15px;
     color: rgba(13, 110, 253, 0.1);
+  }
+
+  @media (max-width: 576px) {
+    .summary-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 1rem;
+    }
+    .summary-icon {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+    .nav-pills .nav-link {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
   }
 </style>
 

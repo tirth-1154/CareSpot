@@ -97,12 +97,12 @@ function App() {
   }
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-screen lg:h-screen overflow-hidden lg:overflow-hidden bg-white">
       {/* View Toggle */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] bg-white/80 backdrop-blur-md p-1.5 rounded-full shadow-lg border border-white flex gap-1">
+      <div className="absolute top-6 md:top-8 left-1/2 -translate-x-1/2 z-[100] bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-xl border border-white/50 flex gap-1 w-fit max-w-[90vw]">
         <button
           onClick={() => setActiveView('patient')}
-          className={`px-8 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
+          className={`px-4 sm:px-8 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap ${
             activeView === 'patient' 
               ? 'bg-[#0288D1] text-white shadow-md' 
               : 'text-gray-500 hover:text-gray-800 hover:bg-white/50'
@@ -112,7 +112,7 @@ function App() {
         </button>
         <button
           onClick={() => setActiveView('doctor')}
-          className={`px-8 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
+          className={`px-4 sm:px-8 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap ${
             activeView === 'doctor' 
               ? 'bg-[#0288D1] text-white shadow-md' 
               : 'text-gray-500 hover:text-gray-800 hover:bg-white/50'

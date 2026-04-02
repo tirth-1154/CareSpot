@@ -14,7 +14,8 @@
     .welcome-card {
         background: linear-gradient(135deg, #0F6DB6 0%, #1590c8 55%, #23B6B3 100%);
         border-radius: 18px;
-        padding: 32px 36px;
+        padding: 24px 20px;
+        sm:padding: 32px 36px;
         color: #fff;
         margin-bottom: 28px;
         position: relative;
@@ -65,7 +66,8 @@
     /* ---------- Statistics Cards ---------- */
     .stat-card {
         border-radius: 16px;
-        padding: 24px 22px;
+        padding: 16px 12px;
+        sm:padding: 24px 22px;
         color: #fff;
         display: flex;
         justify-content: space-between;
@@ -102,20 +104,23 @@
         margin-bottom: 8px;
     }
     .stat-value {
-        font-size: 40px;
+        font-size: 28px;
+        sm:font-size: 40px;
         font-weight: 800;
         line-height: 1;
         color: #fff;
     }
     .stat-icon-circle {
-        width: 60px; height: 60px;
+        width: 40px; height: 40px;
+        sm:width: 60px; sm:height: 60px;
         border-radius: 50%;
         background: rgba(255,255,255,0.18);
         border: 2px solid rgba(255,255,255,0.22);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
+        font-size: 16px;
+        sm:font-size: 22px;
         flex-shrink: 0;
         z-index: 1;
     }
@@ -440,17 +445,35 @@
     .empty-state p { font-size: 14px; margin: 0; }
 
     /* ---------- Responsive ---------- */
-    @media (max-width: 1200px) {
-        .schedule-grid { grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 991px) {
+        .dash-table thead { display: none; }
+        .dash-table, .dash-table tbody, .dash-table tr, .dash-table td { display: block; width: 100%; }
+        .dash-table tr { margin-bottom: 15px; border: 1px solid #eee; border-radius: 12px; padding: 10px; background: #fff; }
+        .dash-table td { padding: 8px 15px; border: none; text-align: left; }
+        .dash-table td:not(:last-child) { border-bottom: 1px solid #f8f9fa; }
+        .dash-table td::before { content: attr(data-label); font-weight: 700; color: #64748b; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 2px; }
+        .dash-table td.text-end { text-align: left !important; padding-top: 15px; }
+        
+        .stat-value { font-size: 24px; }
+        .stat-label { font-size: 10px; }
+        .stat-icon-circle { width: 36px; height: 36px; font-size: 14px; }
+        
+        .box-header { padding: 15px; flex-direction: column; gap: 10px; text-align: center; }
+        .box-header h3 { justify-content: center; }
     }
+
     @media (max-width: 768px) {
-        .welcome-card { padding: 22px 22px; }
+        .welcome-card { padding: 22px 22px; text-align: center; }
         .welcome-card h3 { font-size: 20px; }
-        .stat-value { font-size: 30px; }
-        .schedule-grid { grid-template-columns: repeat(3, 1fr); }
+        .welcome-spec-badge { width: 100%; justify-content: center; }
+        .schedule-grid { grid-template-columns: repeat(3, 1fr); padding: 15px; }
+        .quick-action-btn { padding: 12px 15px; }
     }
+    
     @media (max-width: 480px) {
         .schedule-grid { grid-template-columns: repeat(2, 1fr); }
+        .stat-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .stat-icon-circle { align-self: flex-end; margin-top: -20px; }
     }
 </style>
 
@@ -536,17 +559,17 @@
                         <tbody>
                             {% for appointment in today_appointments %}
                             <tr>
-                                <td>
+                                <td data-label="Patient">
                                     <div class="d-flex align-items-center">
                                         <div class="patient-ring ring-blue">{{ appointment.clientID.name|first|upper }}</div>
                                         <strong>{{ appointment.clientID.name }}</strong>
                                     </div>
                                 </td>
-                                <td>
+                                <td data-label="Time">
                                     <i class="fa-regular fa-clock me-1 text-muted"></i>{{ appointment.appointmentTime }}
                                 </td>
-                                <td>{{ appointment.clientID.description|truncatechars:28|default:"—" }}</td>
-                                <td>
+                                <td data-label="Reason">{{ appointment.clientID.description|truncatechars:28|default:"—" }}</td>
+                                <td data-label="Status">
                                     {% if appointment.isAccepted %}
                                     <span class="status-badge badge-accepted"><i class="fa-solid fa-circle-check"></i>Accepted</span>
                                     {% elif appointment.isRejected %}
@@ -555,7 +578,7 @@
                                     <span class="status-badge badge-pending"><i class="fa-regular fa-clock"></i>Pending</span>
                                     {% endif %}
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end" data-label="Actions">
                                     {% if not appointment.isAccepted and not appointment.isRejected %}
                                     <a href="{% url 'acceptAppointment' appointment.appointmentID %}" class="tbl-action tbl-action-success" title="Accept"><i class="fa-solid fa-check"></i></a>
                                     <a href="{% url 'rejectAppointment' appointment.appointmentID %}" class="tbl-action tbl-action-danger" title="Reject"><i class="fa-solid fa-xmark"></i></a>
@@ -633,19 +656,19 @@
                             {% for appointment in upcoming_appointments %}
                                 {% if appointment.isAccepted == True %}
                                     <tr>
-                                        <td>
+                                        <td data-label="Patient">
                                             <div class="d-flex align-items-center">
                                                 <div class="patient-ring ring-purple">{{ appointment.clientID.name|first|upper }}</div>
                                                 <strong>{{ appointment.clientID.name }}</strong>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td data-label="Date & Time">
                                             <span style="font-size:13px;">
                                                 <i class="fa-regular fa-calendar me-1 text-muted"></i>{{ appointment.appointmentDate|date:"M d, Y" }}
                                                 <span class="text-muted ms-1">{{ appointment.appointmentTime }}</span>
                                             </span>
                                         </td>
-                                        <td>
+                                        <td data-label="Status">
                                             <span class="status-badge badge-upcoming">Accepted</span>
                                         </td>
                                     </tr>

@@ -22,7 +22,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen w-full font-['Inter',sans-serif] bg-slate-50 text-slate-900 overflow-hidden relative flex">
+    <div className="min-h-screen w-full font-['Inter',sans-serif] bg-slate-50 text-slate-900 overflow-x-hidden relative flex">
       
       {/* GLOBAL BACKGROUND - Light grid look matching brand */}
       <div className="absolute inset-0 bg-[#f4f7fb]">
@@ -48,7 +48,7 @@ const AdminLogin = () => {
       </div>
 
       {/* MAIN LAYOUT SPLIT */}
-      <div className="relative z-10 w-full flex flex-col lg:flex-row h-screen max-w-[1800px] mx-auto">
+      <div className="relative z-10 w-full flex flex-col lg:flex-row min-h-screen lg:h-screen max-w-[1800px] mx-auto">
         
         {/* ================= LEFT SIDE (Branding & Stats) ================= */}
         <div className="hidden lg:flex flex-1 flex-col justify-between p-16 relative">
@@ -143,14 +143,14 @@ const AdminLogin = () => {
             className="w-full max-w-[480px]"
           >
             {/* Glassmorphism Login Card */}
-            <div className="bg-white/70 backdrop-blur-2xl border border-white rounded-3xl p-10 lg:p-12 shadow-[0_20px_40px_rgba(0,0,0,0.08),unset_0_1px_1px_rgba(255,255,255,1)] relative overflow-hidden">
+            <div className="bg-white/70 backdrop-blur-2xl border border-white rounded-3xl p-8 sm:p-10 lg:p-12 shadow-[0_20px_40px_rgba(0,0,0,0.08),unset_0_1px_1px_rgba(255,255,255,1)] relative overflow-hidden">
               
               {/* Card top flare */}
               <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-sky-300 to-transparent opacity-50"></div>
 
-              <div className="mb-10 text-center lg:text-left">
-                <h2 className="text-3xl font-bold text-slate-900 mb-3 tracking-wide">Authenticate</h2>
-                <p className="text-slate-500">Enter credentials to access the secure portal.</p>
+              <div className="mb-8 sm:mb-10 text-center lg:text-left">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3 tracking-wide">Authenticate</h2>
+                <p className="text-sm sm:text-base text-slate-500">Enter credentials to access the secure portal.</p>
               </div>
 
               {djangoError && (

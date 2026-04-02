@@ -34,46 +34,49 @@ export function AdminPatients({ data }: AdminPatientsProps) {
   };
 
   return (
-    <div className="p-8 pb-12">
-        <div className="flex justify-between items-center mb-6">
+    <div className="p-4 sm:p-6 lg:p-8 pb-12">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{data.page_title}</h1>
-                <p className="text-slate-500 mt-1 font-medium">Manage and view patient demographics. Total: {data.total_count}</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{data.page_title}</h1>
+                <p className="text-slate-500 mt-1 font-medium text-sm sm:text-base text-wrap">Manage and view patient demographics. Total: {data.total_count}</p>
             </div>
-            <span className="badge badge-admin info p-2 px-3 text-sm">
+            <span className="badge badge-admin info p-2 px-3 text-sm w-fit">
                 <i className="fa-solid fa-bed-pulse me-1"></i> {data.total_count} Patients
             </span>
         </div>
 
-        <form method="GET" action="/site-admin/patients/" className="filter-bar animate-in">
-            <div className="search-input">
+        <form method="GET" action="/site-admin/patients/" className="filter-bar animate-in flex flex-col md:flex-row gap-3">
+            <div className="search-input w-full">
                 <i className="fa-solid fa-magnifying-glass"></i>
-                <input type="text" name="q" placeholder="Search by name, contact or email..." defaultValue={data.query} />
+                <input type="text" name="q" placeholder="Search by name..." className="w-full" defaultValue={data.query} />
             </div>
             
-            <select name="gender" className="filter-select" defaultValue={data.gender_filter}>
-                <option value="">All Genders</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-            </select>
+            <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                <select name="gender" className="filter-select flex-1 md:flex-none md:min-w-[120px]" defaultValue={data.gender_filter}>
+                    <option value="">All Genders</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                
+                <select name="blood" className="filter-select flex-1 md:flex-none md:min-w-[120px]" defaultValue={data.blood_filter}>
+                    <option value="">Blood Group</option>
+                    {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => (
+                        <option key={bg} value={bg}>{bg}</option>
+                    ))}
+                </select>
+                
+                <button type="submit" className="filter-btn flex-1 md:flex-none">Filter</button>
+            </div>
             
-            <select name="blood" className="filter-select" defaultValue={data.blood_filter}>
-                <option value="">All Blood Groups</option>
-                {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => (
-                    <option key={bg} value={bg}>{bg}</option>
-                ))}
-            </select>
-            
-            <button type="submit" className="filter-btn">Filter Patients</button>
             {(data.query || data.gender_filter || data.blood_filter) && (
-                <a href="/site-admin/patients/" className="filter-reset">Clear</a>
+                <a href="/site-admin/patients/" className="filter-reset text-center md:text-left">Clear</a>
             )}
         </form>
 
-        <div className="admin-card animate-in">
+        <div className="admin-card animate-in overflow-hidden">
             <div className="admin-card-body p-0">
-                <div className="admin-table-wrapper">
+                <div className="admin-table-wrapper overflow-x-auto w-full">
                     <table className="admin-table">
                         <thead>
                             <tr>

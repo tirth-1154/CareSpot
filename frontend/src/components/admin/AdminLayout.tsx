@@ -21,7 +21,20 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1024);
+  
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1024) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const path = window.location.pathname;
   const navItems = [
     { label: 'Dashboard', icon: <LayoutDashboard size={20} />, href: '/site-admin/dashboard/', active: path.includes('/site-admin/dashboard') },
@@ -38,15 +51,30 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex h-screen w-full bg-[#f8fafc] overflow-hidden font-sans">
       
+      {/* Mobile Sidebar Backdrop */}
+      <AnimatePresence>
+        {isSidebarOpen && window.innerWidth <= 1024 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <AnimatePresence initial={false}>
+      <AnimatePresence>
         {isSidebarOpen && (
           <motion.aside
-            initial={{ width: 280, opacity: 1 }}
-            animate={{ width: 280, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 200 }}
-            className="h-full bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-20 shadow-sm"
+            initial={{ x: window.innerWidth <= 1024 ? -280 : 0, width: 280 }}
+            animate={{ x: 0, width: 280 }}
+            exit={{ x: -280, width: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className={`h-full bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-40 shadow-xl lg:shadow-sm ${
+              window.innerWidth <= 1024 ? 'fixed' : 'relative'
+            }`}
           >
             <div className="h-16 flex items-center px-6 border-b border-slate-100">
               <span className="font-bold text-xl text-slate-800 tracking-tight">Care<span className="text-indigo-600">Spot</span> Admin</span>
@@ -102,12 +130,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             >
               <Menu size={20} />
             </button>
-            <div className="hidden md:flex items-center bg-slate-100 rounded-full px-4 py-2 border border-slate-200 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
+            <div className="hidden sm:flex items-center bg-slate-100 rounded-full px-4 py-2 border border-slate-200 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
               <Search size={18} className="text-slate-400" />
               <input 
                 type="text" 
-                placeholder="Search across CareSpot..." 
-                className="bg-transparent border-none outline-none text-sm ml-2 w-64 text-slate-700 placeholder:text-slate-400"
+                placeholder="Search..." 
+                className="bg-transparent border-none outline-none text-sm ml-2 w-32 md:w-64 text-slate-700 placeholder:text-slate-400"
               />
             </div>
           </div>

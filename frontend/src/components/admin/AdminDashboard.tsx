@@ -70,15 +70,15 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
   ];
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
       
       {/* Header */}
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Overview</h1>
-          <p className="text-slate-500 mt-1 font-medium">Real-time stats and system vitals.</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Overview</h1>
+          <p className="text-slate-500 mt-1 font-medium text-sm sm:text-base">Real-time stats and system vitals.</p>
         </div>
-        <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-sm shadow-indigo-200 transition-all active:scale-95">
+        <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-sm shadow-indigo-200 transition-all active:scale-95">
           <Activity size={18} />
           View Reports
         </button>
@@ -120,7 +120,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-          className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-100 h-96 flex flex-col"
+          className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-100 h-80 sm:h-96 flex flex-col"
         >
           <div className="mb-4">
             <h3 className="text-lg font-bold text-slate-800">Appointments Trend</h3>

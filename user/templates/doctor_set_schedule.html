@@ -385,6 +385,39 @@
     .modal-status-badge.rejected { background: #fee2e2; color: #991b1b; }
     .modal-status-badge.completed { background: #dbeafe; color: #1e40af; }
 
+    @media (max-width: 768px) {
+        .appointments-header { flex-direction: column; align-items: flex-start !important; gap: 15px; }
+        .appointments-header h1 { font-size: 1.5rem; }
+        .btn-teal { width: 100%; justify-content: center; }
+        
+        .calendar-nav { flex-wrap: wrap; justify-content: center; padding: 15px; }
+        .picker-display { order: 1; width: 100%; justify-content: center; margin: 10px 0; }
+        .nav-arrow { order: 2; }
+        .btn-today { order: 3; margin-left: 10px; padding: 8px 12px; font-size: 12px; }
+        
+        .calendar-grid { grid-template-columns: repeat(7, 1fr); }
+        .calendar-header-cell { padding: 8px 4px; font-size: 0.65rem; }
+        .calendar-cell { min-height: 80px; padding: 5px; }
+        .day-number { font-size: 0.75rem; margin-bottom: 4px; }
+        .apt-indicator { font-size: 0.6rem; padding: 2px 4px; }
+        .apt-indicator span { display: none; } /* Hide time on mobile to save space */
+        
+        .picker-grid { grid-template-columns: repeat(2, 1fr); padding: 15px; gap: 10px; }
+        .selection-item { padding: 15px; font-size: 0.9rem; }
+        
+        .calendar-stats { flex-wrap: wrap; gap: 12px; padding: 12px; }
+        .stat-item { font-size: 12px; }
+        
+        .request-card { min-width: 240px; }
+    }
+
+    @media (max-width: 480px) {
+        .calendar-grid { font-size: 0.8rem; }
+        .calendar-cell { min-height: 60px; }
+        .apt-indicator { height: 10px; width: 10px; border-radius: 50%; padding: 0; color: transparent; overflow: hidden; }
+        .apt-more { font-size: 0.6rem; }
+    }
+
 </style>
 {% endblock %}
 

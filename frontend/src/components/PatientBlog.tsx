@@ -96,7 +96,7 @@ export default function PatientBlog() {
     <div className="min-h-screen font-sans" style={{ backgroundColor: '#F8FAFC', fontFamily: "'Inter', sans-serif" }}>
       
       {/* Hero Header Section */}
-      <section className="relative text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden" 
+      <section className="relative text-white py-12 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden" 
                style={{ background: 'linear-gradient(135deg, #2D9CDB 0%, #1c7ab1 100%)' }}>
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
            {/* Abstract health pattern overlay could go here */}
@@ -105,10 +105,10 @@ export default function PatientBlog() {
         </div>
         
         <div className="max-w-7xl mx-auto relative z-10 text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 drop-shadow-sm">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4 drop-shadow-sm">
             Patient Health Blog
           </h1>
-          <p className="text-lg md:text-xl max-w-2xl mx-auto opacity-90 font-light drop-shadow-sm">
+          <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto opacity-90 font-light drop-shadow-sm">
             Stay informed with the latest healthcare tips, wellness advice, and medical insights from our trusted experts.
           </p>
           
@@ -132,7 +132,7 @@ export default function PatientBlog() {
       </section>
 
       {/* Main Content Layout */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="flex flex-col lg:flex-row gap-10">
           
           {/* Main Blog Area (Left) */}

@@ -237,8 +237,8 @@
         <header class="navbar navbar-expand-lg navbar-light top-navbar fixed-top w-100">
             <div class="container-fluid px-4">
                 <!-- Website Logo / Hospital Name -->
-                <a class="navbar-brand d-flex align-items-center" href="{% url 'doctorDashboard' %}">
-                    <img src="/media/images/careSpotText.png" alt="" class="align center height-58" width="110">
+                <a class="navbar-brand d-flex align-items-center me-0 me-sm-2" href="{% url 'doctorDashboard' %}">
+                    <img src="/media/images/careSpotText.png" alt="" class="align center height-58" width="100" style="max-width: 90px; sm:max-width: 110px;">
                 </a>
 
                 <!-- Mobile Toggle -->
@@ -256,25 +256,25 @@
                         </li>
                     </ul>
 
-                    <ul class="navbar-nav align-items-center gap-3">
+                    <ul class="navbar-nav align-items-center gap-2 gap-sm-3 flex-row">
                         <!-- Notifications -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'doctorMessages' %}"><i class="fa-regular fa-envelope"></i></a>
+                            <a class="nav-link p-2" href="{% url 'doctorMessages' %}"><i class="fa-regular fa-envelope"></i></a>
                         </li>
                         <li class="nav-item dropdown notification-dropdown position-relative notification-bell">
                             <a class="nav-link fs-5 text-secondary p-0" href="#" id="notificationDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px">
-                                    <i class="fa-solid fa-bell text-primary"></i>
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px">
+                                    <i class="fa-solid fa-bell text-primary" style="font-size: 0.9rem;"></i>
                                 </div>
                                 <!-- Red dot indicator -->
-                                <span id="notificationDot" class="position-absolute {% if nav_general_count == 0 %}d-none{% endif %} top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="width: 12px; height: 12px; margin-top: 5px">
+                                <span id="notificationDot" class="position-absolute {% if nav_general_count == 0 %}d-none{% endif %} top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="width: 10px; height: 10px; margin-top: 5px">
                                     <span class="visually-hidden">New alerts</span>
                                 </span>
                             </a>
                             <!-- Notifications Dropdown Menu -->
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-custom mt-2 p-0 shadow-lg border-0" aria-labelledby="notificationDropdownToggle" style="width: 320px; overflow: hidden">
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-custom mt-2 p-0 shadow-lg border-0" aria-labelledby="notificationDropdownToggle" style="width: 280px; sm:width: 320px; overflow: hidden">
                                 <div class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center bg-light">
-                                    <h6 class="mb-0 fw-bold" style="font-size: 0.95rem">Notifications</h6>
+                                    <h6 class="mb-0 fw-bold" style="font-size: 0.9rem">Notifications</h6>
                                     <span id="notificationCount" class="badge bg-primary rounded-pill">{{ nav_general_count }}</span>
                                 </div>
                                 <div id="notificationList" class="overflow-auto border-bottom" style="max-height: 300px">
@@ -300,11 +300,11 @@
 
                         <!-- Doctor Profile Dropdown -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown"
+                            <a class="nav-link dropdown-toggle d-flex align-items-center p-1" href="#" id="profileDropdown"
                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="{{request.session.profilePic|default:'https://ui-avatars.com/api/?name=Doctor&background=0D8ABC&color=fff'}}"
-                                    alt="Profile" class="rounded-circle me-2" width="35" height="35">
-                                <span class="fw-medium">{{ request.session.displayName|default:"Doctor" }}</span>
+                                    alt="Profile" class="rounded-circle me-1 me-sm-2" width="30" height="30">
+                                <span class="fw-medium d-none d-sm-inline" style="font-size: 0.9rem;">{{ request.session.displayName|default:"Doctor" }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm"
                                 aria-labelledby="profileDropdown">

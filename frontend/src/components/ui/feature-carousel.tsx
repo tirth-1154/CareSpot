@@ -73,11 +73,11 @@ export function FeatureCarousel({ doctors = [], countdown, onGetStarted }: { doc
   );
 
   return (
-    <div className="w-full h-screen bg-white relative font-['Outfit'] m-0 p-0 overflow-hidden">
+    <div className="w-full min-h-screen lg:h-screen bg-white relative font-['Outfit'] m-0 p-0 overflow-x-hidden">
       <div className="relative overflow-hidden w-full h-full flex flex-col lg:flex-row bg-white">
         
         {/* LEFT COLUMN: Content & Chips */}
-        <div className="w-full lg:w-[45%] h-full relative z-30 flex flex-col justify-center px-10 md:px-16 lg:pl-20 xl:pl-32 bg-white shadow-[20px_0_40px_rgba(0,0,0,0.04)]">
+        <div className="w-full lg:w-[45%] h-auto lg:h-full relative z-30 flex flex-col justify-center px-6 sm:px-10 md:px-16 lg:pl-20 xl:pl-32 py-20 lg:py-0 bg-white shadow-[0_20px_40px_rgba(0,0,0,0.04)] lg:shadow-[20px_0_40px_rgba(0,0,0,0.04)]">
           
           {/* Welcome Text Content */}
           <div className="w-full max-w-[500px] mb-8 relative z-50">
@@ -86,7 +86,7 @@ export function FeatureCarousel({ doctors = [], countdown, onGetStarted }: { doc
               Welcome to DocSpot
             </div>
             
-            <h1 className="text-[2.75rem] md:text-[3.5rem] lg:text-[4rem] font-extrabold leading-[1.05] mb-6 text-[#111827] tracking-tight">
+            <h1 className="text-[2.25rem] sm:text-[2.75rem] md:text-[3.5rem] lg:text-[4rem] font-extrabold leading-[1.05] mb-6 text-[#111827] tracking-tight">
               Find the <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0288D1] to-[#4FC3F7]">Best Doctor</span><br/> Near You.
             </h1>
             
@@ -161,12 +161,12 @@ export function FeatureCarousel({ doctors = [], countdown, onGetStarted }: { doc
         </div>
 
         {/* RIGHT COLUMN: Photo Cards */}
-        <div className="flex-1 h-full relative bg-gradient-to-br from-[#E3F2FD] to-[#B3E5FC] flex items-center justify-center py-20 px-8 lg:px-20 overflow-hidden">
+        <div className="w-full lg:flex-1 h-[50vh] sm:h-[60vh] lg:h-full relative bg-gradient-to-br from-[#E3F2FD] to-[#B3E5FC] flex items-center justify-center py-10 lg:py-20 px-4 sm:px-8 lg:px-20 overflow-hidden">
           {/* Subtle background circles for depth */}
           <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-white/40 rounded-full blur-[80px]" />
           <div className="absolute -bottom-40 -left-20 w-[600px] h-[600px] bg-[#0288D1]/10 rounded-full blur-[80px]" />
 
-          <div className="relative w-full max-w-[340px] lg:max-w-[420px] aspect-[4/5] flex items-center justify-center mt-[-2%]">
+          <div className="relative w-full max-w-[280px] sm:max-w-[340px] lg:max-w-[420px] aspect-[4/5] flex items-center justify-center mt-[-2%]">
             {FEATURES.map((feature, index) => {
               const status = getCardStatus(index);
               const isActive = status === "active";

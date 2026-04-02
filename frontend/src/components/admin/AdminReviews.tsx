@@ -37,39 +37,42 @@ export function AdminReviews({ data }: AdminReviewsProps) {
   };
 
   return (
-    <div className="p-8 pb-12">
-        <div className="flex justify-between items-center mb-6">
+    <div className="p-4 sm:p-6 lg:p-8 pb-12">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{data.page_title}</h1>
-                <p className="text-slate-500 mt-1 font-medium">Monitor patient feedback and ratings. Total: {data.total_count}</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{data.page_title}</h1>
+                <p className="text-slate-500 mt-1 font-medium text-sm sm:text-base text-wrap">Monitor patient feedback and ratings. Total: {data.total_count}</p>
             </div>
-            <span className="badge badge-admin warning p-2 px-3 text-sm">
+            <span className="badge badge-admin warning p-2 px-3 text-sm w-fit">
                 <i className="fa-solid fa-star me-1"></i> {data.total_count} Reviews
             </span>
         </div>
 
-        <form method="GET" action="/site-admin/reviews/" className="filter-bar animate-in">
-            <div className="search-input">
+        <form method="GET" action="/site-admin/reviews/" className="filter-bar animate-in flex flex-col md:flex-row gap-3">
+            <div className="search-input w-full">
                 <i className="fa-solid fa-magnifying-glass"></i>
-                <input type="text" name="q" placeholder="Search by doctor, patient or review..." defaultValue={data.query} />
+                <input type="text" name="q" placeholder="Search by doctor, patient..." className="w-full" defaultValue={data.query} />
             </div>
             
-            <select name="rating" className="filter-select" defaultValue={data.rating_filter}>
-                <option value="">All Ratings</option>
-                {[5, 4, 3, 2, 1].map(r => (
-                    <option key={r} value={String(r)}>{r} Stars</option>
-                ))}
-            </select>
+            <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                <select name="rating" className="filter-select flex-1 md:flex-none md:min-w-[120px]" defaultValue={data.rating_filter}>
+                    <option value="">All Ratings</option>
+                    {[5, 4, 3, 2, 1].map(r => (
+                        <option key={r} value={String(r)}>{r} Stars</option>
+                    ))}
+                </select>
+                
+                <button type="submit" className="filter-btn flex-1 md:flex-none">Filter</button>
+            </div>
             
-            <button type="submit" className="filter-btn">Filter</button>
             {(data.query || data.rating_filter) && (
-                <a href="/site-admin/reviews/" className="filter-reset">Clear</a>
+                <a href="/site-admin/reviews/" className="filter-reset text-center md:text-left">Clear</a>
             )}
         </form>
 
-        <div className="admin-card animate-in">
+        <div className="admin-card animate-in overflow-hidden">
             <div className="admin-card-body p-0">
-                <div className="admin-table-wrapper">
+                <div className="admin-table-wrapper overflow-x-auto w-full">
                     <table className="admin-table">
                         <thead>
                             <tr>

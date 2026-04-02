@@ -307,6 +307,30 @@
     color: #64748b;
     font-size: 15px;
   }
+
+  /* Responsive Design */
+  @media (max-width: 991px) {
+    .glass-table thead { display: none; }
+    .glass-table, .glass-table tbody, .glass-table tr, .glass-table td { display: block; width: 100%; }
+    .glass-table tbody tr { margin-bottom: 20px; padding: 15px; border: 1px solid rgba(255, 255, 255, 0.8); }
+    .glass-table tbody td { padding: 10px 0; border: none !important; }
+    .glass-table tbody td:first-child { border-radius: 16px 16px 0 0; }
+    .glass-table tbody td:last-child { border-radius: 0 0 16px 16px; border-top: 1px solid rgba(0,0,0,0.05) !important; padding-top: 15px; }
+    
+    .action-buttons { justify-content: center; width: 100%; gap: 10px; }
+    .btn-glass-primary, .btn-glass-secondary { flex: 1; justify-content: center; padding: 10px; font-size: 12px; }
+    
+    .box-header { padding: 20px; flex-direction: column; text-align: center; gap: 15px; }
+    .box-header h3 { font-size: 20px; }
+  }
+  
+  @media (max-width: 480px) {
+    .patient-avatar, .patient-ring { width: 44px; height: 44px; font-size: 16px; margin-right: 12px; }
+    .cell-title { font-size: 15px; }
+    .cell-subtitle { font-size: 12px; }
+    .info-label { width: 55px; }
+    .badge-blood, .badge-success { padding: 4px 10px; font-size: 11px; }
+  }
 </style>
 
 <div class="container-fluid p-0">

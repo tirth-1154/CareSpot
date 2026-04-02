@@ -84,22 +84,22 @@ export function AdminConfigs({ data }: AdminConfigsProps) {
   };
 
   return (
-    <div className="p-8 pb-12 relative">
-        <div className="flex justify-between items-center mb-6">
+    <div className="p-4 sm:p-6 lg:p-8 pb-12 relative">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{data.page_title}</h1>
-                <p className="text-slate-500 mt-1 font-medium">Manage system {isLocations ? 'locations' : 'categories and specializations'}.</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{data.page_title}</h1>
+                <p className="text-slate-500 mt-1 font-medium text-sm sm:text-base">Manage system {isLocations ? 'locations' : 'categories and specializations'}.</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
                 <button 
                   onClick={() => { setShowModal(isLocations ? 'state' : 'cat'); setNewVal(''); }}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-semibold shadow-sm transition-all active:scale-95 flex items-center gap-2"
+                  className="flex-1 sm:flex-none justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-semibold shadow-sm transition-all active:scale-95 flex items-center gap-2 text-sm"
                 >
                     <i className="fa-solid fa-plus"></i> Add {isLocations ? 'State' : 'Category'}
                 </button>
                 <button 
                   onClick={() => { setShowModal(isLocations ? 'city' : 'sub'); setNewVal(''); setParentID(''); }}
-                  className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl font-semibold shadow-sm transition-all active:scale-95 flex items-center gap-2"
+                  className="flex-1 sm:flex-none justify-center bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl font-semibold shadow-sm transition-all active:scale-95 flex items-center gap-2 text-sm"
                 >
                     <i className="fa-solid fa-plus"></i> Add {isLocations ? 'City' : 'Subcategory'}
                 </button>
@@ -110,9 +110,9 @@ export function AdminConfigs({ data }: AdminConfigsProps) {
             {/* Primary List (Categories or States) */}
             <div className="space-y-4">
                 <h3 className="text-lg font-bold text-slate-800 px-1">{isLocations ? 'States' : 'Main Categories'}</h3>
-                <div className="admin-card animate-in border-indigo-100 shadow-indigo-50/50">
+                <div className="admin-card animate-in border-indigo-100 shadow-indigo-50/50 overflow-hidden">
                     <div className="admin-card-body p-0">
-                        <div className="admin-table-wrapper">
+                        <div className="admin-table-wrapper overflow-x-auto w-full">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
@@ -146,9 +146,9 @@ export function AdminConfigs({ data }: AdminConfigsProps) {
             {/* Secondary List (Subcategories or Cities) */}
             <div className="space-y-4">
                 <h3 className="text-lg font-bold text-slate-800 px-1">{isLocations ? 'Cities' : 'Specializations'}</h3>
-                <div className="admin-card animate-in border-slate-100">
+                <div className="admin-card animate-in border-slate-100 overflow-hidden">
                     <div className="admin-card-body p-0">
-                        <div className="admin-table-wrapper">
+                        <div className="admin-table-wrapper overflow-x-auto w-full">
                             <table className="admin-table">
                                 <thead>
                                     <tr>

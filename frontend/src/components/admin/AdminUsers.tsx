@@ -31,38 +31,41 @@ export function AdminUsers({ data }: AdminUsersProps) {
   };
 
   return (
-    <div className="p-8 pb-12">
-        <div className="flex justify-between items-center mb-6">
+    <div className="p-4 sm:p-6 lg:p-8 pb-12">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{data.page_title}</h1>
-                <p className="text-slate-500 mt-1 font-medium">Manage all registered users on the platform. Total: {data.total_count}</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{data.page_title}</h1>
+                <p className="text-slate-500 mt-1 font-medium text-sm sm:text-base text-wrap">Manage all registered users on the platform. Total: {data.total_count}</p>
             </div>
-            <span className="badge badge-admin primary p-2 px-3 text-sm">
+            <span className="badge badge-admin primary p-2 px-3 text-sm w-fit">
                 <i className="fa-solid fa-users me-1"></i> {data.total_count} Total
             </span>
         </div>
 
-        <form method="GET" action="/site-admin/users/" className="filter-bar animate-in">
-            <div className="search-input">
+        <form method="GET" action="/site-admin/users/" className="filter-bar animate-in flex flex-col md:flex-row gap-3">
+            <div className="search-input w-full">
                 <i className="fa-solid fa-magnifying-glass"></i>
-                <input type="text" name="q" placeholder="Search users by name, email or mobile..." defaultValue={data.query} />
+                <input type="text" name="q" placeholder="Search by name, email..." className="w-full" defaultValue={data.query} />
             </div>
             
-            <select name="role" className="filter-select" defaultValue={data.role_filter}>
-                <option value="">All Roles</option>
-                <option value="patient">Patients Only</option>
-                <option value="doctor">Doctors Only</option>
-            </select>
+            <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                <select name="role" className="filter-select flex-1 md:flex-none md:min-w-[120px]" defaultValue={data.role_filter}>
+                    <option value="">All Roles</option>
+                    <option value="patient">Patients</option>
+                    <option value="doctor">Doctors</option>
+                </select>
+                
+                <button type="submit" className="filter-btn flex-1 md:flex-none">Filter</button>
+            </div>
             
-            <button type="submit" className="filter-btn">Filter</button>
             {(data.query || data.role_filter) && (
-                <a href="/site-admin/users/" className="filter-reset">Clear</a>
+                <a href="/site-admin/users/" className="filter-reset text-center md:text-left">Clear</a>
             )}
         </form>
 
-        <div className="admin-card animate-in">
+        <div className="admin-card animate-in overflow-hidden">
             <div className="admin-card-body p-0">
-                <div className="admin-table-wrapper">
+                <div className="admin-table-wrapper overflow-x-auto w-full">
                     <table className="admin-table">
                         <thead>
                             <tr>

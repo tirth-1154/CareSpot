@@ -119,17 +119,22 @@
         color: #dc2626;
     }
     @media (max-width: 768px) {
-        .day-row {
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .time-inputs {
-            margin-left: 0;
-            width: 100%;
-        }
-        .time-inputs input {
-            width: 100%;
-        }
+        .schedule-card { padding: 20px; }
+        .day-row { flex-direction: column; align-items: flex-start; gap: 15px; padding: 20px; }
+        .day-name { min-width: auto; width: 100%; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .day-toggle { margin: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+        .day-toggle::after { content: 'Enable Availability'; font-size: 14px; color: #64748b; font-weight: 600; }
+        .status-badge { margin-left: 0; width: 100%; text-align: center; padding: 8px; }
+        .time-inputs { margin-left: 0; width: 100%; flex-direction: row; justify-content: space-between; }
+        .time-inputs input { width: 45%; }
+        .save-btn { width: 100%; }
+        .schedule-header h2 { font-size: 1.5rem; }
+    }
+
+    @media (max-width: 480px) {
+        .time-inputs { flex-direction: column; align-items: stretch; }
+        .time-inputs input { width: 100%; }
+        .time-inputs .separator { text-align: center; margin: 5px 0; }
     }
 </style>
 

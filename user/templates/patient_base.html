@@ -432,14 +432,15 @@
       <div class="container-fluid px-4 px-lg-5">
         <!-- Website Logo / Hospital Name -->
         <a
-          class="navbar-brand d-flex align-items-center"
+          class="navbar-brand d-flex align-items-center me-0 me-sm-2"
           href="{% url 'patientDoctorsList' %}"
         >
           <img
             src="/media/images/careSpotText.png"
             alt="CareSpot"
             height="58"
-            class="me-2"
+            class="me-1 me-sm-2"
+            style="max-width: 90px; sm:max-width: 110px;"
           />
         </a>
 
@@ -488,10 +489,10 @@
             </li>
           </ul>
 
-          <ul class="navbar-nav align-items-center gap-3">
+          <ul class="navbar-nav align-items-center gap-2 gap-sm-3 flex-row">
             <!-- Notifications -->
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'patientMessages' %}"
+              <a class="nav-link p-2" href="{% url 'patientMessages' %}"
                 ><i class="fa-regular fa-envelope"></i
               ></a>
             </li>
@@ -508,15 +509,15 @@
               >
                 <div
                   class="bg-light rounded-circle d-flex align-items-center justify-content-center"
-                  style="width: 40px; height: 40px"
+                  style="width: 35px; height: 35px"
                 >
-                  <i class="fa-solid fa-bell text-primary"></i>
+                  <i class="fa-solid fa-bell text-primary" style="font-size: 0.9rem;"></i>
                 </div>
                 <!-- Red dot indicator -->
                 <span
                   id="notificationDot"
                   class="position-absolute d-none top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                  style="width: 12px; height: 12px; margin-top: 5px"
+                  style="width: 10px; height: 10px; margin-top: 5px"
                 >
                   <span class="visually-hidden">New alerts</span>
                 </span>
@@ -525,7 +526,7 @@
               <div
                 class="dropdown-menu dropdown-menu-end dropdown-menu-custom mt-2 p-0 shadow-lg border-0"
                 aria-labelledby="notificationDropdownToggle"
-                style="width: 320px; overflow: hidden"
+                style="width: 280px; sm:width: 320px; overflow: hidden"
               >
                 <div
                   class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center bg-light"
@@ -555,7 +556,6 @@
                 </div>
               </div>
             </li>
-            <!-- Patient Profile Dropdown -->
             <li class="nav-item dropdown">
               <a
                 class="nav-link d-flex align-items-center border bg-white shadow-sm transition-all"
@@ -564,29 +564,29 @@
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
-                style="padding: 6px 20px 6px 6px; border-radius: 50px"
+                style="padding: 4px 12px 4px 4px; border-radius: 50px"
               >
                 <img
                   src="{{ request.session.profilePic }}"
-                  class="rounded-circle me-3 object-fit-cover shadow-sm"
-                  width="40"
-                  height="40"
+                  class="rounded-circle me-1 me-sm-2 object-fit-cover shadow-sm"
+                  width="32"
+                  height="32"
                   alt="Profile"
-                  style="border: 2px solid var(--primary-color); padding: 2px"
+                  style="border: 1.5px solid var(--primary-color); padding: 1px"
                 />
-                <div class="d-flex flex-column lh-1 text-start me-3">
+                <div class="d-none d-sm-flex flex-column lh-1 text-start me-2">
                   <span
                     class="fw-bold text-dark"
-                    style="font-size: 15px; color: #1a202c !important"
+                    style="font-size: 13px; color: #1a202c !important"
                     >{{ request.session.user_name }}</span
                   >
-                  <span class="text-muted mt-1" style="font-size: 11px"
+                  <span class="text-muted mt-1" style="font-size: 10px"
                     >Patient</span
                   >
                 </div>
                 <i
-                  class="fa-solid fa-chevron-down text-muted m-0"
-                  style="font-size: 12px"
+                  class="fa-solid fa-chevron-down text-muted m-0 d-none d-sm-block"
+                  style="font-size: 10px"
                 ></i>
               </a>
               <ul
