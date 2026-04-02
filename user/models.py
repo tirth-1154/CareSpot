@@ -59,7 +59,7 @@ class tblDoctor(models.Model):
     licenseNo=models.TextField(max_length=50)
     documents=models.FileField(upload_to='doctor_documents/')
     mode=models.IntegerField(default=1)
-    consultationFees=models.DecimalField(max_digits=10, decimal_places=2, default=500.00)
+    consultationFees=models.DecimalField(max_digits=10, decimal_places=2, default=10.00)
     approval_status = models.CharField(max_length=20, default='pending', choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')])
     def __str__(self):
         return '%d'' %s' % (self.doctorID,self.displayName)

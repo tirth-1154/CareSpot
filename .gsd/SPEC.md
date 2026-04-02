@@ -1,17 +1,14 @@
-# SPEC
+## Current Goal
+Refine and modernize the UI of the CareSpot Smart Healthcare Management System without changing backend logic, database models, routes, or core functionality.
 
-Status: FINALIZED
+## Scope
+- Improve Doctor UI
+- Improve Patient UI
+- Keep all existing workflows intact
+- Focus only on frontend presentation, responsiveness, spacing, typography, layout, and visual consistency
 
-## Project: CareSpot
-
-## Goal:
-Improve UI and make it modern and professional
-
-## Features:
-- Appointment booking UI redesign
-- Admin dashboard improvement
-- Blog page UI upgrade
-
-## Constraints:
-- Do not change backend (Django)
-- Only frontend/UI changes allowed
+## Constraints
+- No backend changes
+- No database changes
+- No route changes
+- No breaking existing logic

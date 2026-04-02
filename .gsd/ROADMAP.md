@@ -1,34 +1,20 @@
-## 🟣 Doctor Message Page UI Improvement
+# UI Refinement Roadmap
 
-### File:
-- templates/doctor/message.html
+## Phase 1: Global Design System
+- Define theme colors
+- Standardize buttons, cards, forms, tables, badges
+- Improve typography and spacing
 
-### Tasks:
+## Phase 2: Doctor UI
+- Improve my schedule page (docotr_schedule.html)
+- Improve blog pages (patient_blogs.html)
 
-#### Analysis
-- Check current UI of message.html
-- Identify issues (layout, design, usability)
+## Phase 3: Patient UI
+- Improve appointment booking UI (patient_book_appointment.html)
+- Improve my appointments UI
+- Improve blog page (patient_blogs.html)
 
-#### UI Redesign
-- Create chat layout (WhatsApp style)
-- Add message bubbles (left/right)
-- Add timestamp display
-- Add scrollable chat area
-
-#### Input Section
-- Add message input box
-- Add send button
-- Improve styling
-
-#### Styling
-- Add CSS for chat design
-- Improve colors and spacing
-- Make UI clean and modern
-
-#### Integration
-- Connect messages with backend data
-- Loop messages dynamically
-
-#### Testing
-- Test send/receive messages
-- Check UI responsiveness
+## Phase 5: Verification
+- Check responsiveness
+- Check consistency
+- Ensure backend flows remain unchanged

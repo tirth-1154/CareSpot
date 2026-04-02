@@ -142,6 +142,6 @@ EMAIL_HOST_USER = 'novacafecenter@gmail.com'
 EMAIL_HOST_PASSWORD = 'htet eprc cprw cbfe'
 
 # Razorpay Payment Gateway Settings
-RAZORPAY_KEY_ID = 'rzp_test_SUej36HOekrltW'  # Replace with your Razorpay Key ID
-RAZORPAY_KEY_SECRET = '4x0RfPXGzFpqiob6lLsrshac'    # Replace with your Razorpay Key Secret
-PLATFORM_FEE = 100  # Platform charge in INR
+RAZORPAY_KEY_ID = 'rzp_test_SYWFItRkNGUREZ'  # Replace with your Razorpay Key ID
+RAZORPAY_KEY_SECRET = 'Kl7bIXfXnUkDeEeSww8PvRqm'    # Replace with your Razorpay Key Secret
+PLATFORM_FEE = 5  # Platform charge in INR
