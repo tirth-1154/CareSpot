@@ -279,20 +279,19 @@
     margin-bottom: 20px;
   }
 
-  @media (max-width: 768px) {
-    .messages-container {
-      flex-direction: column;
-      height: auto;
-    }
-    .messages-inbox {
-      width: 100% !important;
-      border-right: none;
-      border-bottom: 1px solid #eef2f5;
-      height: 300px;
-    }
-    .message-content {
-      height: 500px;
-    }
+  @media (max-width: 991px) {
+    .messages-container { height: calc(100vh - 100px); margin-top: 0; border-radius: 12px; }
+    .messages-inbox { width: 100% !important; height: 100% !important; border-bottom: none; border-right: none; }
+    .message-content { width: 100% !important; height: 100% !important; display: none; border-radius: 12px; }
+    #chatEmptyState { display: none !important; }
+    .chat-header { padding: 10px 15px; }
+    .chat-header .msg-avatar { width: 35px; height: 35px; }
+    .chat-header-info h4 { font-size: 15px; text-transform: capitalize; }
+    .chat-messages { padding: 15px; }
+    .bubble-content { font-size: 13.5px; padding: 10px 14px; }
+    .chat-input-area { padding: 10px; }
+    .chat-input-wrapper { padding: 4px 10px; }
+    .btn-send { width: 34px; height: 34px; }
   }
 
   /* Left Side: Inbox List */
@@ -979,6 +978,9 @@
               >
                 <!-- Chat Header -->
                 <div class="chat-header">
+                  <button class="btn btn-light rounded-circle d-md-none me-2 p-0" id="backToInboxBtn" style="width:35px; height:35px; display:flex; align-items:center; justify-content:center;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                  </button>
                   <img
                     src=""
                     alt=""
@@ -1155,6 +1157,16 @@
     const chatReceiverIdInput = document.getElementById("chatReceiverId");
     const chatMessageInput = document.getElementById("chatMessageInput");
     const patientChatForm = document.getElementById("patientChatForm");
+    const backToInboxBtn = document.getElementById("backToInboxBtn");
+
+    if (backToInboxBtn) {
+        backToInboxBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            activeChatArea.style.display = 'none';
+            document.querySelector('.messages-inbox').style.display = 'flex';
+            partnersListItems.forEach(i => i.classList.remove('active'));
+        });
+    }
 
     const fileInput = document.getElementById('fileInput');
     const filePreviewContainer = document.getElementById('filePreviewContainer');
@@ -1327,6 +1339,9 @@
             // Show chat, hide empty state
             chatEmptyState.style.display = "none";
             activeChatArea.style.display = "flex";
+            if (window.innerWidth <= 991) {
+                document.querySelector('.messages-inbox').style.display = 'none';
+            }
 
             // Scroll to bottom
             chatLog.scrollTop = chatLog.scrollHeight;

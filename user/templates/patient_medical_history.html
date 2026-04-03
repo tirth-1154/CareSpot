@@ -297,10 +297,10 @@
     
     .table-custom thead { display: none; }
     .table-custom, .table-custom tbody, .table-custom tr, .table-custom td { display: block; width: 100%; }
-    .table-custom tr { margin-bottom: 15px; border-radius: 12px; overflow: hidden; border: 1px solid #eee; }
-    .table-custom td { padding: 12px 15px; border: none; text-align: left; }
+    .table-custom tr { margin-bottom: 15px; border-radius: 12px; overflow: hidden; border: 1px solid #eee; padding: 6px; }
+    .table-custom td { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border: none; text-align: right; }
     .table-custom td:not(:last-child) { border-bottom: 1px solid #f8f9fa; }
-    .table-custom td::before { content: attr(data-label); font-weight: 700; color: #64748b; font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 2px; }
+    .table-custom td::before { content: attr(data-label); font-weight: 700; color: #64748b; font-size: 11px; text-transform: uppercase; margin-right: 15px; text-align: left; flex-shrink: 0; }
   }
 
   @media (max-width: 480px) {

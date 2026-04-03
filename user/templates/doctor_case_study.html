@@ -800,12 +800,12 @@
 
 <div class="container-fluid py-4">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start mb-4 gap-3">
         <div>
             <h2 class="fw-bold mb-1">Case Study</h2>
             <p class="text-muted">Clinical documentation and patient history</p>
         </div>
-        <a href="{% url 'doctorTotalPatients' %}" class="btn btn-outline-secondary rounded-pill fw-medium">
+        <a href="{% url 'doctorTotalPatients' %}" class="btn btn-outline-secondary rounded-pill fw-medium shrink-0 text-nowrap">
             <i class="fa-solid fa-arrow-left me-2"></i>Back to Patients
         </a>
     </div>
@@ -817,7 +817,11 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h3>{{appointment.clientID.name}}</h3>
-                    <p class="text-muted mb-2"><i class="fa-regular fa-envelope me-2"></i>{{appointment.clientID.userID.email}} | <i class="fa-solid fa-phone me-2"></i>{{appointment.clientID.userID.mobileNumber}}</p>
+                    <p class="text-muted mb-2 d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
+                        <span><i class="fa-regular fa-envelope me-1"></i>{{appointment.clientID.userID.email}}</span>
+                        <span class="d-none d-md-inline">|</span>
+                        <span><i class="fa-solid fa-phone me-1"></i>{{appointment.clientID.userID.mobileNumber}}</span>
+                    </p>
                 </div>
                 <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill border border-primary">
                     <i class="fa-solid fa-calendar-check me-2"></i>Appt: {{appointment.appointmentDate}} at {{appointment.appointmentTime}}
@@ -908,10 +912,12 @@
 
             <!-- Previous Clinical History -->
             <div class="premium-card">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="section-title mb-0 border-0"><i class="fa-solid fa-clock-rotate-left"></i> Case History</h4>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                    <h4 class="section-title mb-0 border-0 w-100 justify-content-md-start justify-content-center">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Case History
+                    </h4>
                     
-                    <div class="history-tabs">
+                    <div class="history-tabs w-100">
                         <button class="history-tab-btn active" onclick="switchView('timeline')" id="timelineBtn">
                             <i class="fa-solid fa-list-ul"></i> Timeline View
                         </button>
@@ -932,11 +938,11 @@
                     
                     {% for history in case_histories %}
                     <div class="timeline-node">
-                        <div class="timeline-date" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#history-{{ history.clientHistoryID }}">
-                            {{ history.createdDT|date:"M d, Y - h:i A" }} - By {{ history.doctorID.displayName }}
-                            {% if history.title %} - {{ history.title }}{% endif %}
-                            {% if history.isMarkedSpecial %}<span class="badge bg-danger ms-2">Special Case</span>{% endif %}
-                            <i class="fa-solid fa-chevron-down ms-2 fs-6 text-muted"></i>
+                        <div class="timeline-date d-flex flex-wrap align-items-center gap-2 mb-2 w-100" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#history-{{ history.clientHistoryID }}">
+                            <span>{{ history.createdDT|date:"M d, Y - h:i A" }} - By {{ history.doctorID.displayName }}</span>
+                            {% if history.title %}<span class="text-muted fs-6 fw-normal">- {{ history.title }}</span>{% endif %}
+                            {% if history.isMarkedSpecial %}<span class="badge bg-danger">Special Case</span>{% endif %}
+                            <i class="fa-solid fa-chevron-down ms-auto text-muted mt-1 mt-md-0"></i>
                         </div>
                         <div class="timeline-content collapse" id="history-{{ history.clientHistoryID }}">
                             {% if history.symptoms %}

@@ -241,26 +241,24 @@
                     <img src="/media/images/careSpotText.png" alt="" class="align center height-58" width="100" style="max-width: 90px; sm:max-width: 110px;">
                 </a>
 
-                <!-- Mobile Toggle -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
-                    aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- Navigation items align-right -->
-                <div class="collapse navbar-collapse justify-content-end" id="topNavbarContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- Navigation items that stay visible on the right -->
+                <div class="d-flex align-items-center ms-auto">
+                    <!-- Home link (Only Desktop) -->
+                    <ul class="navbar-nav me-auto mb-0 d-none d-lg-flex me-3">
                         <li class="nav-item">
                             <a class="nav-link {% block nav_home %}{% endblock %}" aria-current="page"
                                 href="{% url 'patientBlogs' %}">Home</a>
                         </li>
                     </ul>
 
-                    <ul class="navbar-nav align-items-center gap-2 gap-sm-3 flex-row">
-                        <!-- Notifications -->
+                    <!-- Icons (Desktop & Mobile) -->
+                    <ul class="navbar-nav align-items-center gap-2 flex-row">
+                        <!-- Messages -->
                         <li class="nav-item">
                             <a class="nav-link p-2" href="{% url 'doctorMessages' %}"><i class="fa-regular fa-envelope"></i></a>
                         </li>
+                        
+                        <!-- Notifications -->
                         <li class="nav-item dropdown notification-dropdown position-relative notification-bell">
                             <a class="nav-link fs-5 text-secondary p-0" href="#" id="notificationDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px">
@@ -272,7 +270,7 @@
                                 </span>
                             </a>
                             <!-- Notifications Dropdown Menu -->
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-custom mt-2 p-0 shadow-lg border-0" aria-labelledby="notificationDropdownToggle" style="width: 280px; sm:width: 320px; overflow: hidden">
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-custom mt-2 p-0 shadow-lg border-0 position-absolute" aria-labelledby="notificationDropdownToggle" style="width: 280px; overflow: hidden">
                                 <div class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center bg-light">
                                     <h6 class="mb-0 fw-bold" style="font-size: 0.9rem">Notifications</h6>
                                     <span id="notificationCount" class="badge bg-primary rounded-pill">{{ nav_general_count }}</span>
@@ -303,10 +301,10 @@
                             <a class="nav-link dropdown-toggle d-flex align-items-center p-1" href="#" id="profileDropdown"
                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="{{request.session.profilePic|default:'https://ui-avatars.com/api/?name=Doctor&background=0D8ABC&color=fff'}}"
-                                    alt="Profile" class="rounded-circle me-1 me-sm-2" width="30" height="30">
-                                <span class="fw-medium d-none d-sm-inline" style="font-size: 0.9rem;">{{ request.session.displayName|default:"Doctor" }}</span>
+                                    alt="Profile" class="rounded-circle" width="30" height="30">
+                                <span class="fw-medium d-none d-sm-inline ms-2" style="font-size: 0.9rem;">{{ request.session.displayName|default:"Doctor" }}</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm"
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm position-absolute"
                                 aria-labelledby="profileDropdown">
                                 <li>
                                     <a class="dropdown-item" href="{% url 'doctorUpdateProfile' %}">
@@ -323,6 +321,11 @@
                             </ul>
                         </li>
                     </ul>
+
+                    <!-- Mobile Toggle -->
+                    <button class="navbar-toggler ms-2 ms-sm-3 border-0 py-1 px-2" type="button" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon" style="width: 1.25em; height: 1.25em;"></span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -335,7 +338,7 @@
             <!-- Dashboard Sidebar
             ================================================== -->
             {% block sidebar %}
-            <nav id="sidebarMenu" class="sidebar collapse d-md-block">
+            <nav id="sidebarMenu" class="sidebar">
                 <div class="position-sticky">
                     <ul class="nav flex-column mt-3">
                         <li class="nav-item mb-2 px-4 text-uppercase fs-7 fw-bold text-secondary">Start</li>

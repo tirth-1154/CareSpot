@@ -312,10 +312,12 @@
   @media (max-width: 991px) {
     .glass-table thead { display: none; }
     .glass-table, .glass-table tbody, .glass-table tr, .glass-table td { display: block; width: 100%; }
-    .glass-table tbody tr { margin-bottom: 20px; padding: 15px; border: 1px solid rgba(255, 255, 255, 0.8); }
-    .glass-table tbody td { padding: 10px 0; border: none !important; }
-    .glass-table tbody td:first-child { border-radius: 16px 16px 0 0; }
-    .glass-table tbody td:last-child { border-radius: 0 0 16px 16px; border-top: 1px solid rgba(0,0,0,0.05) !important; padding-top: 15px; }
+    .glass-table tbody tr { margin-bottom: 20px; padding: 8px; border: 1px solid rgba(255, 255, 255, 0.8); }
+    .glass-table tbody td { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border: none !important; text-align: right; }
+    .glass-table tbody td:first-child { border-radius: 16px 16px 0 0; justify-content: center; padding-top: 20px; padding-bottom: 15px; border-bottom: 1px dashed rgba(0,0,0,0.1) !important; }
+    .glass-table tbody td:first-child::before { display: none; }
+    .glass-table tbody td:last-child { border-radius: 0 0 16px 16px; border-top: 1px solid rgba(0,0,0,0.05) !important; padding-top: 15px; padding-bottom: 20px; }
+    .glass-table tbody td::before { content: attr(data-label); font-weight: 700; color: #64748b; font-size: 11px; text-transform: uppercase; margin-right: 15px; text-align: left; flex-shrink: 0; }
     
     .action-buttons { justify-content: center; width: 100%; gap: 10px; }
     .btn-glass-primary, .btn-glass-secondary { flex: 1; justify-content: center; padding: 10px; font-size: 12px; }

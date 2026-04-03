@@ -448,11 +448,11 @@
     @media (max-width: 991px) {
         .dash-table thead { display: none; }
         .dash-table, .dash-table tbody, .dash-table tr, .dash-table td { display: block; width: 100%; }
-        .dash-table tr { margin-bottom: 15px; border: 1px solid #eee; border-radius: 12px; padding: 10px; background: #fff; }
-        .dash-table td { padding: 8px 15px; border: none; text-align: left; }
+        .dash-table tr { margin-bottom: 15px; border: 1px solid #eee; border-radius: 12px; padding: 6px; background: #fff; }
+        .dash-table td { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border: none; text-align: right; }
         .dash-table td:not(:last-child) { border-bottom: 1px solid #f8f9fa; }
-        .dash-table td::before { content: attr(data-label); font-weight: 700; color: #64748b; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 2px; }
-        .dash-table td.text-end { text-align: left !important; padding-top: 15px; }
+        .dash-table td::before { content: attr(data-label); font-weight: 700; color: #64748b; font-size: 11px; text-transform: uppercase; margin-right: 15px; text-align: left; flex-shrink: 0; }
+        .dash-table td.text-end { text-align: right !important; padding-top: 10px; justify-content: space-between; }
         
         .stat-value { font-size: 24px; }
         .stat-label { font-size: 10px; }
