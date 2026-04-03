@@ -158,12 +158,19 @@
         font-weight: 500;
         color: #4a5568;
         transition: all 0.2s;
+        border-radius: 0; /* Standard dropdown look */
       }
 
-      .dropdown-menu-custom .dropdown-item:hover {
-        background: #f0f7f9;
-        color: var(--primary-color);
+      .dropdown-item:hover, 
+      .dropdown-item:active, 
+      .dropdown-item:focus,
+      .dropdown-menu-custom .dropdown-item:hover,
+      .dropdown-menu-custom .dropdown-item:active,
+      .dropdown-menu-custom .dropdown-item:focus {
+        background: #f0f7f9 !important; /* Soft light blue hover, no dark blue click */
+        color: var(--primary-color) !important;
         padding-left: 24px;
+        outline: none;
       }
 
       /* Notification Pulse */
@@ -280,7 +287,7 @@
       /* --- Premium Footer --- */
       .dashboard-footer {
         background: #ffffff;
-        padding: 60px 0 30px;
+        padding: 30px 0 15px;
         border-top: 1px solid rgba(0, 0, 0, 0.05);
         position: relative;
         overflow: hidden;
@@ -292,7 +299,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 4px;
+        height: 2px;
         background: linear-gradient(
           90deg,
           var(--primary-color),
@@ -301,17 +308,17 @@
       }
 
       .footer-logo img {
-        max-width: 130px;
-        margin-bottom: 20px;
+        max-width: 100px;
+        margin-bottom: 15px;
       }
 
       .footer-heading {
         font-weight: 700;
         color: #1a202c;
-        margin-bottom: 25px;
+        margin-bottom: 12px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
       }
 
       .footer-link {
@@ -319,24 +326,26 @@
         text-decoration: none;
         transition: all 0.3s ease;
         display: inline-block;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
+        font-size: 0.85rem;
       }
 
       .footer-link:hover {
         color: var(--primary-color);
-        transform: translateX(5px);
+        transform: translateX(3px);
       }
 
       .social-circle {
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
         background: #f7fafc;
         color: #4a5568;
         border-radius: 50%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        margin-right: 12px;
+        margin-right: 8px;
+        font-size: 0.9rem;
         transition: all 0.3s ease;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
       }
@@ -358,7 +367,7 @@
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         .dashboard-footer {
-          padding: 40px 0 20px;
+          padding: 25px 0 15px;
         }
         .footer-heading {
           margin-top: 25px;
@@ -594,7 +603,7 @@
                 ></i>
               </a>
               <ul
-                class="dropdown-menu dropdown-menu-end border-0 shadow mt-3"
+                class="dropdown-menu dropdown-menu-end dropdown-menu-custom border-0 shadow mt-3"
                 aria-labelledby="profileDropdown"
                 style="border-radius: 12px; min-width: 220px; padding: 10px 0"
               >
@@ -614,6 +623,14 @@
                       class="fa-regular fa-calendar-check me-2 text-primary"
                     ></i>
                     My Appointments</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item py-2 px-3"
+                    href="{% url 'mySupportTickets' %}"
+                    ><i class="fa-solid fa-ticket me-2 text-primary"></i>
+                    My Support Tickets</a
                   >
                 </li>
                 <li><hr class="dropdown-divider opacity-25 my-2" /></li>
@@ -650,7 +667,7 @@
       {% block footer %}
       <footer class="dashboard-footer mt-auto">
         <div class="container">
-          <div class="row gy-5">
+          <div class="row gy-4">
             <div class="col-lg-4 col-md-12">
               <div class="footer-logo">
                 <img src="/media/images/careSpotText.png" alt="CareSpot" />
@@ -679,7 +696,7 @@
               <ul class="list-unstyled">
                 <li>
                   <a
-                    href="{% url 'patientDashboard' %}"
+                    href="{% url 'patientBlogs' %}"
                     class="footer-link small"
                     >Dashboard</a
                   >
@@ -710,14 +727,8 @@
             <div class="col-lg-2 col-md-4 col-6">
               <h6 class="footer-heading">Informed</h6>
               <ul class="list-unstyled">
-                <li>
-                  <a href="#" class="footer-link small">Privacy Policy</a>
-                </li>
-                <li>
-                  <a href="#" class="footer-link small">Terms of Service</a>
-                </li>
                 <li><a href="#" class="footer-link small">Medical FAQs</a></li>
-                <li><a href="#" class="footer-link small">Support</a></li>
+                <li><a href="{% url 'supportPage' %}" class="footer-link small">Support</a></li>
               </ul>
             </div>
             <div class="col-lg-4 col-md-4">
@@ -736,7 +747,7 @@
               </p>
             </div>
           </div>
-          <hr class="my-5 opacity-5" />
+          <hr class="my-4 opacity-5" />
           <div class="row align-items-center">
             <div class="col-md-6 text-center text-md-start">
               <p class="small mb-0">

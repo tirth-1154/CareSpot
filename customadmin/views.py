@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, date
 from user.models import (
     tblUser, tblDoctor, tblClient, tblAppointment, tblReview,
     tblDoctorPost, tblCategory, tblSubcategory, tblState, tblCity,
-    tblchat, tblnotification, tblFollow, tblComments, tblclientHistory
+    tblchat, tblnotification, tblFollow, tblComments, tblclientHistory, tblSupportTicket
 )
 from .decorators import admin_login_required
 
@@ -775,3 +775,63 @@ def admin_doctor_reject(request, id):
         return JsonResponse({'status': 'success', 'message': 'Doctor rejected and email sent.'})
     except tblDoctor.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Doctor not found.'}, status=404)
+
+@admin_login_required
+def admin_support(request):
+    query = request.GET.get('q', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    
+    tickets = tblSupportTicket.objects.select_related('userID').order_by('-createdDT')
+    
+    if query:
+        tickets = tickets.filter(
+            Q(name__icontains=query) |
+            Q(email__icontains=query) |
+            Q(subject__icontains=query)
+        )
+    if status_filter:
+        tickets = tickets.filter(status=status_filter)
+        
+    ticket_list = []
+    for t in tickets:
+        ticket_list.append({
+            'ticketID': t.ticketID,
+            'name': t.name,
+            'email': t.email,
+            'subject': t.subject,
+            'message': t.message,
+            'status': t.status,
+            'createdDT': t.createdDT.strftime('%b %d, %Y') if t.createdDT else ''
+        })
+        
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+    
+    page_data = {
+        'tickets': ticket_list,
+        'query': query,
+        'status_filter': status_filter,
+        'total_count': tickets.count(),
+        'page_title': 'Support Inquiries',
+    }
+    
+    context = {
+        'page_title': 'Support Tickets | Admin',
+        'admin_data_json': json.dumps(page_data, cls=DjangoJSONEncoder)
+    }
+    
+    return render(request, 'customadmin/admin_react_root.html', context)
+
+@admin_login_required
+@require_POST
+def admin_support_update(request, id):
+    new_status = request.POST.get('status', '').strip()
+    try:
+        ticket = tblSupportTicket.objects.get(ticketID=id)
+        if new_status in dict(ticket.STATUS_CHOICES):
+            ticket.status = new_status
+            ticket.save()
+            return JsonResponse({'status': 'success', 'message': 'Ticket status updated.'})
+        return JsonResponse({'status': 'error', 'message': 'Invalid status.'})
+    except tblSupportTicket.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Ticket not found.'}, status=404)

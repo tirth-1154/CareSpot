@@ -255,3 +255,22 @@ class tblPayment(models.Model):
     createdDT = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f'Payment #{self.paymentID} - {self.paymentStatus} - ₹{self.totalAmount}'
+
+class tblSupportTicket(models.Model):
+    STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('in_progress', 'In Progress'),
+        ('resolved', 'Resolved'),
+        ('closed', 'Closed'),
+    ]
+    ticketID = models.AutoField(primary_key=True)
+    userID = models.ForeignKey(tblUser, on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.TextField(max_length=100)
+    email = models.TextField(max_length=100)
+    subject = models.TextField(max_length=150)
+    message = models.TextField(max_length=1000)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    createdDT = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Ticket #{self.ticketID} - {self.subject}'

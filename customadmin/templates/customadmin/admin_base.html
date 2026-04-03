@@ -84,6 +84,11 @@
                     <i class="fa-solid fa-newspaper"></i> Blogs
                 </a>
             </li>
+            <li class="sidebar-nav-item">
+                <a href="{% url 'customadmin:admin_support' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_support' %}active{% endif %}">
+                    <i class="fa-solid fa-headset"></i> Support Tickets
+                </a>
+            </li>
         </ul>
 
         <div class="sidebar-section-title">Configuration</div>

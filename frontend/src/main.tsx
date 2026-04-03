@@ -12,6 +12,7 @@ import { AdminAppointments } from './components/admin/AdminAppointments'
 import { AdminReviews } from './components/admin/AdminReviews'
 import { AdminBlogs } from './components/admin/AdminBlogs'
 import { AdminConfigs } from './components/admin/AdminConfigs'
+import { AdminSupport } from './components/admin/AdminSupport'
 import './index.css'
 
 const adminContainer = document.getElementById('react-admin-dashboard-root');
@@ -43,6 +44,8 @@ if (adminContainer) {
     AdminComponentToRender = <AdminBlogs data={data as any} />;
   } else if (path.includes('/site-admin/categories') || path.includes('/site-admin/locations')) {
     AdminComponentToRender = <AdminConfigs data={data as any} />;
+  } else if (path.includes('/site-admin/support')) {
+    AdminComponentToRender = <AdminSupport data={data as any} />;
   }
   
   ReactDOM.createRoot(adminContainer).render(

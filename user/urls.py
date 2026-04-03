@@ -66,5 +66,6 @@ urlpatterns = [
     #meeting url
     path('meeting/<int:appointment_id>/', views.videoMeeting, name='videoMeeting'),
     path('api/blogs/', views.get_blogs_api, name='get_blogs_api'),
-
+    path('support/', views.supportPage, name='supportPage'),
+    path('my-support-tickets/', views.mySupportTickets, name='mySupportTickets'),
 ]

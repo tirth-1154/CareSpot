@@ -12,7 +12,8 @@ import {
   LogOut,
   Bell,
   Search,
-  Menu
+  Menu,
+  Headset
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -46,6 +47,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { label: 'Blogs', icon: <FileText size={20} />, href: '/site-admin/blogs/', active: path.includes('/site-admin/blogs') },
     { label: 'Categories', icon: <Tags size={20} />, href: '/site-admin/categories/', active: path.includes('/site-admin/categories') },
     { label: 'Locations', icon: <MapPin size={20} />, href: '/site-admin/locations/', active: path.includes('/site-admin/locations') },
+    { label: 'Support', icon: <Headset size={20} />, href: '/site-admin/support/', active: path.includes('/site-admin/support') },
   ];
 
   return (

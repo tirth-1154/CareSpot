@@ -441,8 +441,57 @@
                     </div>
                 </div>
 
+                <!-- My Support Tickets Section -->
+                <div class="premium-card mb-5 shadow-sm">
+                    <div class="card-header-styled d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h4 class="fw-bold mb-0 text-dark">
+                            <i class="fa-solid fa-headset me-2" style="color: var(--primary-color);"></i>My Support Tickets
+                        </h4>
+                        <a href="{% url 'supportPage' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
+                            <i class="fa-solid fa-plus me-1"></i>New Ticket
+                        </a>
+                    </div>
+                    <div class="p-4">
+                        {% for ticket in my_tickets %}
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 p-3 mb-3 hover-lift" style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+                            <div style="flex:1; min-width:200px;">
+                                <div class="fw-bold text-dark" style="font-size:0.95rem;">{{ ticket.subject }}</div>
+                                <div class="text-muted mt-1" style="font-size:0.85rem;">{{ ticket.message|truncatechars:120 }}</div>
+                                <div class="mt-2 d-flex align-items-center gap-3 flex-wrap" style="font-size:0.8rem; color:#94a3b8;">
+                                    <span><i class="fa-solid fa-hashtag me-1"></i>Ticket #{{ ticket.ticketID }}</span>
+                                    <span><i class="fa-regular fa-clock me-1"></i>{{ ticket.createdDT|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                {% if ticket.status == 'open' %}
+                                    <span class="badge rounded-pill px-3 py-2" style="background:#fee2e2; color:#dc2626; font-weight:700; font-size:0.78rem;"><i class="fa-solid fa-circle-dot me-1"></i>Open</span>
+                                {% elif ticket.status == 'in_progress' %}
+                                    <span class="badge rounded-pill px-3 py-2" style="background:#fef3c7; color:#d97706; font-weight:700; font-size:0.78rem;"><i class="fa-solid fa-rotate fa-spin me-1"></i>In Progress</span>
+                                {% elif ticket.status == 'resolved' %}
+                                    <span class="badge rounded-pill px-3 py-2" style="background:#dcfce7; color:#16a34a; font-weight:700; font-size:0.78rem;"><i class="fa-solid fa-circle-check me-1"></i>Resolved</span>
+                                {% elif ticket.status == 'closed' %}
+                                    <span class="badge rounded-pill px-3 py-2" style="background:#f1f5f9; color:#475569; font-weight:700; font-size:0.78rem;"><i class="fa-solid fa-ban me-1"></i>Closed</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="fa-solid fa-headset fa-3x" style="color:#e2e8f0;"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark">No Tickets Yet</h5>
+                            <p class="text-muted mx-auto mb-4" style="max-width: 320px;">Support tickets you submit will appear here along with their current status.</p>
+                            <a href="{% url 'supportPage' %}" class="btn btn-primary rounded-pill px-4">
+                                <i class="fa-solid fa-plus me-2"></i>Submit Support Request
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
             </div>
         </div>
+
     </div>
 <!-- Page Specific Scripts -->
 <script>

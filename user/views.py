@@ -363,6 +363,12 @@ def doctorProfile(request):
 
     doctor_images = tblDoctorImages.objects.filter(doctorID=doctor_id)
     doctor_attachments = tblDoctorAttachment.objects.filter(doctorID=doctor_id)
+    
+    # Support tickets for this doctor
+    user_id = request.session.get('user_id') or request.session.get('userID')
+    user_obj = tblUser.objects.filter(userID=user_id).first() if user_id else None
+    my_tickets = tblSupportTicket.objects.filter(userID=user_obj).order_by('-createdDT') if user_obj else []
+    
     data={
         "blogs":blogs,
         "blog_count":blog_count,
@@ -370,7 +376,8 @@ def doctorProfile(request):
         "review_count":review_count,
         "avg_rating":avg_rating,
         "doctor_images": doctor_images,
-        "doctor_attachments": doctor_attachments
+        "doctor_attachments": doctor_attachments,
+        "my_tickets": my_tickets
     }
     return render(request,'doctor_profile.html',data)
 
@@ -1373,11 +1380,17 @@ def patientProfileUpdate(request):
         
 
     
+    # Support tickets for this patient
+    user_id = request.session.get('user_id') or request.session.get('userID')
+    user_obj = tblUser.objects.filter(userID=user_id).first() if user_id else None
+    my_tickets = tblSupportTicket.objects.filter(userID=user_obj).order_by('-createdDT') if user_obj else []
+    
     data={
         "user":tblUser.objects.filter(userID=user_id).first(),
         "client":c,
         "cities":cities,
-        "states":states
+        "states":states,
+        "my_tickets": my_tickets
     }
     return render(request, 'patient_update_profile.html',data)
 
@@ -2300,3 +2313,80 @@ def doctorSetSchedule(request):
         'pending_json': json.dumps(pending_list),
     }
     return render(request, 'doctor_set_schedule.html', data)
+
+
+def supportPage(request):
+    import json
+    from django.core.serializers.json import DjangoJSONEncoder
+    
+    # Standardize userID/user_id lookup
+    user_id = request.session.get('user_id') or request.session.get('userID')
+    user_context = tblUser.objects.filter(userID=user_id).first() if user_id else None
+    
+    # Auto-link orphaned tickets (submitted before fix) if email matches
+    if user_context:
+        tblSupportTicket.objects.filter(email=user_context.email, userID__isnull=True).update(userID=user_context)
+
+    # Fetch history
+    my_tickets = []
+    if user_context:
+        my_tickets = tblSupportTicket.objects.filter(userID=user_context).order_by('-createdDT')
+
+    if request.method == 'POST':
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        
+        if user_context and subject and message:
+            tblSupportTicket.objects.create(
+                name=user_context.userName,
+                email=user_context.email,
+                subject=subject,
+                message=message,
+                userID=user_context
+            )
+            # Re-fetch for immediate update in template
+            my_tickets = tblSupportTicket.objects.filter(userID=user_context).order_by('-createdDT')
+            
+            # Determine base_template
+            base_template = 'base.html' if request.session.get('isDoctor') else 'patient_base.html'
+            
+            return render(request, 'support_page.html', {
+                'success': True, 
+                'user_data': user_context, 
+                'my_tickets': my_tickets,
+                'base_template': base_template
+            })
+
+    # Determine base_template
+    base_template = 'base.html' if request.session.get('isDoctor') else 'patient_base.html'
+
+    return render(request, 'support_page.html', {
+        'user_data': user_context, 
+        'my_tickets': my_tickets,
+        'base_template': base_template
+    })
+
+def mySupportTickets(request):
+    # Standardize userID/user_id lookup
+    user_id = request.session.get('user_id') or request.session.get('userID')
+    user_context = tblUser.objects.filter(userID=user_id).first() if user_id else None
+    
+    if not user_context:
+        return redirect('Login')
+
+    # Auto-link orphaned tickets (submitted before fix) if email matches
+    tblSupportTicket.objects.filter(email=user_context.email, userID__isnull=True).update(userID=user_context)
+
+    # Fetch history
+    my_tickets = tblSupportTicket.objects.filter(userID=user_context).order_by('-createdDT')
+    open_tickets_count = my_tickets.filter(status='open').count()
+
+    # Determine base_template
+    base_template = 'base.html' if request.session.get('isDoctor') else 'patient_base.html'
+
+    return render(request, 'my_support_tickets.html', {
+        'user_data': user_context, 
+        'my_tickets': my_tickets,
+        'open_tickets_count': open_tickets_count,
+        'base_template': base_template
+    })

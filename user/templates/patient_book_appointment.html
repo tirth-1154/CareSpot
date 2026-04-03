@@ -10,32 +10,109 @@
 <style>
     :root {
         --primary-blue: #076FC5;
-        --primary-blue-dark: #004b91;
+        --primary-blue-dark: #055a9e;
         --bg-body: #F8FAFB;
         --text-main: #1E293B;
         --text-muted: #64748B;
-        --card-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+        --card-shadow: 0 24px 60px rgba(7, 111, 197, 0.08); /* Premium deeper shadow */
     }
 
+    body {
+        position: relative;
+        background-color: #f1f5f9;
+        min-height: 100vh;
+    }
+
+    /* Breathtaking Animated Glass Background */
+    .bg-animated-orbs {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        overflow: hidden;
+        background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+    }
+
+    .bg-animated-orbs .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.5;
+        animation: floatOrb infinite alternate ease-in-out;
+    }
+
+    .orb-1 {
+        width: 800px; height: 800px;
+        background: rgba(14, 165, 233, 0.4);
+        top: -200px; left: -100px;
+        animation-duration: 25s;
+    }
+
+    .orb-2 {
+        width: 600px; height: 600px;
+        background: rgba(34, 197, 94, 0.25);
+        bottom: -150px; right: -50px;
+        animation-duration: 22s;
+        animation-delay: -5s;
+    }
+    
+    .orb-3 {
+        width: 500px; height: 500px;
+        background: rgba(59, 130, 246, 0.35);
+        top: 20%; left: 40%;
+        animation-duration: 18s;
+        animation-delay: -10s;
+    }
+
+    @keyframes floatOrb {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(80px, 120px) scale(1.1); }
+        100% { transform: translate(-50px, 80px) scale(0.9); }
+    }
+
+    /* Glassmorphism texture overlay */
+    .bg-animated-orbs::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(80px);
+        -webkit-backdrop-filter: blur(80px);
+    }
+
+    /* Micro-grid overlay */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image: radial-gradient(rgba(14, 165, 233, 0.15) 1px, transparent 1px);
+        background-size: 24px 24px;
+        pointer-events: none;
+    }
 
     .booking-wrapper {
         min-height: calc(100vh - 100px);
         display: flex;
         padding: 60px 20px;
         position: relative;
+        z-index: 5; 
     }
 
     .booking-standalone-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
         width: 100%;
-        max-width: 1000px;
-        margin: auto; /* Safely centers without overflowing top/bottom when scroll is needed */
-        border-radius: 30px;
+        max-width: 1050px;
+        margin: auto; 
+        border-radius: 40px;
         overflow: hidden;
-        box-shadow: var(--card-shadow);
+        box-shadow: 
+            0 40px 100px rgba(7, 111, 197, 0.15),
+            inset 0 0 0 1.5px rgba(255, 255, 255, 0.6);
         display: flex;
         min-height: 650px;
-        border: 1px solid rgba(0, 0, 0, 0.03);
+        border: none;
     }
 
     /* Left Section */
@@ -146,6 +223,13 @@
 
     @media (max-width: 900px) { .booking-standalone-card { flex-direction: column; } .booking-left { border-right: none; border-bottom: 2px solid #F1F5F9; } }
 </style>
+
+<!-- Animated Background Orbs -->
+<div class="bg-animated-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
 
 <div class="booking-wrapper">
     <div class="booking-standalone-card">

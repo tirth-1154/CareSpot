@@ -1,0 +1,12 @@
+blogAdd.html
+blogPost.html
+dRegister.html
+dashboard.html
+docProfile.html
+doctorLogin.html
+doctor_view_profile.html
+myAppointments.html
+pRegister.html
+searchDoctor.html
+setting.html
+viewDoctor.html

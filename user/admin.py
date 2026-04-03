@@ -92,4 +92,9 @@ admin.site.register(tblDoctorAttachment)
 admin.site.register(tblDiagnosis)
 # admin.site.register(tblDoctorSchedule)
 
-# Register your models here.
+class SupportTicketAdmin(admin.ModelAdmin):
+    list_display = ('ticketID', 'name', 'email', 'subject', 'status', 'createdDT')
+    list_filter = ('status',)
+    search_fields = ('name', 'email', 'subject')
+
+admin.site.register(tblSupportTicket, SupportTicketAdmin)

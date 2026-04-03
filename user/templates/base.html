@@ -161,12 +161,19 @@
         font-weight: 500;
         color: #4a5568;
         transition: all 0.2s;
+        border-radius: 0;
       }
 
-      .dropdown-menu-custom .dropdown-item:hover {
-        background: #f0f7f9;
-        color: var(--primary-color);
+      .dropdown-item:hover, 
+      .dropdown-item:active, 
+      .dropdown-item:focus,
+      .dropdown-menu-custom .dropdown-item:hover,
+      .dropdown-menu-custom .dropdown-item:active,
+      .dropdown-menu-custom .dropdown-item:focus {
+        background: #f0f7f9 !important;
+        color: var(--primary-color) !important;
         padding-left: 24px;
+        outline: none;
       }
 
       /* Notification Pulse */
@@ -243,14 +250,6 @@
 
                 <!-- Navigation items that stay visible on the right -->
                 <div class="d-flex align-items-center ms-auto">
-                    <!-- Home link (Only Desktop) -->
-                    <ul class="navbar-nav me-auto mb-0 d-none d-lg-flex me-3">
-                        <li class="nav-item">
-                            <a class="nav-link {% block nav_home %}{% endblock %}" aria-current="page"
-                                href="{% url 'patientBlogs' %}">Home</a>
-                        </li>
-                    </ul>
-
                     <!-- Icons (Desktop & Mobile) -->
                     <ul class="navbar-nav align-items-center gap-2 flex-row">
                         <!-- Messages -->
@@ -304,7 +303,7 @@
                                     alt="Profile" class="rounded-circle" width="30" height="30">
                                 <span class="fw-medium d-none d-sm-inline ms-2" style="font-size: 0.9rem;">{{ request.session.displayName|default:"Doctor" }}</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm position-absolute"
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom border-0 shadow-sm position-absolute"
                                 aria-labelledby="profileDropdown">
                                 <li>
                                     <a class="dropdown-item" href="{% url 'doctorUpdateProfile' %}">
@@ -313,6 +312,8 @@
                                 </li>
                                 <li><a class="dropdown-item" href="{% url 'doctorProfile' %}"><i
                                             class="fa-regular fa-user me-2"></i> Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'mySupportTickets' %}"><i
+                                            class="fa-solid fa-ticket me-2"></i> My Support Tickets</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -347,6 +348,12 @@
                             <a class="nav-link {% block sidebar_nav_dashboard %}{% endblock %}"
                                 href="{% url 'doctorDashboard' %}">
                                 <i class="fa-solid fa-grip"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% block nav_home %}{% endblock %}"
+                                href="{% url 'patientBlogs' %}">
+                                <i class="fa-solid fa-house"></i> Home
                             </a>
                         </li>
                         <li class="nav-item">
@@ -401,7 +408,7 @@
     ================================================== -->
                 {% block footer %}
                 <footer class="dashboard-footer d-flex justify-content-between align-items-center flex-wrap pt-3 mt-5">
-                    <p class="mb-0 small">&copy; 2026 <strong>CareSpot</strong>. All Rights Reserved.</p>
+                    <p class="mb-0 small">&copy; 2026 <strong>CareSpot</strong>. All Rights Reserved. &nbsp; | &nbsp; <a href="{% url 'supportPage' %}" class="text-muted fw-bold text-decoration-none">Support</a></p>
                     <ul class="list-inline mb-0 small">
                         <li class="list-inline-item"><a href="#" class="text-decoration-none text-muted"><i
                                     class="fa-brands fa-facebook"></i></a></li>

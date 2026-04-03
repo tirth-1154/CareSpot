@@ -44,4 +44,8 @@ urlpatterns = [
 
     # API
     path('api/chart-data/', views.admin_chart_data, name='admin_chart_data'),
+    
+    # Support Tickets
+    path('support/', views.admin_support, name='admin_support'),
+    path('support/update/<int:id>/', views.admin_support_update, name='admin_support_update'),
 ]
