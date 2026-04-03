@@ -358,7 +358,7 @@
         <div class="p-4 border-bottom bg-light bg-opacity-50">
             <form method="GET" action="" class="row g-3 align-items-end">
                 <div class="col-md-3">
-                    <label class="form-label small fw-bold text-muted">Filter by Date</label>
+                    <label class="form-label small fw-bold text-muted">Filter by Create Date</label>
                     <input type="date" name="date" class="form-control" value="{{ request.GET.date }}">
                 </div>
                 <div class="col-md-4">
@@ -395,6 +395,7 @@
                     <th style="width: 60px;">No</th>
                     <th>ID Code</th>
                     <th>Doctor Name</th>
+                    <th>Appointment Date</th>
                     <th>Created Date</th>
                     <th>Time</th>
                     <th>Status</th>
@@ -417,6 +418,7 @@
                             <span class="doctor-name">{{ appointment.doctorID.displayName }}</span>
                         </div>
                     </td>
+                    <td data-label="Appointment Date">{{ appointment.appointmentDate|date:"d M Y" }}</td>
                     <td data-label="Created Date">{{ appointment.createdDT|date:"d M Y" }}</td>
                     <td data-label="Time">{{ appointment.appointmentTime|time:"h:i a" }}</td>
                     <td data-label="Status">
@@ -459,7 +461,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="text-center py-5">
+                    <td colspan="9" class="text-center py-5">
                         <div class="text-muted">No appointments found matches your search.</div>
                     </td>
                 </tr>

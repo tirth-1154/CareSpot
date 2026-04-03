@@ -1258,7 +1258,7 @@ def patientMyAppointments(request):
     
     # Date filter
     if filter_date:
-        appointments = appointments.filter(appointmentDate=filter_date)
+        appointments = appointments.filter(createdDT__date=filter_date)
     
     # Doctor filter
     if filter_doctor:
