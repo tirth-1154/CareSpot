@@ -590,7 +590,11 @@
                                     {% endif %}
                                     <div class="rating-badge">
                                         <i class="fa-solid fa-star"></i>
-                                        {{ doc.avg_rating|default:"4.5"|floatformat:1 }}
+                                        {% if doc.review_count > 0 %}
+                                            {{ doc.avg_rating|floatformat:1 }} <span style="color: #64748B; font-weight: 600;">({{ doc.review_count }})</span>
+                                        {% else %}
+                                            New
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="doctor-card-info">

@@ -937,8 +937,11 @@ def patientDoctorsList(request):
         except ValueError:
             pass
     
-    # Annotate average rating for each doctor
-    doctors = doctors.annotate(avg_rating=Avg('tblreview__rating'))
+    # Annotate average rating and review count for each doctor
+    doctors = doctors.annotate(
+        avg_rating=Avg('tblreview__rating'),
+        review_count=Count('tblreview')
+    )
     
     # Rating filter
     if rating_filter:
