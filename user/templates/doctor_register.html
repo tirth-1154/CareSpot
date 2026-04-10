@@ -7,10 +7,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 body { margin: 0; font-family: 'Inter', sans-serif; color: #0f172a; background-color: #ffffff; min-height: 100vh; overflow-x: hidden; }
-.split-container { display: flex; min-height: 100vh; width: 100%; position: relative; }
+.split-container { display: flex; min-height: 100dvh; width: 100%; position: relative; }
 
 /* Left Side - Shuffle Hero */
-.split-left { flex: 1; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 2.5rem; }
+.split-left { flex: 1; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 2rem; }
 
 .shuffle-hero-content { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 1.5rem; }
 
@@ -42,7 +42,7 @@ body { margin: 0; font-family: 'Inter', sans-serif; color: #0f172a; background-c
 .role-toggle a:not(.active):hover { color: #0f172a; }
 
 /* Form Container */
-.registration-form-container { width: 100%; max-width: 440px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 24px; padding: 2.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.04); }
+.registration-form-container { width: 100%; max-width: 440px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 24px; padding: 2.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.04); margin: 2rem 0; }
 .registration-form-container h2 { font-size: 1.75rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
 .registration-form-container > p { font-size: 0.875rem; color: #64748b; margin-bottom: 2rem; }
 
@@ -86,7 +86,14 @@ body { margin: 0; font-family: 'Inter', sans-serif; color: #0f172a; background-c
 @media (max-width: 768px) {
     .split-container { flex-direction: column; }
     .split-left { display: none; }
-    .role-toggle { position: relative; top: 0; margin: 1rem 0; width: max-content; }
+    .split-right { padding: 1.5rem; }
+    .role-toggle { position: relative; top: 0; margin-bottom: 1.5rem; transform: none; left: 0; }
+    .registration-form-container { padding: 1.5rem; border-radius: 16px; margin: 1rem 0; }
+}
+
+@media (max-height: 800px) {
+    .split-right { align-items: flex-start; padding-top: 6rem; }
+    .registration-form-container { padding: 1.5rem; }
 }
 </style>
 

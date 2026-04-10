@@ -28,9 +28,10 @@
     }
 
     html, body {
-        width: 100%; height: 100%;
+        width: 100%;
+        min-height: 100%;
         font-family: 'Outfit', sans-serif;
-        overflow: hidden;
+        overflow-x: hidden;
         background: linear-gradient(160deg, var(--blue-5) 0%, var(--blue-4) 100%);
     }
 
@@ -48,10 +49,11 @@
        MAIN WRAPPER
     ============================================= */
     .page-wrapper {
-        width: 100vw; height: 100vh;
+        width: 100%;
+        min-height: 100dvh;
         display: flex; align-items: center; justify-content: center;
         position: relative;
-        overflow: hidden;
+        padding: 40px 20px;
         z-index: 1;
     }
 
@@ -78,7 +80,8 @@
         position: relative;
         z-index: 10;
         display: flex;
-        width: 920px;
+        width: 100%;
+        max-width: 920px;
         min-height: 540px;
         background: rgba(255, 255, 255, 0.65);
         backdrop-filter: blur(24px);
@@ -471,16 +474,28 @@
     /* =============================================
        RESPONSIVE
     ============================================= */
-    @media (max-width: 800px) {
-        html, body { overflow-y: auto; height: auto; }
-        .page-wrapper { min-height: 100vh; height: auto; padding: 40px 0; }
-        .login-card { flex-direction: column; width: 95%; max-width: 460px; min-height: auto; margin: 20px auto; }
-        .card-left { flex: none; height: 200px; border-bottom: 1px solid rgba(79,195,247,0.1); }
-        .card-right { border-left: none; padding: 36px 30px; }
-        .heart-icon { font-size: 60px; }
-        .heart-scene { width: 140px; height: 140px; }
-        .ecg-line { width: 200px; bottom: 20px; left: 0; }
-        .tc-name { font-size: 36px; }
+    @media (max-width: 900px) {
+        .login-card { flex-direction: column; width: 95%; max-width: 480px; min-height: auto; }
+        .card-left { flex: none; height: 240px; border-bottom: 1px solid rgba(79,195,247,0.1); padding: 30px; }
+        .card-right { padding: 40px 30px; }
+        .heart-icon { font-size: 70px; }
+    }
+
+    @media (max-height: 700px) {
+        .page-wrapper { padding: 20px; }
+        .login-card { min-height: auto; }
+        .form-header { margin-bottom: 20px; }
+        .form-header h2 { font-size: 26px; }
+        .custom-input-group { margin-bottom: 15px; }
+        .card-right { padding: 30px; }
+    }
+
+    @media (max-width: 480px) {
+        .card-left { height: 180px; }
+        .heart-icon { font-size: 50px; }
+        .heart-scene { width: 120px; height: 120px; }
+        .form-header h2 { font-size: 24px; }
+        .btn-login { padding: 12px; }
     }
 </style>
 
