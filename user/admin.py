@@ -98,3 +98,4 @@ class SupportTicketAdmin(admin.ModelAdmin):
     search_fields = ('name', 'email', 'subject')
 
 admin.site.register(tblSupportTicket, SupportTicketAdmin)
+admin.site.register(tblPatientReport)

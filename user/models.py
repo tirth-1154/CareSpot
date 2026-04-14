@@ -274,3 +274,29 @@ class tblSupportTicket(models.Model):
 
     def __str__(self):
         return f'Ticket #{self.ticketID} - {self.subject}'
+
+class tblPatientReport(models.Model):
+    reportID = models.AutoField(primary_key=True)
+    clientID = models.ForeignKey(tblClient, on_delete=models.CASCADE)
+    clientHistoryID = models.ForeignKey(tblclientHistory, on_delete=models.SET_NULL, null=True, blank=True, related_name='patient_reports')
+    reportTitle = models.CharField(max_length=200)
+    reportDescription = models.TextField(max_length=500, null=True, blank=True)
+    reportFile = models.FileField(upload_to='patient_reports/')
+    uploadedDT = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Report #{self.reportID} - {self.reportTitle}'
+
+    @property
+    def file_extension(self):
+        import os
+        _, ext = os.path.splitext(self.reportFile.name)
+        return ext.lower()
+
+    @property
+    def is_image(self):
+        return self.file_extension in ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp']
+
+    @property
+    def is_pdf(self):
+        return self.file_extension == '.pdf'

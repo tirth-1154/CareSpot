@@ -1326,12 +1326,51 @@ def patientMedicalHistory(request):
     user = tblUser.objects.filter(userID=user_id).first()
     client = tblClient.objects.filter(clientID=client_id).first()
     
+    # Handle report upload
+    if request.method == 'POST' and request.POST.get('btnUploadReport'):
+        report_title = request.POST.get('report_title', '').strip()
+        report_desc = request.POST.get('report_description', '').strip()
+        linked_history_id = request.POST.get('linked_case_history')
+        report_file = request.FILES.get('report_file')
+        
+        if report_title and report_file:
+            linked_history = None
+            if linked_history_id:
+                linked_history = tblclientHistory.objects.filter(
+                    clientHistoryID=linked_history_id, clientID=client_id
+                ).first()
+            
+            tblPatientReport.objects.create(
+                clientID=client,
+                clientHistoryID=linked_history,
+                reportTitle=report_title,
+                reportDescription=report_desc if report_desc else None,
+                reportFile=report_file
+            )
+            messages.success(request, 'Report uploaded successfully!')
+        else:
+            messages.error(request, 'Please provide a title and select a file.')
+        return redirect('patientMedicalHistory')
+    
+    # Handle report deletion
+    if request.method == 'POST' and request.POST.get('btnDeleteReport'):
+        report_id = request.POST.get('report_id')
+        report = tblPatientReport.objects.filter(reportID=report_id, clientID=client_id).first()
+        if report:
+            report.reportFile.delete(save=False)
+            report.delete()
+            messages.success(request, 'Report deleted successfully!')
+        return redirect('patientMedicalHistory')
+    
     appointments = tblAppointment.objects.filter(clientID=client_id).order_by('-appointmentDate', '-appointmentTime')
     
     # Case studies / history for this patient
     case_histories = tblclientHistory.objects.filter(clientID=client_id).order_by('-createdDT')
     
-    has_history = case_histories.exists() or appointments.exists()
+    # Patient reports
+    patient_reports = tblPatientReport.objects.filter(clientID=client_id).order_by('-uploadedDT')
+    
+    has_history = case_histories.exists() or appointments.exists() or patient_reports.exists()
     
     # Calculate age
     age = 0
@@ -1347,6 +1386,7 @@ def patientMedicalHistory(request):
         "client": client,
         "appointments": appointments,
         "case_histories": case_histories,
+        "patient_reports": patient_reports,
         "has_history": has_history,
         "age": age,
         "total_visits": total_visits,
@@ -1733,11 +1773,16 @@ def doctorCaseStudy(request, id):
         clientID=appointment.clientID
     ).order_by('-createdDT')
 
+    patient_reports = tblPatientReport.objects.filter(
+        clientID=appointment.clientID
+    ).order_by('-uploadedDT')
+
     data = {
         "doctor": doctor,
         "appointment": appointment,
         "age": age,
         "case_histories": case_histories,
+        "patient_reports": patient_reports,
         "diagnoses": diagnoses,  # 🔥 IMPORTANT
         "subcategory": doctor.subcategoryID  # 🔥 SHOW IN UI
     }
