@@ -233,6 +233,45 @@
         padding: 5px;
     }
 
+    /* Pagination Styles */
+    .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 30px;
+        gap: 8px;
+    }
+    .page-btn {
+        min-width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .page-btn:hover {
+        border-color: var(--primary-blue);
+        color: var(--primary-blue);
+        background: #F1F5F9;
+    }
+    .page-btn.active {
+        background: var(--primary-blue);
+        color: #fff;
+        border-color: var(--primary-blue);
+    }
+    .page-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+
     @media (max-width: 1200px) {
         .profile-grid { grid-template-columns: 1fr 1fr; }
         .card-reports { grid-column: span 2; }
@@ -352,9 +391,9 @@
 
     <div class="card-premium">
         <div class="tabs-nav">
-            <div class="tab-link active" onclick="switchAptTab('all', this)">All History</div>
-            <div class="tab-link" onclick="switchAptTab('accepted', this)">Upcoming</div>
-            <div class="tab-link" onclick="switchAptTab('completed', this)">Completed</div>
+            <a href="?status=all" class="tab-link {% if active_status == 'all' or not active_status %}active{% endif %}">All History</a>
+            <a href="?status=accepted" class="tab-link {% if active_status == 'accepted' %}active{% endif %}">Upcoming</a>
+            <a href="?status=completed" class="tab-link {% if active_status == 'completed' %}active{% endif %}">Completed</a>
         </div>
 
         <div id="apt-container" class="apt-content">
@@ -393,26 +432,44 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        {% if appointments.has_other_pages %}
+        <div class="pagination-wrapper">
+            {% if appointments.has_previous %}
+                <a href="?page={{ appointments.previous_page_number }}&status={{ active_status }}" class="page-btn">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </a>
+            {% else %}
+                <span class="page-btn disabled">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </span>
+            {% endif %}
+
+            {% for i in appointments.paginator.page_range %}
+                {% if appointments.number == i %}
+                    <span class="page-btn active">{{ i }}</span>
+                {% else %}
+                    <a href="?page={{ i }}&status={{ active_status }}" class="page-btn">{{ i }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if appointments.has_next %}
+                <a href="?page={{ appointments.next_page_number }}&status={{ active_status }}" class="page-btn">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            {% else %}
+                <span class="page-btn disabled">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </span>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
-    function switchAptTab(type, el) {
-        // Update active class
-        document.querySelectorAll('.tab-link').forEach(tab => tab.classList.remove('active'));
-        el.classList.add('active');
-
-        // Filter rows
-        const rows = document.querySelectorAll('.apt-row');
-        rows.forEach(row => {
-            if (type === 'all') {
-                row.style.display = 'table-row';
-            } else if (row.getAttribute('data-type') === type) {
-                row.style.display = 'table-row';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
+    // Remove client-side filtering logic as it's now server-side
 </script>
+
 {% endblock %}

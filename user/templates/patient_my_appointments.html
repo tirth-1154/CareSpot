@@ -343,7 +343,7 @@
         <form method="GET" action="" id="filterForm" class="filter-actions">
             <div class="search-input-group">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" name="search" class="search-input" placeholder="Search anything here" value="{{ request.GET.search }}">
+                <input type="text" name="search" id="appointmentSearch" class="search-input" placeholder="Search anything here" value="{{ request.GET.search }}">
                 <input type="hidden" name="show" value="{{ show_entries }}">
             </div>
             
@@ -403,9 +403,9 @@
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="appointmentTableBody">
                 {% for appointment in appointments %}
-                <tr>
+                <tr class="appointment-row">
                     <td data-label="No" class="text-muted small fw-bold">{{ forloop.counter|add:appointments.start_index|add:"-1" }}</td>
                     <td data-label="ID Code" class="fw-bold">#APT{{ appointment.appointmentID }}</td>
                     <td data-label="Doctor Name">
@@ -445,27 +445,21 @@
                             <button class="action-btn action-view" data-bs-toggle="modal" data-bs-target="#appointmentModal{{ appointment.appointmentID }}" title="View Details">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
-                            
-                            {% comment %} <!-- Join/Edit/Meeting (Using blue circle for context) -->
-                            {% if appointment.isAccepted and appointment.mode == 'online' and appointment.meetLink %}
-                            <a href="{% url 'videoMeeting' appointment.appointmentID %}" class="action-btn action-edit" title="Join Video Meeting">
-                                <i class="fa-solid fa-video"></i>
-                            </a>
-                            {% else %}
-                            <button class="action-btn action-edit" title="No Action Available">
-                                <i class="fa-solid fa-pencil"></i>
-                            </button>
-                            {% endif %} {% endcomment %}
                         </div>
                     </td>
                 </tr>
                 {% empty %}
-                <tr>
+                <tr id="serverNoResults">
                     <td colspan="9" class="text-center py-5">
                         <div class="text-muted">No appointments found matches your search.</div>
                     </td>
                 </tr>
                 {% endfor %}
+                <tr id="clientNoResults" style="display: none;">
+                    <td colspan="9" class="text-center py-5">
+                        <div class="text-muted">No appointments found matches your search locally.</div>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -511,16 +505,7 @@
     </div>
 </div>
 
-<script>
-    function applyEntriesShow(val) {
-        let url = new URL(window.location.href);
-        url.searchParams.set('show', val);
-        url.searchParams.set('page', '1'); // Reset to first page when changing count
-        window.location.href = url.href;
-    }
-</script>
-
-<!-- MODALS (Hidden from original logic) -->
+<!-- MODALS -->
 {% for appointment in appointments %}
 <div class="modal fade" id="appointmentModal{{ appointment.appointmentID }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -582,3 +567,48 @@
 {% endfor %}
 
 {% endblock %}
+
+{% block js %}
+<script>
+    // Live search functionality — Case-Insensitive (Handles both small and capital letters)
+    document.getElementById('appointmentSearch').addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.appointment-row');
+        const clientNoResults = document.getElementById('clientNoResults');
+        const serverNoResults = document.getElementById('serverNoResults');
+        let hasVisible = false;
+
+        rows.forEach(row => {
+            // Get combined text from all relevant cells (Doctor, ID, Status, etc.)
+            const text = row.innerText.toLowerCase();
+            if (text.includes(query)) {
+                row.style.display = '';
+                hasVisible = true;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Handle "No Results" display
+        if (clientNoResults) {
+            clientNoResults.style.display = (!hasVisible && query !== '') ? '' : 'none';
+        }
+        
+        // If searching locally, hide the server-side "empty" row to avoid duplicates
+        if (serverNoResults && query !== '') {
+            serverNoResults.style.display = 'none';
+        } else if (serverNoResults && query === '') {
+            serverNoResults.style.display = '';
+        }
+    });
+
+    // Pagination entries show handler
+    function applyEntriesShow(val) {
+        let url = new URL(window.location.href);
+        url.searchParams.set('show', val);
+        url.searchParams.set('page', '1'); // Reset to first page when changing count
+        window.location.href = url.href;
+    }
+</script>
+{% endblock %}
+

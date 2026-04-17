@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.decorators.cache import never_cache
-from django.db.models import Avg, Count
+from django.db import models
+from django.db.models import Avg, Count, Q
 from datetime import datetime as dt, date
 import datetime
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -14,6 +15,8 @@ import random
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 def home(request):
     user_id = request.session.get('user_id')
@@ -1261,10 +1264,15 @@ def patientMyAppointments(request):
     
     # Search filter — doctor name or appointment ID
     if search:
-        appointments = appointments.filter(
-            models.Q(doctorID__displayName__icontains=search) |
-            models.Q(appointmentID__icontains=search)
-        )
+        # If user searches for #APT123 or APT123, extract the numeric ID
+        appointment_id_search = search.lower().replace('#apt', '').replace('apt', '').strip()
+        
+        search_query = models.Q(doctorID__displayName__icontains=search)
+        
+        if appointment_id_search.isdigit():
+            search_query |= models.Q(appointmentID=appointment_id_search)
+            
+        appointments = appointments.filter(search_query)
     
     # Date filter
     if filter_date:
@@ -1362,7 +1370,12 @@ def patientMedicalHistory(request):
             messages.success(request, 'Report deleted successfully!')
         return redirect('patientMedicalHistory')
     
-    appointments = tblAppointment.objects.filter(clientID=client_id).order_by('-appointmentDate', '-appointmentTime')
+    all_appointments = tblAppointment.objects.filter(clientID=client_id).order_by('-appointmentDate', '-appointmentTime')
+    
+    # Pagination for Appointment History (5 items per page)
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(all_appointments, 5)
+    appointments = paginator.get_page(page_number)
     
     # Case studies / history for this patient
     case_histories = tblclientHistory.objects.filter(clientID=client_id).order_by('-createdDT')
@@ -1370,7 +1383,7 @@ def patientMedicalHistory(request):
     # Patient reports
     patient_reports = tblPatientReport.objects.filter(clientID=client_id).order_by('-uploadedDT')
     
-    has_history = case_histories.exists() or appointments.exists() or patient_reports.exists()
+    has_history = case_histories.exists() or all_appointments.exists() or patient_reports.exists()
     
     # Calculate age
     age = 0
@@ -1379,7 +1392,7 @@ def patientMedicalHistory(request):
         dob = client.dob
         age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
     
-    total_visits = appointments.filter(isAccepted=True).count()
+    total_visits = all_appointments.filter(isAccepted=True).count()
     
     data = {
         "user": user,
@@ -2275,17 +2288,39 @@ def doctorViewPatientProfile(request, id):
     upcoming_appointments = [a for a in appointments if a.status_label == "Accepted"]
     completed_appointments = [a for a in appointments if a.status_label == "Completed"]
     
+    # Global Status Filtering
+    active_status = request.GET.get('status', 'all')
+    if active_status == 'accepted':
+        filtered_appointments = upcoming_appointments
+    elif active_status == 'completed':
+        filtered_appointments = completed_appointments
+    else:
+        filtered_appointments = list(appointments)
+    
+    # Pagination
+    paginator = Paginator(filtered_appointments, 8)  # Changed to 8 items per page
+    page_number = request.GET.get('page')
+    try:
+        appointments_page = paginator.page(page_number)
+    except PageNotAnInteger:
+        appointments_page = paginator.page(1)
+    except EmptyPage:
+        appointments_page = paginator.page(paginator.num_pages)
+    
     data = {
         'doctor': doctor,
         'client': client,
-        'appointments': appointments,
+        'appointments': appointments_page,
         'total_appointments': total_appointments,
         'total_payment': total_payment,
         'reports': reports,
-        'upcoming_appointments': upcoming_appointments,
-        'completed_appointments': completed_appointments,
+        'active_status': active_status,
+        'upcoming_count': len(upcoming_appointments),
+        'completed_count': len(completed_appointments),
     }
     return render(request, 'doctor_view_patient_profile.html', data)
+
+
 
 
 def updateAppointmentStatusAjax(request):

@@ -497,6 +497,7 @@
     <!-- ② Statistics Cards -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-xl-3">
+            <a href="{% url 'doctorSetSchedule' %}" style="text-decoration:none; display:block; height:100%;">
             <div class="stat-card stat-card-blue">
                 <div>
                     <p class="stat-label mb-2">Today's Appointments</p>
@@ -504,6 +505,7 @@
                 </div>
                 <div class="stat-icon-circle"><i class="fa-solid fa-clock"></i></div>
             </div>
+            </a>
         </div>
         <div class="col-6 col-xl-3">
             <a href="{% url 'doctorTotalPatients' %}" style="text-decoration:none; display:block; height:100%;">
@@ -518,15 +520,18 @@
         </div>
 
         <div class="col-6 col-xl-3">
-            <div class="stat-card stat-card-purple">
+            <a href="{% url 'doctorSetSchedule' %}" style="text-decoration:none; display:block; height:100%;">
+            <div class="stat-card stat-card-purple" >
                 <div>
                     <p class="stat-label mb-2">Upcoming</p>
                     <div class="stat-value">{{ upcoming_appointments_count }}</div>
                 </div>
                 <div class="stat-icon-circle"><i class="fa-regular fa-calendar-check"></i></div>
             </div>
+            </a>
         </div>
         <div class="col-6 col-xl-3">
+            <a href="{% url 'doctorSetSchedule' %}" style="text-decoration:none; display:block; height:100%;">
             <div class="stat-card stat-card-green">
                 <div>
                     <p class="stat-label mb-2">Completed</p>
@@ -534,6 +539,7 @@
                 </div>
                 <div class="stat-icon-circle"><i class="fa-solid fa-circle-check"></i></div>
             </div>
+            </a>
         </div>
     </div>
 

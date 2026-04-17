@@ -399,11 +399,11 @@
                 {% if p.latest_appointment %}
                 <div class="cell-subtitle"><span class="info-label text-nowrap">Last:</span> <span class="info-val">{{ p.latest_appointment|date:"M d, Y" }}</span></div>
                 {% endif %}
-                {% if p.case_studies_count > 0 %}
+                {% comment %} {% if p.case_studies_count > 0 %}
                 <div class="mt-2">
                   <span class="badge-success"><i class="fa-solid fa-file-invoice me-1"></i> {{ p.case_studies_count }} Case Studies</span>
                 </div>
-                {% endif %}
+                {% endif %} {% endcomment %}
               </td>
               <td>
                 <div class="action-buttons">
