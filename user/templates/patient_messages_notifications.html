@@ -710,11 +710,11 @@
                 {% endif %}
                 <div class="d-flex gap-3">
                   <div
-                    class="notif-icon {% if 'message' in notif.message|lower %}message{% elif 'rejected' in notif.message|lower %}alert{% else %}success{% endif %}"
+                    class="notif-icon {% if 'message' in notif.message|lower %}message{% elif 'rejected' in notif.message|lower or 'cancelled' in notif.message|lower %}alert{% else %}success{% endif %}"
                   >
                     {% if 'message' in notif.message|lower %}
                     <i class="fa-solid fa-comment-medical"></i>
-                    {% elif 'rejected' in notif.message|lower %}
+                    {% elif 'rejected' in notif.message|lower or 'cancelled' in notif.message|lower %}
                     <i class="fa-solid fa-calendar-xmark"></i>
                     {% else %}
                     <i class="fa-solid fa-calendar-check"></i>
@@ -726,7 +726,7 @@
                     >
                       <div class="notif-title">
                         {% if 'message' in notif.message|lower %}Message Alert
-                        {% elif 'rejected' in notif.message|lower %}Appointment Rejected
+                        {% elif 'rejected' in notif.message|lower or 'cancelled' in notif.message|lower %}Appointment Cancelled
                         {% else %}Appointment Confirmed{% endif %}
                       </div>
                       <div class="dropdown">
@@ -789,10 +789,10 @@
                 <div class="notification-item unread">
                   <div class="badge-indicator"></div>
                   <div class="d-flex gap-3">
-                    <div class="notif-icon {% if 'message' in notif.message|lower %}message{% elif 'rejected' in notif.message|lower %}alert{% else %}success{% endif %}">
+                    <div class="notif-icon {% if 'message' in notif.message|lower %}message{% elif 'rejected' in notif.message|lower or 'cancelled' in notif.message|lower %}alert{% else %}success{% endif %}">
                       {% if 'message' in notif.message|lower %}
                       <i class="fa-solid fa-comment-medical"></i>
-                      {% elif 'rejected' in notif.message|lower %}
+                      {% elif 'rejected' in notif.message|lower or 'cancelled' in notif.message|lower %}
                       <i class="fa-solid fa-calendar-xmark"></i>
                       {% else %}
                       <i class="fa-solid fa-calendar-check"></i>
@@ -802,7 +802,7 @@
                       <div class="d-flex justify-content-between align-items-start">
                         <div class="notif-title">
                           {% if 'message' in notif.message|lower %}Message Alert
-                          {% elif 'rejected' in notif.message|lower %}Appointment Rejected
+                          {% elif 'rejected' in notif.message|lower or 'cancelled' in notif.message|lower %}Appointment Cancelled
                           {% else %}Appointment Confirmed{% endif %}
                         </div>
                         <div class="dropdown">
@@ -858,14 +858,14 @@
           <div class="tab-pane fade" id="appointments" role="tabpanel">
             <div class="notification-list" id="appointments-list">
               {% for notif in notifications %}
-                {% if 'appointment' in notif.message|lower or 'rejected' in notif.message|lower or 'confirmed' in notif.message|lower or 'booked' in notif.message|lower %}
+                {% if 'appointment' in notif.message|lower or 'rejected' in notif.message|lower or 'cancelled' in notif.message|lower or 'confirmed' in notif.message|lower or 'booked' in notif.message|lower %}
                 <div class="notification-item appointment-notif {% if not notif.isRead %}unread{% endif %}">
                   {% if not notif.isRead %}
                   <div class="badge-indicator"></div>
                   {% endif %}
                   <div class="d-flex gap-3">
-                    <div class="notif-icon {% if 'rejected' in notif.message|lower %}alert{% else %}success{% endif %}">
-                      {% if 'rejected' in notif.message|lower %}
+                    <div class="notif-icon {% if 'rejected' in notif.message|lower or 'cancelled' in notif.message|lower %}alert{% else %}success{% endif %}">
+                      {% if 'rejected' in notif.message|lower or 'cancelled' in notif.message|lower %}
                       <i class="fa-solid fa-calendar-xmark"></i>
                       {% else %}
                       <i class="fa-solid fa-calendar-check"></i>
@@ -875,6 +875,7 @@
                       <div class="d-flex justify-content-between align-items-start">
                         <div class="notif-title">
                           {% if 'rejected' in notif.message|lower %}Appointment Rejected
+                          {% elif 'cancelled' in notif.message|lower %}Appointment Cancelled
                           {% else %}Appointment Confirmed{% endif %}
                         </div>
                         <div class="dropdown">

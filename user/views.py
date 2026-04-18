@@ -648,6 +648,23 @@ def doctorUpdateProfile(request):
     doctor = tblDoctor.objects.filter(userID=user_id).first()
     subcategories = tblSubcategory.objects.all()
     
+    if request.POST.get('btnUpdatePassword'):
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        if new_password != confirm_password:
+            messages.error(request, 'New password and confirm password do not match.')
+        elif len(new_password) < 8:
+            messages.error(request, 'New password must be at least 8 characters long.')
+        elif user.password != current_password:
+            messages.error(request, 'Current password is incorrect.')
+        else:
+            user.password = new_password
+            user.save()
+            request.session['password'] = new_password
+            messages.success(request, 'Password updated successfully!')
+        return redirect('doctorUpdateProfile')
+
     if request.POST.get('btnUpdate'):
         # 1. Update User related fields
         user.email = request.POST.get('email')
