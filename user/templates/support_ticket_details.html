@@ -1,0 +1,151 @@
+{% extends base_template|default:'patient_base.html' %}
+{% block title %}Ticket #{{ ticket.ticketID }} Details | CareSpot{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-blue: #0d6efd;
+        --dark-navy: #1e293b;
+        --bg-soft: #f8fbff;
+    }
+
+    .dashboard-wrapper {
+        min-height: 100vh;
+        background: var(--bg-soft);
+        padding: 50px 0 80px;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 30px;
+        transition: color 0.2s;
+    }
+
+    .back-btn:hover {
+        color: var(--primary-blue);
+    }
+
+    .ticket-details-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        border: 1px solid #f1f5f9;
+    }
+
+    .ticket-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 30px;
+        margin-bottom: 30px;
+    }
+
+    .ticket-title-section h2 {
+        font-weight: 800;
+        color: var(--dark-navy);
+        margin-bottom: 10px;
+    }
+
+    .ticket-meta {
+        display: flex;
+        gap: 20px;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 8px 18px;
+        border-radius: 50px;
+    }
+
+    .badge-open { background: #fee2e2; color: #dc2626; }
+    .badge-progress { background: #fef3c7; color: #d97706; }
+    .badge-resolved { background: #dcfce7; color: #16a34a; }
+    .badge-closed { background: #f1f5f9; color: #475569; }
+
+    .ticket-body {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: #334155;
+    }
+
+    .message-container {
+        background: #f8fbff;
+        border-radius: 16px;
+        padding: 25px;
+        border: 1px solid #e2e8f0;
+        white-space: pre-wrap;
+    }
+
+    .info-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .ticket-header {
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="container">
+        
+        <a href="{% url 'mySupportTickets' %}" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Back to My Tickets
+        </a>
+
+        <div class="ticket-details-card">
+            <div class="ticket-header">
+                <div class="ticket-title-section">
+                    <div class="info-label">Ticket #{{ ticket.ticketID }}</div>
+                    <h2>{{ ticket.subject }}</h2>
+                    <div class="ticket-meta">
+                        <span><i class="fa-regular fa-calendar me-1"></i> Requested on {{ ticket.createdDT|date:"M d, Y h:i A" }}</span>
+                    </div>
+                </div>
+                
+                {% if ticket.status == 'open' %}
+                    <span class="status-badge badge-open">Open</span>
+                {% elif ticket.status == 'in_progress' %}
+                    <span class="status-badge badge-progress">In Progress</span>
+                {% elif ticket.status == 'resolved' %}
+                    <span class="status-badge badge-resolved">Resolved</span>
+                {% elif ticket.status == 'closed' %}
+                    <span class="status-badge badge-closed">Closed</span>
+                {% endif %}
+            </div>
+
+            <div class="ticket-body">
+                <div class="info-label">Message Content</div>
+                <div class="message-container">
+                    {{ ticket.message }}
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-top">
+                <p class="text-muted small">
+                    <i class="fa-solid fa-circle-info me-1"></i> Our support team will review your request and get back to you shortly. You will receive a notification when there is an update.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

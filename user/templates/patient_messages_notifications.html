@@ -272,10 +272,10 @@
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.08); /* Bigger card shadow */
     overflow: hidden;
-    height: calc(100vh - 80px); /* Full screen chat height */
+    height: calc(100vh - 140px); /* Adjusted for positive top margin */
     min-height: 600px;
     border: 1px solid #eef2f5;
-    margin-top: -20px;
+    margin-top: 30px; /* Added space from navbar */
     margin-bottom: 20px;
   }
 
@@ -1002,11 +1002,8 @@
                       <span id="chatPartnerStatusText">Online</span>
                     </p>
                   </div>
-                  <div class="ms-auto">
-                    <button class="btn btn-light rounded-circle">
-                      <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </button>
-                  </div>
+                  <!-- Removed ellipsis menu as requested -->
+
                 </div>
 
                 <!-- Hidden File Input -->

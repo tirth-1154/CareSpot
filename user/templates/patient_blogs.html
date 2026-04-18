@@ -141,6 +141,9 @@
   .blog-content-sidebar {
     width: 310px;
     flex-shrink: 0;
+    position: sticky;
+    top: 110px;
+    align-self: flex-start;
   }
   @media (max-width: 1024px) {
     .blog-page-layout { flex-direction: column; }
@@ -382,7 +385,7 @@
   .blog-widget {
     background: white;
     border-radius: var(--blog-radius);
-    padding: 20px 22px;
+    padding: 45px 28px;
     margin-bottom: 24px;
     border: 1px solid var(--blog-border);
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
@@ -391,7 +394,7 @@
     font-size: 16px;
     font-weight: 700;
     color: var(--blog-text);
-    margin: 0 0 16px;
+    margin: 0 0 30px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -436,15 +439,15 @@
     display: flex;
     gap: 12px;
     text-decoration: none !important;
-    padding: 8px 0;
+    padding: 18px 0;
     border-bottom: 1px solid #f3f4f6;
     transition: var(--blog-transition);
   }
   .trending-item:last-child { border-bottom: none; }
   .trending-item:hover { transform: translateX(3px); }
   .trending-item-img {
-    width: 64px;
-    height: 64px;
+    width: 72px;
+    height: 72px;
     border-radius: 10px;
     object-fit: cover;
     flex-shrink: 0;
@@ -583,7 +586,7 @@
       </div> {% endcomment %}
 
       <!-- Widget: Trending Now -->
-      <div class="blog-widget" style="margin-top: 110px;">
+      <div class="blog-widget" style="margin-top: 40px;">
         <h3 class="blog-widget-title"><i class="fa-solid fa-arrow-trend-up" style="color: var(--blog-secondary);"></i> Trending Now</h3>
         <div>
           {% for blog in trending_blogs|slice:":4" %}

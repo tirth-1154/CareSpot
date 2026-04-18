@@ -34,10 +34,10 @@
         border-radius: 16px;
         box-shadow: 0 10px 40px rgba(0,0,0,0.08); /* Bigger card shadow */
         overflow: hidden;
-        height: calc(100vh - 60px); /* Full screen chat height */
+        height: calc(100vh - 110px); /* Adjusted height to accommodate positive margin */
         min-height: 600px;
         border: 1px solid #eef2f5;
-        margin-top: -30px; /* Pull up to fill gap after removing headline */
+        margin-top: 20px; /* Added space from navbar */
         margin-bottom: 20px;
     }
 
@@ -403,7 +403,7 @@
                 {% if partners %}
                     {% for partner in partners %}
                     <a href="#" class="message-list-item {% if forloop.first %}active{% endif %}" data-user-id="{{ partner.user.userID }}">
-                        <img src="{{ partner.user.profilePic.url }}" alt="{{ partner.user.userName }}" class="msg-avatar">
+                        <img src="{% if partner.user.profilePic %}{{ partner.user.profilePic.url }}{% else %}https://ui-avatars.com/api/?name={{ partner.user.userName|urlencode }}&background=random{% endif %}" alt="{{ partner.user.userName }}" class="msg-avatar">
                         <div class="msg-info">
                             <div class="msg-header">
                                 <h4 class="msg-name">
@@ -440,9 +440,8 @@
                         <span id="chatPartnerStatusText">Online</span>
                     </p>
                 </div>
-                <div class="ms-auto">
-                    <button class="btn btn-light rounded-circle"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                </div>
+                <!-- Removed ellipsis menu as requested -->
+
             </div>
 
             <!-- Hidden File Input -->

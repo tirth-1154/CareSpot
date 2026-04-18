@@ -1310,8 +1310,18 @@
                                 </div>
                                 
                                 <div class="modal-footer-custom">
-                                    <button class="btn-print-record">
-                                        <i class="fa-solid fa-print"></i> Print Report
+                                    <button class="btn-print-record" 
+                                            onclick="downloadHistoryPDF(this)"
+                                            data-name="{{ appointment.clientID.name }}"
+                                            data-pid="#PID-{{ appointment.clientID.clientID }}"
+                                            data-gender="{{ appointment.clientID.gender|title }}"
+                                            data-date="{{ history.createdDT|date:'M d, Y' }}"
+                                            data-symptoms="{{ history.symptoms|default:'' }}"
+                                            data-diagnosis="{{ history.diagnosisID.diagnosisName|default:history.customDiagnosis|default:'General Assessment' }}"
+                                            data-prescription="{{ history.prescription|default:'' }}"
+                                            data-notes="{{ history.additionalNotes|default:'' }}"
+                                            data-reports="{% for rpt in history.patient_reports.all %}{{ rpt.reportFile.url }}|{{ rpt.is_image }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                                        <i class="fa-solid fa-file-pdf"></i> Download PDF
                                     </button>
                                     <button type="button" class="btn-close-record" data-bs-dismiss="modal">Close Record</button>
                                 </div>
@@ -1381,12 +1391,87 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Premium Formal Medical Report Template (Hidden) -->
+<div id="print-template" style="display:none; padding:60px 50px; background:#ffffff; font-family:'Helvetica', 'Arial', sans-serif; color:#1e293b; line-height:1.6; font-size: 14pt;">
+    
+    <!-- Top Header Banner -->
+    <div style="border-top: 10px solid #0284c7; padding-top: 35px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; page-break-inside: avoid;">
+        <div>
+            <h1 style="margin:0; font-size:38px; color:#0f172a; font-weight:800; letter-spacing: -1px;">CareSpot<span style="color:#0284c7;">.</span></h1>
+            <p style="margin:8px 0 0; font-size:16px; color:#64748b; font-weight:500;">Advanced Digital Healthcare System</p>
+            <p style="margin:4px 0 0; font-size:14px; color:#94a3b8;">123 CareSpot Avenue, Medical District • www.carespot.com</p>
+        </div>
+        <div style="text-align: right;">
+            <div style="display: inline-block; padding: 8px 16px; background: #f1f5f9; border-radius: 6px; font-size: 12px; font-weight: 700; color: #0f172a; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">
+                Medical Record : Confidential
+            </div>
+            <h2 style="margin:5px 0 0; font-size:24px; color:#0f172a; font-weight:700;">OFFICIAL CLINICAL REPORT</h2>
+            <p style="margin:4px 0 0; font-size:14px; color:#475569;">Report ID: <strong style="color:#1e293b;">#CSR-{{ appointment.clientID.clientID }}/{% now "Ymd" %}</strong></p>
+        </div>
+    </div>
+
+    <!-- Patient Info Grid -->
+    <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 30px; margin-bottom: 45px; page-break-inside: avoid;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px;">
+            <div><span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Patient Full Name</span><span id="pt-name" style="font-size:18px; font-weight:700; color:#0f172a;"></span></div>
+            <div><span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Unique Patient ID</span><span id="pt-id" style="font-size:18px; font-weight:700; color:#0f172a;"></span></div>
+            <div><span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Consultation Date</span><span id="pt-date" style="font-size:18px; font-weight:700; color:#0f172a;"></span></div>
+            <div><span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Age / Sex</span><span id="pt-gender" style="font-size:18px; font-weight:700; color:#0f172a;"></span></div>
+            <div><span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Attending Doctor</span><span style="font-size:18px; font-weight:700; color:#0f172a;">Dr. {{ doctor_obj.displayName|default:doctor.displayName }}</span></div>
+            <div><span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Clinical Department</span><span style="font-size:18px; font-weight:700; color:#0f172a;">{{ doctor_obj.subcategoryID.subcategoryName|default:doctor.subcategoryID.subcategoryName|default:"General Medicine" }}</span></div>
+        </div>
+    </div>
+
+    <!-- Clinical Details -->
+    <div style="margin-bottom: 40px; page-break-inside: avoid;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px; margin-bottom: 18px;">
+            <span style="display:inline-block; width:28px; color:#0284c7;">◆</span> Reported Symptoms
+        </h3>
+        <p id="pt-symptoms" style="margin: 0 0 0 28px; font-size: 17px; color: #334155; line-height: 1.8;"></p>
+    </div>
+
+    <div style="margin-bottom: 40px; page-break-inside: avoid;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #7e22ce; text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #f3e8ff; padding-bottom: 10px; margin-bottom: 18px;">
+            <span style="display:inline-block; width:28px; color:#7e22ce;">◆</span> Clinical Diagnosis
+        </h3>
+        <p id="pt-diagnosis" style="margin: 0 0 0 28px; font-size: 18px; font-weight: 700; color: #0f172a; line-height: 1.8;"></p>
+    </div>
+
+    <!-- Treatment Plan Highlight Box -->
+    <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 30px; margin-bottom: 40px; margin-left: 28px; page-break-inside: avoid;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px;">
+            ✚ Suggested Treatment & Medication Plan
+        </h3>
+        <p id="pt-prescription" style="margin: 0; font-size: 18px; color: #14532d; font-weight: 600; line-height: 1.8;"></p>
+    </div>
+
+    <div id="pt-notes-container" style="margin-bottom: 40px; page-break-inside: avoid;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 18px;">
+            <span style="display:inline-block; width:28px; color:#94a3b8;">◆</span> Physician's Remarks
+        </h3>
+        <p id="pt-notes" style="margin: 0 0 0 28px; font-size: 16px; color: #475569; line-height: 1.8; font-style: italic;"></p>
+    </div>
+
+    <!-- Attachment Section -->
+    <div id="pt-reports-container" style="margin-bottom: 50px;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 25px;">
+            <span style="display:inline-block; width:28px; color:#cbd5e1;">◆</span> Scanned Laboratory Reports
+        </h3>
+        <div id="pt-reports" style="margin-left: 28px;"></div>
+    </div>
+
+    <div style="margin-top: 60px; display: flex; justify-content: space-between; align-items: flex-end; page-break-inside: avoid;">
+        <div><p style="margin:0; font-size:11px; color:#94a3b8;">Generated on {% now "F d, Y" %}</p></div>
+        <div style="text-align: right; width: 250px;"><div style="border-bottom: 1px dashed #94a3b8; margin-bottom: 10px; height: 30px;"></div><strong>Dr. {{ doctor_obj.displayName|default:doctor.displayName }}</strong></div>
+    </div>
+</div>
+
+
 
 <!-- ── Lightbox Overlay Element ── -->
-<div id="imageLightbox" class="lightbox-overlay" style="display: none;" onclick="closeLightbox(event)">
-    <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+<div id="imageLightbox" class="lightbox-overlay" style="display:none;" onclick="closeLightbox(event)">
     <div class="lightbox-content-wrapper">
+        <span class="lightbox-close">&times;</span>
         <img id="lightboxImage" src="" alt="Report Preview" style="display:none;">
         <iframe id="lightboxPdf" src="" style="display:none; width: 85vw; height: 85vh; border: none; border-radius: 8px; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.5);"></iframe>
     </div>
@@ -1539,6 +1624,64 @@
             }
         });
     })();
-</script>
 
+    // ── PDF Download Logic ──
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    function downloadHistoryPDF(btn) {
+        const d = btn.dataset;
+        document.getElementById('pt-name').textContent = d.name;
+        document.getElementById('pt-id').textContent = d.pid;
+        document.getElementById('pt-gender').textContent = d.gender;
+        document.getElementById('pt-date').textContent = d.date;
+        document.getElementById('pt-symptoms').textContent = d.symptoms;
+        document.getElementById('pt-diagnosis').textContent = d.diagnosis;
+        document.getElementById('pt-prescription').textContent = d.prescription;
+        
+        if (d.notes && d.notes.trim()) {
+            document.getElementById('pt-notes').textContent = d.notes;
+            document.getElementById('pt-notes-container').style.display = 'block';
+        } else {
+            document.getElementById('pt-notes-container').style.display = 'none';
+        }
+
+        const reportsDiv = document.getElementById('pt-reports');
+        reportsDiv.innerHTML = '';
+        if (d.reports && d.reports.trim()) {
+            const rArr = d.reports.split(',');
+            let hasImages = false;
+            rArr.forEach(r => {
+                const [url, isImg] = r.split('|');
+                if (isImg === 'True') {
+                    hasImages = true;
+                    reportsDiv.innerHTML += `<img src="${url}" style="max-width:100%; margin-bottom:20px; border:1px solid #eee; border-radius:8px; display:block; page-break-inside:avoid;">`;
+                }
+            });
+            document.getElementById('pt-reports-container').style.display = hasImages ? 'block' : 'none';
+        } else {
+            document.getElementById('pt-reports-container').style.display = 'none';
+        }
+
+        const template = document.getElementById('print-template');
+        template.style.display = 'block';
+
+        const opt = {
+            margin: [0.5, 0.5],
+            filename: `Medical_Report_${d.name.replace(/\s+/g, '_')}.pdf`,
+            image: { type: 'jpeg', quality: 1.0 },
+            html2canvas: { 
+                scale: 2, 
+                useCORS: true,
+                letterRendering: true
+            },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf().set(opt).from(template).save().then(() => {
+            template.style.display = 'none';
+        });
+    }
+</script>
 {% endblock %}
