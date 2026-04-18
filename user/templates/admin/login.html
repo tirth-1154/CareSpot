@@ -3,126 +3,277 @@
 
 {% block extrahead %}
 {{ block.super }}
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-    body { background-color: #f8fafc; }
-    .split-layout { display: flex; min-height: 100vh; overflow: hidden; }
-    .side-image { 
-        flex: 1.2; 
-        background: url("{% static 'admin/img/admin_bg.png' %}") no-repeat center center; 
-        background-size: cover;
-        position: relative;
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
     }
-    .side-image::after {
-        content: "";
+
+    /* Force Hide Admin Sidebar, Header and Breadcrumbs on Login */
+    aside, nav, header, .breadcrumb { 
+        display: none !important; 
+    }
+    
+    /* Reset main layout constraints */
+    main, #content, .content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 100vh !important;
+    }
+
+    .premium-wrapper {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: url("{% static 'admin/img/premium_login_bg.png' %}") no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .premium-wrapper::before {
+        content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.4) 0%, rgba(13, 148, 136, 0.6) 100%);
+        background: radial-gradient(circle at center, rgba(15, 23, 42, 0.4) 0%, rgba(15, 23, 42, 0.85) 100%);
+        backdrop-filter: saturate(1.2);
     }
-    .side-content {
-        position: absolute;
-        bottom: 10%;
-        left: 10%;
+
+    .glass-login-card {
+        position: relative;
         z-index: 10;
-        color: white;
-        max-width: 400px;
-    }
-    .login-section {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 4rem;
-        background: white;
-    }
-    .login-box {
-        max-width: 420px;
         width: 100%;
-        margin: 0 auto;
+        max-width: 440px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(25px) saturate(200%);
+        -webkit-backdrop-filter: blur(25px) saturate(200%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 28px;
+        padding: 3.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        margin: 1rem;
     }
-    .logo-header { margin-bottom: 2.5rem; text-align: center; }
-    .logo-header img { height: 64px; margin-bottom: 1rem; }
-    .form-group { margin-bottom: 1.5rem; }
-    .form-label { display: block; font-size: 0.875rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; }
-    .form-input { 
-        width: 100%; 
-        padding: 0.75rem 1rem; 
-        border: 1px solid #e2e8f0; 
-        border-radius: 8px; 
+
+    @keyframes cardEntrance {
+        from { opacity: 0; transform: translateY(40px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .branding-logo {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .branding-logo img {
+        height: 64px;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    }
+
+    .welcome-text {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .welcome-text h1 {
+        font-size: 30px;
+        font-weight: 800;
+        color: #0F172A;
+        margin: 0;
+        letter-spacing: -0.025em;
+    }
+
+    .welcome-text p {
+        color: #475569;
+        font-size: 14px;
+        margin-top: 10px;
+        font-weight: 500;
+        line-height: 1.5;
+    }
+
+    .form-group {
+        margin-bottom: 1.75rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper i {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94A3B8;
+        font-size: 16px;
+        transition: color 0.3s;
+    }
+
+    .premium-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 14px 16px 14px 52px;
+        font-family: inherit;
+        font-size: 14px;
+        color: #1E293B;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .premium-input:focus {
+        background: #FFFFFF;
+        border-color: #14B8A6;
+        box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
         outline: none;
-        transition: border-color 0.2s, ring 0.2s;
     }
-    .form-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
-    .submit-btn {
+
+    .premium-input:focus + i {
+        color: #14B8A6;
+    }
+
+    .login-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 750;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+        margin-left: 4px;
+    }
+
+    .submit-btn-premium {
         width: 100%;
-        padding: 0.875rem;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
         color: white;
-        font-weight: 700;
-        border-radius: 8px;
         border: none;
+        padding: 16px;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 750;
         cursor: pointer;
-        transition: filter 0.2s;
-        margin-top: 1rem;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin-top: 1.5rem;
+        box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
     }
-    .submit-btn:hover { filter: brightness(1.1); }
-    
-    @media (max-width: 1024px) {
-        .side-image { display: none; }
-        .login-section { padding: 2rem; }
+
+    .submit-btn-premium:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 25px -5px rgba(20, 184, 166, 0.4);
+        filter: brightness(1.05);
+    }
+
+    .submit-btn-premium:active {
+        transform: translateY(-1px);
+    }
+
+    .back-to-site {
+        margin-top: 3rem;
+        text-align: center;
+    }
+
+    .back-to-site a {
+        color: #64748B;
+        font-size: 13px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .back-to-site a:hover {
+        color: #0F172A;
+        transform: translateX(-4px);
+    }
+
+    .error-msg {
+        background: #FEF2F2;
+        border: 1px solid #FCA5A5;
+        color: #B91C1C;
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        font-size: 13.5px;
+        font-weight: 600;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    @media (max-width: 480px) {
+        .glass-login-card {
+            padding: 2.5rem 2rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="split-layout">
-    <div class="side-image">
-        <div class="side-content">
-                <div class="mb-8 flex justify-center lg:justify-start">
-                    <img src="/media/images/careSpotText.png" alt="CareSpot Logo" class="h-12 w-auto">
-                </div>
-                <h1 class="text-3xl font-bold bg-gradient-to-r from-[#2563EB] to-[#0D9488] bg-clip-text text-transparent mb-2">CareSpot Admin</h1>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Secure medical administration and patient management systems.</p>
+<div class="premium-wrapper">
+    <div class="glass-login-card">
+        <div class="branding-logo">
+            <img src="/media/images/careSpot.png" alt="CareSpot">
         </div>
-    </div>
-    <div class="login-section">
-        <div class="login-box">
-            <div class="logo-header">
-                <img src="/media/images/careSpot.png" alt="CareSpot">
-                <h2 style="font-size: 1.5rem; color: #1e293b;">Welcome Back</h2>
-                <p style="color: #64748b;">Please enter your admin credentials</p>
+        
+        <div class="welcome-text">
+            <h1>Healthcare Admin</h1>
+            <p>Authorized personnel only. Access hospital systems and user management.</p>
+        </div>
+
+        {% if form.errors %}
+            <div class="error-msg">
+                <i class="fa-solid fa-circle-exclamation" style="font-size: 18px;"></i>
+                <span>
+                    {% if form.errors.items|length == 1 %}
+                        Login failed. Access denied for provided credentials.
+                    {% else %}
+                        Please correct the identified errors below.
+                    {% endif %}
+                </span>
             </div>
+        {% endif %}
 
-            {% if form.errors and not form.non_field_errors %}
-                <p class="errornote" style="color: #ef4444; margin-bottom: 1rem;">
-                {% if form.errors.items|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
-                </p>
-            {% endif %}
-
-            {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    <p class="errornote" style="color: #ef4444; margin-bottom: 1rem;">{{ error }}</p>
-                {% endfor %}
-            {% endif %}
-
-            <form action="{{ app_path }}" method="post" id="login-form">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" name="username" class="form-input" placeholder="Enter admin username" required>
+        <form action="{{ app_path }}" method="post" id="login-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="login-label">Staff Username</label>
+                <div class="input-wrapper">
+                    <input type="text" name="username" class="premium-input" placeholder="Admin username" required autofocus>
+                    <i class="fa-solid fa-user-shield"></i>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-input" placeholder="••••••••" required>
-                </div>
-                
-                <input type="hidden" name="next" value="{{ next }}">
-                
-                <button type="submit" class="submit-btn">Continue to Dashboard</button>
-            </form>
+            </div>
             
-            <div style="margin-top: 2rem; text-align: center;">
-                <a href="/" style="color: #64748b; font-size: 0.875rem; text-decoration: none;">&larr; Return to main site</a>
+            <div class="form-group">
+                <label class="login-label">Security Key</label>
+                <div class="input-wrapper">
+                    <input type="password" name="password" class="premium-input" placeholder="••••••••" required>
+                    <i class="fa-solid fa-lock"></i>
+                </div>
             </div>
+            
+            <input type="hidden" name="next" value="{{ next }}">
+            
+            <button type="submit" class="submit-btn-premium">
+                Continue to Dashboard <i class="fa-solid fa-arrow-right-long"></i>
+            </button>
+        </form>
+        
+        <div class="back-to-site">
+            <a href="/"><i class="fa-solid fa-house-chimney-medical"></i> Return to Healthcare Hub</a>
         </div>
     </div>
 </div>

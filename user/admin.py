@@ -7,6 +7,7 @@ from .models import *
 
 @admin.register(tblUser)
 class UserAdmin(ModelAdmin):
+    change_list_template = "admin/user/tbluser/change_list.html"
     list_display = ('userID', 'userName', 'email', 'mobileNumber', 'cityID', 'is_doctor_status', 'edit_action')
     list_display_links = ('userID', 'userName')
     list_filter = ('IsDoctor', 'cityID')
