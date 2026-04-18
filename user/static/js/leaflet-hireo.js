@@ -70,14 +70,6 @@ if(document.getElementById("map") !== null){
 	}).addTo(map);
 
 
-	// MapBox (Requires API Key)
-	// -----------------------//
-	// L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
-	//     attribution: " &copy;  <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> &copy;  <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
-	//     maxZoom: 18,
-	//     id: 'mapbox.streets',
-	//     accessToken: 'REMOVED'
-	// }).addTo(map);
 
 
 	// ThunderForest (Requires API Key)
@@ -214,20 +206,10 @@ function singleListingMap() {
 
 	// Open Street Map 
 	// -----------------------//
-	// L.tileLayer(
-	// 	'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-	// 	attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> Contributors',
-	// 	maxZoom: 18,
-	// }).addTo(map_single);
-
-
-	// MapBox (Requires API Key)
-	// -----------------------//
-	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
-	    attribution: " &copy;  <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> &copy;  <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
-	    maxZoom: 18,
-	    id: 'mapbox.streets',
-	    accessToken: 'REMOVED'
+	L.tileLayer(
+		'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> Contributors',
+		maxZoom: 18,
 	}).addTo(map_single);
 	
 
