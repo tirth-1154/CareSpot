@@ -741,22 +741,13 @@
                           class="dropdown-menu dropdown-menu-end shadow-sm border-0"
                         >
                           <li>
-                            <form
-                              action="{% url 'mark_notifications_read' %}"
-                              method="POST"
-                              class="m-0"
-                            >
-                              {% csrf_token %}
-                              <input
-                                type="hidden"
-                                name="notification_id"
-                                value="{{ notif.notificationID }}"
-                              />
-                              <button type="submit" class="dropdown-item">
-                                <i class="fa-solid fa-check me-2"></i>Mark as
-                                read
-                              </button>
-                            </form>
+                              <form action="{% url 'mark_notifications_read' %}" method="POST" class="m-0" onsubmit="handleMarkNotifRead(event, this)">
+                                {% csrf_token %}
+                                <input type="hidden" name="notification_id" value="{{ notif.notificationID }}" />
+                                <button type="submit" class="dropdown-item">
+                                  <i class="fa-solid fa-check me-2"></i>Mark as read
+                                </button>
+                              </form>
                           </li>
                         </ul>
                       </div>
@@ -820,7 +811,7 @@
                           </button>
                           <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                             <li>
-                              <form action="{% url 'mark_notifications_read' %}" method="POST" class="m-0">
+                              <form action="{% url 'mark_notifications_read' %}" method="POST" class="m-0" onsubmit="handleMarkNotifRead(event, this)">
                                 {% csrf_token %}
                                 <input type="hidden" name="notification_id" value="{{ notif.notificationID }}" />
                                 <button type="submit" class="dropdown-item">
@@ -892,7 +883,7 @@
                           </button>
                           <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                             <li>
-                              <form action="{% url 'mark_notifications_read' %}" method="POST" class="m-0">
+                              <form action="{% url 'mark_notifications_read' %}" method="POST" class="m-0" onsubmit="handleMarkNotifRead(event, this)">
                                 {% csrf_token %}
                                 <input type="hidden" name="notification_id" value="{{ notif.notificationID }}" />
                                 <button type="submit" class="dropdown-item">
@@ -1430,6 +1421,78 @@
         }
       }
     }
+
+    // --- AJAX Notification Logic ---
+    function handleMarkNotifRead(event, form) {
+      if (event) event.preventDefault();
+      const formData = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          const notifItem = form.closest('.notification-item');
+          if (notifItem) {
+            // Remove unread indicators
+            notifItem.classList.remove('unread');
+            const indicator = notifItem.querySelector('.badge-indicator');
+            if (indicator) indicator.style.display = 'none';
+            const newBadge = notifItem.querySelector('.badge.bg-primary');
+            if (newBadge) newBadge.style.display = 'none';
+            
+            // Update Tab Count
+            const unreadBadge = document.querySelector('#unread-tab .badge');
+            let currentCount = 0;
+            if (unreadBadge) {
+              currentCount = parseInt(unreadBadge.textContent);
+              if (currentCount > 0) {
+                currentCount--;
+                unreadBadge.textContent = currentCount;
+              }
+            }
+
+            // If inside the Unread tab, remove the item with an animation
+            if (notifItem.closest('#unread')) {
+                notifItem.style.transition = 'all 0.4s ease';
+                notifItem.style.opacity = '0';
+                notifItem.style.transform = 'translateX(30px)';
+                setTimeout(() => {
+                    notifItem.remove();
+                    // If no more unread notifications, show the empty state
+                    if (currentCount === 0) {
+                        const emptyStates = document.querySelectorAll('#unread .empty-state');
+                        emptyStates.forEach(s => s.classList.remove('d-none'));
+                        
+                        // If it's the version with unread_count == 0, it might need a fallback
+                        const unreadList = document.querySelector('#unread .notification-list');
+                        if (unreadList && unreadList.children.length === 0) {
+                            unreadList.innerHTML = `
+                                <div class="premium-card empty-state">
+                                    <i class="fa-regular fa-face-smile"></i>
+                                    <h4 class="fw-bold text-dark">All caught up!</h4>
+                                    <p class="text-muted mb-0">You have no unread notifications.</p>
+                                </div>
+                            `;
+                        }
+                    }
+                }, 400);
+            }
+            
+            // Close Dropdown
+            const dropdownBtn = notifItem.querySelector('[data-bs-toggle="dropdown"]');
+            if (dropdownBtn) {
+              const bsDropdown = bootstrap.Dropdown.getInstance(dropdownBtn);
+              if (bsDropdown) bsDropdown.hide();
+            }
+          }
+        }
+      })
+      .catch(err => console.error('Error marking as read:', err));
+    }
+    window.handleMarkNotifRead = handleMarkNotifRead;
   </script>
   {% comment %} {% endif %} {% endcomment %}
 </div>

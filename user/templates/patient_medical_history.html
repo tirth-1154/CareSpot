@@ -780,6 +780,41 @@
           </tbody>
         </table>
       </div>
+
+      <!-- ── Appointment Pagination ── -->
+      {% if appointments.has_other_pages %}
+      <nav aria-label="Appointment Pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if appointments.has_previous %}
+          <li class="page-item">
+            <a class="page-link rounded-pill border-0 shadow-sm px-3 me-2" href="?page={{ appointments.previous_page_number }}#appointments" style="background-color: #f8fafc; color: #64748b;">
+              <i class="fa-solid fa-chevron-left small me-1"></i> Prev
+            </a>
+          </li>
+          {% endif %}
+
+          {% for num in appointments.paginator.page_range %}
+            {% if appointments.number == num %}
+            <li class="page-item active">
+                <a class="page-link rounded-circle border-0 shadow-sm mx-1 fw-bold" href="#" style="background-color: var(--primary-color);">{{ num }}</a>
+            </li>
+            {% elif num > appointments.number|add:'-3' and num < appointments.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link rounded-circle border-0 shadow-sm mx-1" href="?page={{ num }}#appointments" style="background-color: #f8fafc; color: #64748b;">{{ num }}</a>
+            </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if appointments.has_next %}
+          <li class="page-item">
+            <a class="page-link rounded-pill border-0 shadow-sm px-3 ms-2" href="?page={{ appointments.next_page_number }}#appointments" style="background-color: #f8fafc; color: #64748b;">
+              Next <i class="fa-solid fa-chevron-right small ms-1"></i>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
     </div>
 
     <!-- 3. MY REPORTS TAB -->
@@ -1034,6 +1069,25 @@ function closeLightbox(e) {
             fileNameDisplay.textContent = '📎 ' + e.dataTransfer.files[0].name;
             fileNameDisplay.style.display = 'block';
         }
+    });
+})();
+
+// ── Tab Persistence Logic ──
+(function() {
+    const hash = window.location.hash;
+    if (hash) {
+        const tabTriggerEl = document.querySelector(`button[data-bs-target="${hash}"]`);
+        if (tabTriggerEl) {
+            setTimeout(() => {
+                const tab = new bootstrap.Tab(tabTriggerEl);
+                tab.show();
+            }, 100);
+        }
+    }
+    document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(btn => {
+        btn.addEventListener('shown.bs.tab', function(e) {
+            window.location.hash = e.target.getAttribute('data-bs-target');
+        });
     });
 })();
 </script>

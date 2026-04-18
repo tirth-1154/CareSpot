@@ -484,10 +484,11 @@
     <div class="blog-hero-inner">
       <h1>Patient Health Blog</h1>
       <p>Stay informed with the latest healthcare tips, wellness advice, and medical insights from our trusted experts.</p>
-      <form method="GET">
+      <form method="GET" id="search-form">
         <div class="blog-search-bar">
           <i class="fa-solid fa-magnifying-glass search-icon"></i>
           <input id="autocomplete-input" name="search" type="text" placeholder="Search treatments, habits, doctors..." value="{{ search_query|default_if_none:'' }}" />
+          <i class="fa-solid fa-xmark" id="clearSearch" style="display:none; cursor:pointer; color: var(--blog-muted); margin-right: 15px; font-size: 18px;" title="Clear Search"></i>
           <button type="submit">Search</button>
         </div>
       </form>
@@ -617,48 +618,108 @@
 
 {% endblock %}
 
-{% block scripts %}
+{% block js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('autocomplete-input');
-    const dynamicContent = document.getElementById('dynamic-content');
-    let timeout = null;
+    const clearBtn = document.getElementById('clearSearch');
+    const searchForm = document.getElementById('search-form');
+    const masonryGrid = document.querySelector('.masonry-grid');
+    const cards = document.querySelectorAll('.masonry-card');
+    const emptyState = document.querySelector('.blog-empty-state');
+    
+    if (!searchInput || !masonryGrid) return;
 
-    if (searchInput && dynamicContent) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(timeout);
-            const query = searchInput.value.trim();
-
-            timeout = setTimeout(() => {
-                const url = new URL(window.location.href);
-                if (query) {
-                    url.searchParams.set('search', query);
-                } else {
-                    url.searchParams.delete('search');
-                }
-
-                dynamicContent.style.opacity = '0.5';
-                dynamicContent.style.transition = 'opacity 0.2s ease';
-
-                fetch(url)
-                    .then(response => response.text())
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const newContent = doc.getElementById('dynamic-content');
-
-                        if (newContent) {
-                            dynamicContent.innerHTML = newContent.innerHTML;
-                            dynamicContent.style.opacity = '1';
-                            window.history.replaceState({}, '', url);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Search error:', error);
-                        dynamicContent.style.opacity = '1';
-                    });
-            }, 300);
+    // Create a local "no results" message if it doesn't exist
+    let noResults = document.getElementById('local-no-results');
+    if (!noResults) {
+        noResults = document.createElement('div');
+        noResults.id = 'local-no-results';
+        noResults.className = 'blog-empty-state';
+        noResults.style.display = 'none';
+        noResults.innerHTML = `
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <h3>No articles found</h3>
+            <p>No articles match your search. Try a different keyword.</p>
+            <a href="javascript:void(0);" class="clear-btn" id="local-clear-btn">Clear Search</a>
+        `;
+        masonryGrid.parentNode.insertBefore(noResults, masonryGrid.nextSibling);
+        
+        document.getElementById('local-clear-btn').addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchInput.focus();
         });
+    }
+
+    // Toggle clear button visibility
+    function toggleClearBtn() {
+        if (clearBtn) {
+            clearBtn.style.display = searchInput.value.trim() ? 'block' : 'none';
+        }
+    }
+
+    // Client-side filtering logic
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        toggleClearBtn();
+
+        cards.forEach(card => {
+            const titleEl = card.querySelector('.masonry-card-topic h3');
+            const doctorEl = card.querySelector('.masonry-card-doctor-name');
+            const badgeEl = card.querySelector('.masonry-card-badge');
+            
+            const title = titleEl ? titleEl.textContent.toLowerCase() : '';
+            const doctor = doctorEl ? doctorEl.textContent.toLowerCase() : '';
+            const badge = badgeEl ? badgeEl.textContent.toLowerCase() : '';
+
+            if (query === '' || title.includes(query) || doctor.includes(query) || badge.includes(query)) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Show/hide masonry grid and no-results message
+        if (visibleCount === 0 && query !== '') {
+            masonryGrid.style.display = 'none';
+            noResults.style.display = 'block';
+            if (emptyState) emptyState.style.display = 'none';
+        } else {
+            masonryGrid.style.display = query === '' && !cards.length ? 'none' : '';
+            noResults.style.display = 'none';
+            // If we have no cards at all (even without search), show the original empty state
+            if (!cards.length && emptyState) {
+                emptyState.style.display = 'block';
+            }
+        }
+    });
+
+    // Clear button functionality
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchInput.focus();
+        });
+    }
+
+    // Prevent form submission - handle it live
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Just ensure filtering is updated
+            searchInput.dispatchEvent(new Event('input'));
+        });
+    }
+
+    // Initial state
+    toggleClearBtn();
+    if (searchInput.value.trim()) {
+        searchInput.dispatchEvent(new Event('input'));
     }
 });
 </script>
