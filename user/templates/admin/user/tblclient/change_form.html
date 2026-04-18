@@ -1,0 +1,186 @@
+{% extends "admin/change_form.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="https://kit.fontawesome.com/d949cf944a.js" crossorigin="anonymous"></script>
+
+<style>
+/* CSS fallbacks for arbitrary tailwind classes */
+.evergreen-bg-main { background-color: #F4F7FB; }
+.evergreen-text-heading { color: #1F2937; }
+.evergreen-text-accent { color: #14B8A6; }
+.evergreen-bg-accent { background-color: #14B8A6; }
+.evergreen-bg-accent-light { background-color: #F0FDFA; }
+.evergreen-border { border-color: #F3F4F6; }
+.evergreen-bullet { background-color: #14B8A6; }
+.evergreen-photo-container { width: 160px; height: 200px; position: relative; flex-shrink: 0; }
+.evergreen-photo-container img { width: 100%; height: 100%; object-fit: cover; border-radius: 0.75rem; }
+</style>
+<script>
+    // Force Light Theme
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('color-theme', 'light');
+    
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === "class" && document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    });
+    observer.observe(document.documentElement, {attributes: true});
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- PATIENT PROFILE OVERRIDE (Evergreen UI) -->
+<div class="evergreen-bg-main p-6 rounded-2xl mb-12 shadow-sm border evergreen-border" style="font-family: 'Inter', system-ui, sans-serif; color: #6B7280;">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6 px-2">
+        <h1 class="text-2xl font-bold evergreen-text-heading">Patient Profile</h1>
+        <div class="flex gap-4">
+            <span class="px-3 py-1 bg-white border evergreen-border text-xs font-bold evergreen-text-heading flex items-center gap-2 rounded-full shadow-sm"><span class="w-2 h-2 rounded-full evergreen-bg-accent"></span> Online</span>
+        </div>
+    </div>
+
+    <!-- 65 / 35 Split Grid -->
+    <div>
+
+        <div class="space-y-6">
+            
+            <!-- Patient Information -->
+            <div class="bg-white border evergreen-border rounded-2xl p-6 shadow-sm">
+                <h3 class="text-sm font-bold evergreen-text-heading mb-6">Patient Information</h3>
+                
+                <div class="flex flex-col md:flex-row gap-8">
+                    <!-- Photo Column -->
+                    <div class="flex flex-col items-center" style="flex-shrink: 0;">
+                        <div class="evergreen-photo-container bg-gray-100 rounded-xl mb-3 overflow-hidden border border-gray-100 flex items-center justify-center text-gray-300">
+                            {% if original.userID.profilePic %}
+                                <img src="{{ original.userID.profilePic.url }}" alt="Profile">
+                            {% else %}
+                                <i class="fa-solid fa-user text-5xl"></i>
+                            {% endif %}
+                        </div>
+                        <h4 class="text-sm font-bold evergreen-text-heading text-center">{{ original.name }}</h4>
+                    </div>
+
+                    <!-- Details Matrix -->
+                    <div class="w-full md:w-3/4 grid grid-cols-2 gap-y-6 gap-x-4">
+                        <div>
+                            <p class="text-xs font-medium text-gray-400 flex items-center gap-2 mb-1"><i class="fa-solid fa-venus-mars"></i> Gender</p>
+                            <p class="text-sm font-bold evergreen-text-heading capitalize">{{ original.gender|default:"N/A" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-400 flex items-center gap-2 mb-1"><i class="fa-solid fa-phone"></i> Phone Number</p>
+                            <p class="text-sm font-bold evergreen-text-heading">{{ original.userID.mobileNumber|default:"N/A" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-400 flex items-center gap-2 mb-1"><i class="fa-solid fa-hourglass-half"></i> Blood Group</p>
+                            <p class="text-sm font-bold evergreen-text-heading">{{ original.bloodGroup|default:"N/A" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-400 flex items-center gap-2 mb-1"><i class="fa-regular fa-envelope"></i> Email</p>
+                            <p class="text-sm font-bold evergreen-text-heading truncate">{{ original.userID.email|default:"N/A" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-400 flex items-center gap-2 mb-1"><i class="fa-regular fa-calendar"></i> Date of Birth</p>
+                            <p class="text-sm font-bold evergreen-text-heading">{{ original.dob|date:"d M Y"|default:"N/A" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-400 flex items-center gap-2 mb-1"><i class="fa-solid fa-location-dot"></i> Address</p>
+                            <p class="text-sm font-bold evergreen-text-heading leading-tight">{{ original.address|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical History -->
+            <div style="margin-bottom: 1.5rem;">
+                <h3 class="text-sm font-bold evergreen-text-heading" style="margin-bottom: 1rem; padding-left: 4px;">Medical History</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem;">
+                    {% for hist in medical_history %}
+                    <div style="background: #fff; border: 1px solid #F3F4F6; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.2s;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                            <span style="width: 32px; height: 32px; border-radius: 0.5rem; background: #F0FDFA; display: flex; align-items: center; justify-content: center; color: #14B8A6; border: 1px solid #ccfbf1; flex-shrink: 0;">
+                                <i class="fa-solid fa-stethoscope" style="font-size: 12px;"></i>
+                            </span>
+                            <span style="font-size: 13px; font-weight: 700; color: #1F2937;">{{ hist.diagnosisID.diagnosisName|default:hist.customDiagnosis|default:"Consultation" }}</span>
+                        </div>
+                        <p style="font-size: 12px; color: #6B7280; line-height: 1.5; margin-bottom: 0.5rem;">{{ hist.symptoms|default:"No specific symptoms recorded." }}</p>
+                        <p style="font-size: 10px; color: #9CA3AF;">{{ hist.createdDT|date:"d M Y" }}</p>
+                    </div>
+                    {% empty %}
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; font-size: 12px; color: #9CA3AF;">No medical history recorded for this patient.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Appointments -->
+            <div style="margin-bottom: 1.5rem;">
+                <h3 class="text-sm font-bold evergreen-text-heading" style="margin-bottom: 1rem; padding-left: 4px;">Appointments</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem;">
+                    {% for appt in recent_appointments %}
+                    <div style="background: #fff; border: 1px solid #F3F4F6; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.2s;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                            <span style="width: 32px; height: 32px; border-radius: 0.5rem; background: #F0FDFA; display: flex; align-items: center; justify-content: center; color: #14B8A6; border: 1px solid #ccfbf1; flex-shrink: 0;">
+                                <i class="fa-solid fa-calendar-check" style="font-size: 12px;"></i>
+                            </span>
+                            <span style="font-size: 13px; font-weight: 700; color: #14B8A6;">{{ appt.doctorID.displayName }}</span>
+                        </div>
+                        <p style="font-size: 12px; color: #1F2937; font-weight: 600; margin-bottom: 0.25rem;">{{ appt.appointmentDate|date:"d F Y" }} &bull; {{ appt.appointmentTime }}</p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                            <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 4px; {% if appt.mode == 'online' %}background: #DBEAFE; color: #2563EB;{% else %}background: #F0FDFA; color: #14B8A6;{% endif %}">{{ appt.mode }}</span>
+                            {% if appt.isAccepted %}
+                            <span style="font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: #DCFCE7; color: #16A34A;">Accepted</span>
+                            {% elif appt.isRejected %}
+                            <span style="font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: #FEE2E2; color: #EF4444;">Rejected</span>
+                            {% else %}
+                            <span style="font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: #FEF3C7; color: #D97706;">Pending</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; font-size: 12px; color: #9CA3AF;">No appointments recorded.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+                <!-- Documents -->
+                <div class="bg-white border evergreen-border rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-sm font-bold evergreen-text-heading mb-6">Patient Documents</h3>
+                    <div class="space-y-4">
+                        {% for report in recent_reports %}
+                        <div class="flex items-center gap-4 py-2 border-b border-gray-50 last:border-0 last:pb-0">
+                            <div class="w-8 h-8 rounded bg-red-50 flex items-center justify-center text-red-500 border border-red-100 flex-shrink-0">
+                                <i class="fa-regular fa-file-pdf text-xs"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs font-bold evergreen-text-heading truncate">{{ report.reportName }}</p>
+                                <p class="text-xs text-gray-400">Recorded File</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-xs text-gray-400">No documents uploaded.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<hr class="my-10 border-t-2 border-gray-100 border-dashed">
+<div class="mt-8">
+    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"><i class="fa-solid fa-pen-to-square" style="color:#14B8A6"></i> Edit Patient Records</h2>
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        {{ block.super }}
+    </div>
+</div>
+{% endblock %}

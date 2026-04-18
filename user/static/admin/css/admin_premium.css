@@ -1,0 +1,139 @@
+/* admin_premium.css */
+/* Overrides for Unfold to match Evergreen Layout */
+
+:root {
+    --bg-main: #F4F7FB;
+    --bg-card: #FFFFFF;
+    --text-heading: #1F2937;
+    --text-body: #6B7280;
+    --border-color: #F3F4F6;
+    --brand-teal: #14B8A6; /* Matches screenshot accent */
+    --brand-teal-light: #F0FDFA;
+}
+
+/* Force Light Theme */
+.dashboard-wrapper {
+    background-color: var(--bg-main) !important;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-body);
+}
+
+.evergreen-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px -6px rgba(0, 0, 0, 0.03);
+}
+
+.text-heading { color: var(--text-heading) !important; }
+.text-body { color: var(--text-body) !important; }
+
+/* Timeline CSS */
+.timeline-item {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.25rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background-color: var(--brand-teal-light);
+    border: 2px solid var(--brand-teal);
+    z-index: 10;
+}
+.timeline-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 0.35rem; /* center the line under the circle */
+    top: 1rem;
+    bottom: -1rem;
+    width: 1px;
+    background-color: #E5E7EB;
+    z-index: 0;
+}
+
+/* Custom Scrollbar for clean look */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}
+
+/* --- PREMIUM REDESIGN UTILITIES --- */
+
+/* Glassmorphism Effect */
+.glass-card {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04) !important;
+}
+
+/* Pulse Animation for Status Indicators */
+@keyframes statusToggle {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.status-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #14B8A6;
+    display: inline-block;
+    animation: statusToggle 2s infinite ease-in-out;
+}
+
+/* Stat Trend Indicators */
+.trend-up {
+    color: #10B981;
+    background: #ECFDF5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.trend-down {
+    color: #EF4444;
+    background: #FEF2F2;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* Premium Typography Overrides */
+.text-premium-heading {
+    letter-spacing: -0.025em;
+    font-weight: 800;
+}
+
+/* Gradient Text for important labels */
+.text-gradient-teal {
+    background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Hover effects for dashboard items */
+.hover-lift {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1) !important;
+}

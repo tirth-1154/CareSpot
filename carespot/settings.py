@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'unfold',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +41,90 @@ INSTALLED_APPS = [
     'user',
     'customadmin',
 ]
+
+UNFOLD = {
+    "SITE_TITLE": "CareSpot Admin",
+    "SITE_HEADER": "CareSpot Management",
+    "SITE_SYMBOL": "medical_services", # Material icon
+    "SITE_LOGO": "/media/images/careSpotText.png",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "STYLES": [
+        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css",
+        lambda request: "admin/css/admin_premium.css",
+    ],
+    "COLORS": {
+        "primary": {
+            "50": "204, 251, 241",  # Light Teal (#CCFBF1)
+            "100": "153, 246, 228",
+            "200": "94, 234, 212",
+            "300": "45, 212, 191",
+            "400": "20, 184, 166",
+            "500": "13, 148, 136",  # Primary Teal (#0D9488)
+            "600": "15, 118, 110",
+            "700": "15, 98, 92",
+            "800": "17, 78, 74",
+            "900": "19, 63, 60",
+            "950": "8, 47, 45",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": "Core Management",
+                "items": [
+                    {
+                        "title": "Dashboard",
+                        "icon": "dashboard",
+                        "link": "/admin/",
+                    },
+                    {
+                        "title": "Users",
+                        "icon": "people",
+                        "link": "/admin/user/tbluser/",
+                    },
+                ],
+            },
+            {
+                "title": "Medical Operations",
+                "items": [
+                    {
+                        "title": "Doctors",
+                        "icon": "medical_services",
+                        "link": "/admin/user/tbldoctor/",
+                    },
+                    {
+                        "title": "Appointments",
+                        "icon": "calendar_month",
+                        "link": "/admin/user/tblappointment/",
+                    },
+                    {
+                        "title": "Clients (Patients)",
+                        "icon": "person",
+                        "link": "/admin/user/tblclient/",
+                    },
+                ],
+            },
+            {
+                "title": "Support & Feedback",
+                "items": [
+                    {
+                        "title": "Tickets",
+                        "icon": "confirmation_number",
+                        "link": "/admin/user/tblsupportticket/",
+                    },
+                    {
+                        "title": "Reviews",
+                        "icon": "star",
+                        "link": "/admin/user/tblreview/",
+                    },
+                ],
+            },
+        ],
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

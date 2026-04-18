@@ -1,75 +1,264 @@
-{% extends "admin/base_site.html" %}
-{% load i18n static %}
-{% load admin_dashboard_tags %}
+{% extends "admin/base.html" %}
+{% load i18n static admin_dashboard_tags %}
 
-{% block content_title %}{% endblock %}
+{% block breadcrumbs %}{% endblock %}
 
-{% block content %}
-{% get_admin_stats as stats %}
-<div class="stats-container">
-    <div class="stat-card">
-        <div class="stat-icon"><i class="fa-solid fa-user-doctor"></i></div>
-        <div class="stat-info">
-            <h3>Total Doctors</h3>
-            <div class="value">{{ stats.total_doctors }}</div>
-        </div>
-    </div>
-    <div class="stat-card" style="border-left-color: var(--secondary-color);">
-        <div class="stat-icon" style="color: var(--secondary-color);"><i class="fa-solid fa-users"></i></div>
-        <div class="stat-info">
-            <h3>Total Patients</h3>
-            <div class="value">{{ stats.total_patients }}</div>
-        </div>
-    </div>
-    <div class="stat-card" style="border-left-color: #f39c12;">
-        <div class="stat-icon" style="color: #f39c12;"><i class="fa-solid fa-calendar-check"></i></div>
-        <div class="stat-info">
-            <h3>Total Appointments</h3>
-            <div class="value">{{ stats.total_appointments }}</div>
-        </div>
-    </div>
-    <div class="stat-card" style="border-left-color: #2bbbad;">
-        <div class="stat-icon" style="color: #2bbbad;"><i class="fa-solid fa-clock-rotate-left"></i></div>
-        <div class="stat-info">
-            <h3>Active Appointments</h3>
-            <div class="value">{{ stats.active_appointments }}</div>
-        </div>
-    </div>
-</div>
-
-<div class="dashboard-layout">
-    <div class="dashboard-main">
-    </div>
-    <div class="dashboard-sidebar">
-        <div class="module" id="recent-actions-module">
-            <h2>{% translate 'Recent actions' %}</h2>
-            <h3>{% translate 'My actions' %}</h3>
-            {% load log %}
-            {% get_admin_log 10 as admin_log for_user user %}
-            {% if not admin_log %}
-            <p>{% translate 'None available' %}</p>
-            {% else %}
-            <ul class="actionlist">
-                {% for entry in admin_log %}
-                <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
-                    {% if entry.is_deletion or not entry.url %}
-                        {{ entry.object_repr }}
-                    {% else %}
-                        <a href="{{ entry.url }}">{{ entry.object_repr }}</a>
-                    {% endif %}
-                    <br>
-                    {% if entry.content_type %}
-                        <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
-                    {% else %}
-                        <span class="mini quiet">{% translate 'Unknown content' %}</span>
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% block extrahead %}
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 {% endblock %}
 
-{% block sidebar %}{% endblock %}
+{% block content %}
+{% get_admin_analytics as data %}
+
+<div class="dashboard-wrapper" style="background-color: #F8FAFC; padding: 2.5rem; font-family: 'Outfit', sans-serif; color: #475569; min-height: 100vh;">
+
+    <!-- TOP HEADER: Command Center Greeting -->
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 3rem; padding: 0 4px;">
+        <div>
+            <p style="font-size: 14px; font-weight: 600; color: #14B8A6; margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase;">Overview Dashboard</p>
+            <h1 class="text-premium-heading" style="font-size: 2rem; color: #0F172A; margin: 0;">Good Morning, Administrator</h1>
+            <p style="font-size: 14px; color: #94A3B8; margin-top: 6px;">Hospital system operational and steady for <span style="color: #1F2937; font-weight: 700;">{% now "l, d F Y" %}</span></p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <div style="background: #fff; border: 1px solid #E2E8F0; padding: 10px 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+                <i class="fa-solid fa-cloud-sun text-orange-400"></i>
+                <span style="font-size: 13px; font-weight: 700; color: #1E293B;">28°C / Surat, IN</span>
+            </div>
+            <a href="/admin/user/tblappointment/add/" class="hover-lift" style="background: #14B8A6; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.2);">
+                <i class="fa-solid fa-circle-plus"></i> New Appointment
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI STATS: Data-Rich Matrix -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem;">
+        
+        <!-- Doctors Stat -->
+        <div class="evergreen-card hover-lift" style="padding: 1.75rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1.25rem;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(20, 184, 166, 0.1); color: #14B8A6; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-user-doctor" style="font-size: 18px;"></i>
+                </div>
+                <span class="trend-up"><i class="fa-solid fa-arrow-up"></i> 4%</span>
+            </div>
+            <h3 style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Active Medical Staff</h3>
+            <p style="font-size: 2rem; font-weight: 800; color: #0F172A; margin: 0; line-height: 1;">{{ data.stats.total_doctors }}</p>
+            <div style="margin-top: 1.5rem; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
+                <div style="width: 85%; height: 100%; background: #14B8A6;"></div>
+            </div>
+        </div>
+
+        <!-- Patients Stat -->
+        <div class="evergreen-card hover-lift" style="padding: 1.75rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1.25rem;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(37, 99, 235, 0.1); color: #2563EB; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-users" style="font-size: 18px;"></i>
+                </div>
+                <span class="trend-up"><i class="fa-solid fa-arrow-up"></i> 12%</span>
+            </div>
+            <h3 style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total Registrations</h3>
+            <p style="font-size: 2rem; font-weight: 800; color: #0F172A; margin: 0; line-height: 1;">{{ data.stats.total_patients }}</p>
+            <div style="margin-top: 1.5rem; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
+                <div style="width: 70%; height: 100%; background: #2563EB;"></div>
+            </div>
+        </div>
+
+        <!-- Bookings Stat -->
+        <div class="evergreen-card hover-lift" style="padding: 1.75rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1.25rem;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(217, 119, 6, 0.1); color: #D97706; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-calendar-check" style="font-size: 18px;"></i>
+                </div>
+                <span class="trend-down"><i class="fa-solid fa-arrow-down"></i> 2%</span>
+            </div>
+            <h3 style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Successful Bookings</h3>
+            <p style="font-size: 2rem; font-weight: 800; color: #0F172A; margin: 0; line-height: 1;">{{ data.stats.total_appointments }}</p>
+            <div style="margin-top: 1.5rem; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
+                <div style="width: 92%; height: 100%; background: #D97706;"></div>
+            </div>
+        </div>
+
+        <!-- Revenue Stat -->
+        <div class="evergreen-card hover-lift" style="padding: 1.75rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1.25rem;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(22, 163, 74, 0.1); color: #16A34A; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-indian-rupee-sign" style="font-size: 18px;"></i>
+                </div>
+                <span class="trend-up" style="background: #DCFCE7; color: #16A34A;"><i class="fa-solid fa-arrow-up"></i> 8%</span>
+            </div>
+            <h3 style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Net Hospital Revenue</h3>
+            <p style="font-size: 2rem; font-weight: 800; color: #0F172A; margin: 0; line-height: 1;">₹{{ data.stats.total_revenue|floatformat:0 }}</p>
+            <div style="margin-top: 1.5rem; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
+                <div style="width: 60%; height: 100%; background: #16A34A;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN ANALYTICS GRID -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+        
+        <!-- Performance Insights Chart -->
+        <div class="evergreen-card" style="padding: 2rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: #0F172A; margin: 0;">Performance Insights</h3>
+                    <p style="font-size: 13px; color: #94A3B8; margin-top: 4px;">Dynamic patient volume and consultation frequency</p>
+                </div>
+                <div style="display: flex; background: #F1F5F9; padding: 4px; border-radius: 8px;">
+                    <button style="border: none; background: #fff; color: #1E293B; font-size: 12px; font-weight: 700; padding: 6px 16px; border-radius: 6px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">Weekly</button>
+                    <button style="border: none; background: transparent; color: #64748B; font-size: 12px; font-weight: 700; padding: 6px 16px; border-radius: 6px; cursor: pointer;">Monthly</button>
+                </div>
+            </div>
+            <div style="height: 350px; position: relative;">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Live Feed / Recent Activity -->
+        <div class="evergreen-card" style="padding: 1.75rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); display: flex; flex-direction: column; min-height: 480px;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem;">
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: #0F172A; margin: 0;">Shift Activity</h3>
+                    <p style="font-size: 12px; color: #94A3B8; margin-top: 4px;">Real-time management updates</p>
+                </div>
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: #F8FAFC; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; color: #14B8A6;">
+                    <i class="fa-solid fa-bolt-lightning" style="font-size: 12px;"></i>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; flex-grow: 1;">
+                {% for appt in data.upcoming_appointments|slice:":5" %}
+                <div class="hover-lift" style="display: flex; gap: 1rem; align-items: center; padding: 12px; border-radius: 12px; transition: all 0.2s; cursor: pointer; background: #fff; border: 1px solid #F8FAFC;" onmouseover="this.style.background='#F8FAFC'; this.style.borderColor='#E2E8F0'" onmouseout="this.style.background='#fff'; this.style.borderColor='#F8FAFC'">
+                    <div style="width: 42px; height: 42px; border-radius: 10px; background: #F1F5F9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; border: 1px solid #E2E8F0;">
+                        <i class="fa-solid fa-calendar-day text-[#14B8A6]" style="font-size: 16px;"></i>
+                        <span class="status-pulse" style="position: absolute; top: -3px; right: -3px; border: 2px solid #fff;"></span>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
+                            <p style="font-size: 13.5px; font-weight: 700; color: #1E293B; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">{{ appt.clientID.name }}</p>
+                            <span style="font-size: 9px; font-weight: 800; color: #14B8A6; background: rgba(20, 184, 166, 0.1); padding: 2px 6px; border-radius: 4px; white-space: nowrap;">{{ appt.appointmentTime }}</span>
+                        </div>
+                        <p style="font-size: 11px; color: #64748B; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"> {{ appt.doctorID.displayName|truncatechars:15 }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 0; opacity: 0.5;">
+                    <i class="fa-solid fa-inbox" style="font-size: 32px; color: #CBD5E1; margin-bottom: 12px;"></i>
+                    <p style="color: #94A3B8; font-size: 13px; margin: 0;">No active shifts</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="margin-top: 1.5rem; border-top: 1px solid #F1F5F9; padding-top: 1.25rem;">
+                <a href="/admin/user/tblappointment/" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #F8FAFC; color: #475569; text-decoration: none; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; border: 1px solid #E2E8F0; transition: all 0.2s;" onmouseover="this.style.background='#1E293B'; this.style.color='#fff'; this.style.borderColor='#1E293B'" onmouseout="this.style.background='#F8FAFC'; this.style.color='#475569'; this.style.borderColor='#E2E8F0'">
+                    View Logs <i class="fa-solid fa-arrow-right-long" style="font-size: 11px;"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM SECTION: Patient Hub -->
+    <div style="margin-top: 2.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding: 0 4px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: #0F172A; margin: 0;">Patient Hub</h3>
+            <a href="/admin/user/tblclient/" style="font-size: 13px; font-weight: 700; color: #14B8A6; text-decoration: none;">Explore Full Database →</a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+            {% for patient in data.recent_patients|slice:":4" %}
+            <div class="evergreen-card hover-lift" style="padding: 1.5rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); text-align: center;">
+                <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 3px solid #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-weight: 800; font-size: 20px; color: #1e293b;">
+                    {{ patient.name|slice:":1" }}
+                </div>
+                <h4 style="font-size: 15px; font-weight: 700; color: #1E293B; margin: 0;">{{ patient.name }}</h4>
+                <p style="font-size: 12px; color: #94A3B8; margin: 4px 0 1.25rem;">Reg Date: {{ patient.createdDT|date:"d M, Y" }}</p>
+                <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 1.5rem;">
+                    <span style="font-size: 10px; font-weight: 800; background: #F1F5F9; color: #475569; padding: 4px 10px; border-radius: 6px;">{{ patient.gender|upper }}</span>
+                    <span style="font-size: 10px; font-weight: 800; background: #DBEAFE; color: #2563EB; padding: 4px 10px; border-radius: 6px;">{{ patient.bloodGroup }}</span>
+                </div>
+                <a href="/admin/user/tblclient/{{ patient.clientID }}/change/" style="display: block; width: 100%; border: 1px solid #E2E8F0; color: #1E293B; text-decoration: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: all 0.2s;" onmouseover="this.style.background='#1E293B'; this.style.color='#fff'; this.style.borderColor='#1E293B'" onmouseout="this.style.background='transparent'; this.style.color='#1E293B'; this.style.borderColor='#E2E8F0'">Visit Profile</a>
+            </div>
+            {% empty %}
+            <div style="grid-column: 1 / -1; padding: 3rem; text-align: center; color: #94A3B8; font-size: 14px;">No recent patient registrations identified.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        
+        // Premium Gradient for the chart
+        const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+        gradient.addColorStop(0, 'rgba(20, 184, 166, 0.25)');
+        gradient.addColorStop(0.5, 'rgba(20, 184, 166, 0.1)');
+        gradient.addColorStop(1, 'rgba(20, 184, 166, 0.0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ data.chart_labels|safe }},
+                datasets: [
+                    {
+                        label: 'Current Performance',
+                        data: {{ data.chart_values|safe }},
+                        borderColor: '#14B8A6',
+                        borderWidth: 4,
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#14B8A6',
+                        pointBorderWidth: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 8,
+                        pointHoverBorderWidth: 4
+                    },
+                    {
+                        label: 'Projected Target',
+                        data: {{ data.chart_values|safe }}.map(v => v * 1.15 + (Math.random() * 2)),
+                        borderColor: '#CBD5E1',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0F172A',
+                        padding: 16,
+                        titleFont: { size: 13, family: 'Outfit', weight: 'bold' },
+                        bodyFont: { size: 14, family: 'Outfit' },
+                        cornerRadius: 12,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 12, family: 'Outfit', weight: '500' }, color: '#94A3B8', padding: 10 }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(226, 232, 240, 0.5)', drawBorder: false },
+                        ticks: { stepSize: 5, font: { size: 12, family: 'Outfit', weight: '500' }, color: '#94A3B8', padding: 10 },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
