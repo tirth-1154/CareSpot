@@ -20,6 +20,8 @@
         padding: 24px;
         background-color: #F8FAFC;
         min-height: 100vh;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     /* Breadcrumbs */
@@ -276,9 +278,222 @@
         .profile-grid { grid-template-columns: 1fr 1fr; }
         .card-reports { grid-column: span 2; }
     }
+    /* Case Study Section */
+    .case-study-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        padding: 24px;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    .case-study-card:hover {
+        box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+        border-color: var(--primary-blue);
+    }
+    .case-study-card.expanded {
+        border-color: var(--primary-blue);
+        box-shadow: 0 6px 24px rgba(0, 118, 189, 0.1);
+    }
+    .cs-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .cs-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex: 1;
+        min-width: 0;
+    }
+    .cs-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    .cs-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0 0 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .cs-meta {
+        font-size: 12px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .cs-meta i { margin-right: 4px; }
+    .cs-toggle {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: #F8FAFC;
+        border: none;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        flex-shrink: 0;
+        cursor: pointer;
+    }
+    .cs-toggle:hover { background: #EFF6FF; color: var(--primary-blue); }
+    .cs-toggle i { transition: transform 0.3s; }
+    .case-study-card.expanded .cs-toggle i { transform: rotate(180deg); }
+
+    .cs-body {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease, padding 0.3s ease;
+        padding: 0 0 0 58px;
+    }
+    .case-study-card.expanded .cs-body {
+        max-height: 600px;
+        padding: 20px 0 4px 58px;
+    }
+    .cs-detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .cs-detail-item label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--primary-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 6px;
+    }
+    .cs-detail-item p {
+        font-size: 14px;
+        color: var(--text-dark);
+        line-height: 1.6;
+        margin: 0;
+    }
+    .cs-detail-item.full-width { grid-column: span 2; }
+
+    .cs-empty-state {
+        text-align: center;
+        padding: 50px 24px;
+        background: #fff;
+        border-radius: 16px;
+        border: 1px dashed #CBD5E1;
+    }
+    .cs-empty-state i {
+        font-size: 40px;
+        color: #CBD5E1;
+        margin-bottom: 14px;
+    }
+    .cs-empty-state h4 {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0 0 6px;
+    }
+    .cs-empty-state p {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin: 0 0 16px;
+    }
+    .cs-empty-state a {
+        display: inline-block;
+        background: var(--primary-blue);
+        color: #fff;
+        padding: 10px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .cs-empty-state a:hover { background: #005f9a; }
+
+    .cs-count-badge {
+        background: #EFF6FF;
+        color: var(--primary-blue);
+        font-size: 13px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
     @media (max-width: 768px) {
         .profile-grid { grid-template-columns: 1fr; }
         .card-reports { grid-column: span 1; }
+        .cs-detail-grid { grid-template-columns: 1fr; }
+        .cs-detail-item.full-width { grid-column: span 1; }
+        .cs-body, .case-study-card.expanded .cs-body { padding-left: 0; }
+    }
+
+    /* Premium Modal Styles */
+    .premium-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .premium-modal-overlay.active { display: flex; }
+    .premium-modal { background: #fff; width: 100%; max-width: 800px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); position: relative; overflow: hidden; animation: modalSlideIn 0.3s ease-out; }
+    @keyframes modalSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .premium-modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; color: #64748B; cursor: pointer; transition: color 0.2s; z-index: 10; }
+    .premium-modal-close:hover { color: #000; }
+    .pm-header { background: #EAF4FC; padding: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .pm-badge { display: block; font-size: 11px; font-weight: 700; color: var(--primary-blue); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;}
+    #modal-title { font-size: 28px; font-weight: 800; color: var(--primary-blue); margin: 0 0 15px; }
+    .pm-patient-tags { display: flex; gap: 10px; }
+    .pm-tag { background: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #475569; border: 1px solid #E2E8F0; }
+    .pm-tag i { color: var(--primary-blue); margin-right: 5px; }
+    .pm-header-date { text-align: right; }
+    .pm-date-label { display: block; font-size: 10px; font-weight: 700; color: var(--primary-blue); letter-spacing: 1px; margin-bottom: 5px; }
+    .pm-date-val { font-size: 15px; font-weight: 700; color: #334155; }
+    .pm-body { padding: 30px; background: #fff; max-height: 60vh; overflow-y: auto; }
+    .pm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .pm-card { background: #F8FAFC; border-radius: 12px; padding: 20px; border: 1px solid #F1F5F9; }
+    .pm-card-header { font-size: 12px; font-weight: 700; color: var(--primary-blue); letter-spacing: 0.5px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; text-transform: uppercase;}
+    .pm-icon-wrapper { width: 28px; height: 28px; border-radius: 50%; background: #E0F2FE; color: #0284C7; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .pm-icon-wrapper.purple { background: #F3E8FF; color: #9333EA; }
+    .pm-icon-wrapper.green { background: #DCFCE7; color: #16A34A; }
+    .pm-card-content { font-size: 14px; color: #334155; line-height: 1.6; }
+    .pm-card-treatment { background: #ECFDF5; border: 1px solid #A7F3D0; margin-bottom: 20px; position: relative; overflow: hidden; padding: 20px; border-radius: 12px;}
+    .pm-card-treatment .pm-card-header { color: #065F46; }
+    .pm-card-treatment .pm-bg-icon { position: absolute; right: -10px; bottom: -20px; font-size: 120px; color: #D1FAE5; transform: rotate(-20deg); pointer-events: none;}
+    .pm-card-treatment .pm-card-content { font-size: 17px; font-weight: 700; color: #064E3B; position: relative;}
+    .pm-footer { padding: 20px 30px; background: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; }
+    .pm-btn { padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; outline: none;}
+    .pm-btn-outline { border: 1px solid #CBD5E1; background: #fff; color: #475569; }
+    .pm-btn-outline:hover { background: #F1F5F9; }
+    .pm-btn-primary { border: none; background: #0284C7; color: #fff; }
+    .pm-btn-primary:hover { background: #0369A1; }
+    
+    @media (max-width: 600px) { .pm-header { flex-direction: column; align-items: flex-start; gap: 15px; } .pm-header-date { text-align: left; } .pm-grid { grid-template-columns: 1fr; } }
+    
+    /* Make un-expandable case study card have hover effect */
+    .case-study-card:hover { background: #F8FAFC; border-color: #CBD5E1; }
+    
+    /* Print Layout for Modal */
+    @media print {
+        body * { visibility: hidden; }
+        #caseStudyModalOverlay, #caseStudyModalOverlay * { visibility: visible; }
+        #caseStudyModalOverlay { display: block !important; position: absolute; left: 0; top: 0; padding: 0 !important; background: #fff !important; width: 100%; height: auto; z-index: 999999; }
+        .premium-modal { width: 100%; max-width: 100%; border-radius: 0; box-shadow: none; border: none; }
+        .pm-footer, .premium-modal-close, .pm-btn, #case-studies-list, .breadcrumb-nav { display: none !important; }
+        .pm-body { max-height: none !important; overflow: visible !important; }
+        .pm-card { page-break-inside: avoid; border: 1px solid #000; }
+        .pm-card-treatment { border: 1px solid #000; background: #fff; }
+        .pm-header { background: #fff; border-bottom: 2px solid #000; padding: 15px 0; }
+        .pm-tag { border: 1px solid #000; background: transparent; }
+        .print-image { max-width: 100%; display: block; margin: 10px 0; max-height: 900px; page-break-inside: avoid; }
     }
 </style>
 
@@ -315,7 +530,7 @@
                 </div>
             </div>
 
-            <button class="btn-message" onclick="window.location.href='{% url 'doctorMessages' %}'">
+            <button class="btn-message" onclick="window.location.href='{% url 'doctorMessages' %}?partner={{ client.userID.userID }}'">
                 Send Message
             </button>
         </div>
@@ -358,34 +573,67 @@
             </div>
         </div>
 
-        <!-- Reports Card -->
-        <div class="card-premium card-reports">
-            <div class="card-header-flex">
-                <h3>Clinical Reports</h3>
-                <a href="{% url 'doctorCaseStudy' client.clientID %}" class="add-link">+ Add Report</a>
+        <!-- Case Study History Section (replaces Reports Card) -->
+        <div class="card-premium card-reports" style="display: flex; flex-direction: column; overflow: hidden; padding: 24px;">
+            <div class="card-header-flex" style="margin-bottom: 20px;">
+                <h3 style="font-size: 18px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-book-medical" style="color: var(--primary-blue);"></i>
+                    Case Study History
+                </h3>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="cs-count-badge">{{ reports|length }}</span>
+                    <a href="{% url 'doctorCaseStudy' client.clientID %}" class="add-link">+ New</a>
+                </div>
             </div>
-            <div class="report-list">
-                {% for report in reports %}
-                <div class="report-item">
-                    <div class="report-info">
-                        <span class="report-name">{{ report.diagnosis|truncatechars:30|default:"Clinical Record" }}</span>
-                        <span class="report-date">Date - {{ report.createdDT|date:"d M, Y" }}</span>
+
+            <div style="flex: 1; overflow-y: auto; padding-right: 5px;" class="custom-scrollbar">
+                {% if reports %}
+                <div id="case-studies-list">
+                    {% for cs in reports %}
+                    <div class="case-study-card" 
+                         onclick="openCaseStudyModal(this)"
+                         data-title="{{ cs.title|default:'Case Study' }}"
+                         data-date="{{ cs.createdDT|date:'M d, Y' }}"
+                         data-symptoms="{{ cs.symptoms|default:'—' }}"
+                         data-diagnosis="{% if cs.diagnosisID %}{{ cs.diagnosisID.diagnosisName }}{% elif cs.customDiagnosis %}{{ cs.customDiagnosis }}{% else %}—{% endif %}"
+                         data-prescription="{{ cs.prescription|default:'—' }}"
+                         data-notes="{{ cs.additionalNotes|default:'' }}"
+                         data-reports="{% for rep in cs.patient_reports.all %}{{ rep.reportFile.url }}|{{ rep.is_image }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                         style="padding: 16px; margin-bottom: 12px; cursor: pointer;">
+                        <div class="cs-header" style="pointer-events: none;">
+                            <div class="cs-header-left">
+                                <div class="cs-icon" style="width: 36px; height: 36px; font-size: 15px;">
+                                    <i class="fa-solid fa-file-medical"></i>
+                                </div>
+                                <div style="min-width: 0;">
+                                    <h4 class="cs-title" style="font-size: 14px; margin-bottom: 2px;">{{ cs.title|default:"Case Study" }}</h4>
+                                    <div class="cs-meta" style="font-size: 11px;">
+                                        <span>{{ cs.createdDT|date:"d M, Y" }}</span>
+                                        <span>{{ cs.createdDT|time:"g:i A" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="cs-toggle" title="View Details" style="width: 28px; height: 28px; pointer-events: none;">
+                                <i class="fa-solid fa-chevron-down" style="font-size: 12px; transform: rotate(-90deg);"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="report-actions">
-                        <a href="{% url 'doctorCaseStudy' client.clientID %}" class="action-icon" title="View"><i class="fa-solid fa-eye"></i></a>
-                    </div>
+                    {% endfor %}
                 </div>
-                {% empty %}
-                <div class="text-center py-4 text-muted" style="font-size: 13px;">
-                    No clinical reports found for this patient.
+                {% else %}
+                <div class="cs-empty-state" style="padding: 30px 15px;">
+                    <i class="fa-solid fa-folder-open" style="font-size: 32px; margin-bottom: 10px;"></i>
+                    <h4 style="font-size: 15px;">No Case Studies</h4>
+                    <p style="font-size: 12px; margin-bottom: 12px;">Start documenting this patient's medical history.</p>
+                    <a href="{% url 'doctorCaseStudy' client.clientID %}" style="padding: 8px 16px; font-size: 13px;"><i class="fa-solid fa-plus" style="margin-right: 4px;"></i>Create First</a>
                 </div>
-                {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>
 
     <!-- Appointment Section -->
-    <div class="section-title-flex">
+    <div class="section-title-flex" style="margin-top: 36px;">
         <h2>Appointment History</h2>
     </div>
 
@@ -469,7 +717,314 @@
 </div>
 
 <script>
-    // Remove client-side filtering logic as it's now server-side
+
+    function switchAptTab(type, el) {
+        // Update active class
+        document.querySelectorAll('.tab-link').forEach(tab => tab.classList.remove('active'));
+        el.classList.add('active');
+
+        // Filter rows
+        const rows = document.querySelectorAll('.apt-row');
+        rows.forEach(row => {
+            if (type === 'all') {
+                row.style.display = 'table-row';
+            } else if (row.getAttribute('data-type') === type) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function toggleCaseStudy(card) {
+        // Redundant with modal implementation but keeping empty to prevent errors if clicked fast
+    }
+</script>
+
+<!-- Premium Case Study Modal -->
+<div id="caseStudyModalOverlay" class="premium-modal-overlay">
+    <div class="premium-modal">
+        <button class="premium-modal-close" onclick="closeCaseStudyModal()"><i class="fa-solid fa-xmark"></i></button>
+        
+        <div class="pm-header">
+            <div class="pm-header-content">
+                <span class="pm-badge">CLINICAL RECORD ASSESSMENT</span>
+                <h2 id="modal-title">Record Title</h2>
+                <div class="pm-patient-tags">
+                    <span class="pm-tag"><i class="fa-solid fa-user"></i> {{ client.name }}</span>
+                    <span class="pm-tag"><i class="fa-solid fa-venus-mars"></i> {{ client.gender|title }}</span>
+                    <span class="pm-tag"><i class="fa-solid fa-hashtag"></i> #PID-{{ client.clientID }}</span>
+                </div>
+            </div>
+            <div class="pm-header-date">
+                <span class="pm-date-label">ASSESSMENT DATE</span>
+                <span class="pm-date-val" id="modal-date"></span>
+            </div>
+        </div>
+
+        <div class="pm-body">
+            <div class="pm-grid">
+                <div class="pm-card">
+                    <div class="pm-card-header"><span class="pm-icon-wrapper"><i class="fa-solid fa-stethoscope"></i></span> SYMPTOMS REPORTED</div>
+                    <div class="pm-card-content" id="modal-symptoms"></div>
+                </div>
+                <div class="pm-card">
+                    <div class="pm-card-header"><span class="pm-icon-wrapper purple"><i class="fa-solid fa-microscope"></i></span> CLINICAL DIAGNOSIS</div>
+                    <div class="pm-card-content fw-bold" id="modal-diagnosis"></div>
+                </div>
+            </div>
+
+            <div class="pm-card-treatment">
+                <i class="fa-solid fa-pills pm-bg-icon"></i>
+                <div class="pm-card-header"><span class="pm-icon-wrapper green"><i class="fa-solid fa-file-prescription"></i></span> TREATMENT & MEDICATION PLAN</div>
+                <div class="pm-card-content" id="modal-prescription"></div>
+            </div>
+
+            <div class="pm-card" id="modal-notes-container" style="background:#fff; border: 1px solid #E2E8F0; margin-bottom: 20px;">
+                <div class="pm-card-header" style="color:#1E293B;">Secondary Physician Remarks</div>
+                <div class="pm-card-content" id="modal-notes"></div>
+            </div>
+
+            <div id="modal-reports-container" style="display:none;">
+                <div class="pm-card-header" style="color:#1E293B; margin-top:20px; font-size: 14px;"><i class="fa-solid fa-paperclip"></i> Attached Reports</div>
+                <div id="modal-reports-content"></div>
+            </div>
+        </div>
+
+        <div class="pm-footer">
+            <button class="pm-btn pm-btn-outline" onclick="downloadPDF()"><i class="fa-solid fa-file-pdf"></i> DOWNLOAD PDF</button>
+            <button class="pm-btn pm-btn-primary" onclick="closeCaseStudyModal()">CLOSE RECORD</button>
+        </div>
+    </div>
+</div>
+
+<div id="print-template" style="display:none; padding:60px 50px; background:#ffffff; font-family:'Helvetica', 'Arial', sans-serif; color:#1e293b; line-height:1.6; font-size: 14pt;">
+    
+    <!-- Top Header Banner -->
+    <div style="border-top: 10px solid #0284c7; padding-top: 35px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; page-break-inside: avoid;">
+        <div>
+            <h1 style="margin:0; font-size:38px; color:#0f172a; font-weight:800; letter-spacing: -1px;">CareSpot<span style="color:#0284c7;">.</span></h1>
+            <p style="margin:8px 0 0; font-size:16px; color:#64748b; font-weight:500;">Advanced Digital Healthcare System</p>
+            <p style="margin:4px 0 0; font-size:14px; color:#94a3b8;">123 CareSpot Avenue, Medical District • www.carespot.com</p>
+        </div>
+        <div style="text-align: right;">
+            <div style="display: inline-block; padding: 8px 16px; background: #f1f5f9; border-radius: 6px; font-size: 12px; font-weight: 700; color: #0f172a; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">
+                Medical Record : Confidential
+            </div>
+            <h2 style="margin:5px 0 0; font-size:24px; color:#0f172a; font-weight:700;">OFFICIAL CLINICAL REPORT</h2>
+            <p style="margin:4px 0 0; font-size:14px; color:#475569;">Report ID: <strong style="color:#1e293b;">#CSR-{{ client.clientID }}/{% now "Ymd" %}</strong></p>
+        </div>
+    </div>
+
+    <!-- Patient Info Grid -->
+    <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 30px; margin-bottom: 45px; page-break-inside: avoid;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px;">
+            <div>
+                <span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Patient Full Name</span>
+                <span id="pt-name" style="font-size:18px; font-weight:700; color:#0f172a;"></span>
+            </div>
+            <div>
+                <span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Unique Patient ID</span>
+                <span id="pt-id" style="font-size:18px; font-weight:700; color:#0f172a;"></span>
+            </div>
+            <div>
+                <span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Consultation Date</span>
+                <span id="pt-date" style="font-size:18px; font-weight:700; color:#0f172a;"></span>
+            </div>
+            <div>
+                <span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Age / Sex</span>
+                <span id="pt-gender" style="font-size:18px; font-weight:700; color:#0f172a;"></span>
+            </div>
+            <div>
+                <span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Attending Doctor</span>
+                <span style="font-size:18px; font-weight:700; color:#0f172a;">Dr. {{ doctor.displayName }}</span>
+            </div>
+            <div>
+                <span style="display:block; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Clinical Department</span>
+                <span style="font-size:18px; font-weight:700; color:#0f172a;">{{ doctor.subcategoryID.subcategoryName|default:"General Medicine" }}</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Clinical Details -->
+    <div style="margin-bottom: 40px; page-break-inside: avoid;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #e0f2fe; padding-bottom: 10px; margin-bottom: 18px;">
+            <span style="display:inline-block; width:28px; color:#0284c7;">◆</span> Reported Symptoms
+        </h3>
+        <p id="pt-symptoms" style="margin: 0 0 0 28px; font-size: 17px; color: #334155; line-height: 1.8;"></p>
+    </div>
+
+    <div style="margin-bottom: 40px; page-break-inside: avoid;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #7e22ce; text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #f3e8ff; padding-bottom: 10px; margin-bottom: 18px;">
+            <span style="display:inline-block; width:28px; color:#7e22ce;">◆</span> Clinical Diagnosis
+        </h3>
+        <p id="pt-diagnosis" style="margin: 0 0 0 28px; font-size: 18px; font-weight: 700; color: #0f172a; line-height: 1.8;"></p>
+    </div>
+
+    <!-- Treatment Plan Highlight Box -->
+    <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 30px; margin-bottom: 40px; margin-left: 28px; page-break-inside: avoid;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px;">
+            ✚ Suggested Treatment & Medication Plan
+        </h3>
+        <p id="pt-prescription" style="margin: 0; font-size: 18px; color: #14532d; font-weight: 600; line-height: 1.8;"></p>
+    </div>
+
+    <div id="pt-notes-container" style="margin-bottom: 40px; page-break-inside: avoid;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 18px;">
+            <span style="display:inline-block; width:28px; color:#94a3b8;">◆</span> Physician's Remarks
+        </h3>
+        <p id="pt-notes" style="margin: 0 0 0 28px; font-size: 16px; color: #475569; line-height: 1.8; font-style: italic;"></p>
+    </div>
+
+    <!-- Attachment Section -->
+    <div id="pt-reports-container" style="margin-bottom: 50px;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 25px;">
+            <span style="display:inline-block; width:28px; color:#cbd5e1;">◆</span> Scanned Laboratory Reports
+        </h3>
+        <div id="pt-reports" style="margin-left: 28px;"></div>
+    </div>
+
+
+    <!-- Footer / Sign-off -->
+    <div style="margin-top: 60px; display: flex; justify-content: space-between; align-items: flex-end; page-break-inside: avoid;">
+        <div>
+            <p style="margin:0; font-size:11px; color:#94a3b8; font-style:italic;">Electronically generated on {% now "F d, Y, h:i A" %}</p>
+            <p style="margin:2px 0 0; font-size:11px; color:#94a3b8;">CareSpot Medical Portal - This document may contain confidential health information.</p>
+        </div>
+        <div style="text-align: right; width: 250px;">
+            <div style="border-bottom: 1px dashed #94a3b8; margin-bottom: 10px; height: 30px;">
+                <!-- Doctor signature graphic can go here later if uploaded -->
+            </div>
+            <strong style="display:block; font-size:16px; color:#0f172a;">Dr. {{ doctor.displayName }}</strong>
+            <span style="display:block; font-size:12px; color:#64748b;">Consultant ID: {{ doctor.doctorID }}</span>
+        </div>
+    </div>
+</div>
+
+
+<!-- html2pdf library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    function openCaseStudyModal(el) {
+        document.getElementById('modal-title').textContent = el.getAttribute('data-title');
+        document.getElementById('modal-date').textContent = el.getAttribute('data-date');
+        document.getElementById('modal-symptoms').textContent = el.getAttribute('data-symptoms');
+        document.getElementById('modal-diagnosis').textContent = el.getAttribute('data-diagnosis');
+        document.getElementById('modal-prescription').textContent = el.getAttribute('data-prescription');
+        
+        let notes = el.getAttribute('data-notes');
+        let notesContainer = document.getElementById('modal-notes-container');
+        if(notes && notes.trim() !== '' && notes !== 'None') {
+            document.getElementById('modal-notes').textContent = notes;
+            notesContainer.style.display = 'block';
+        } else {
+            notesContainer.style.display = 'none';
+        }
+        
+        let reportsData = el.getAttribute('data-reports');
+        let reportsContainer = document.getElementById('modal-reports-container');
+        let reportsContent = document.getElementById('modal-reports-content');
+        reportsContent.innerHTML = '';
+        if(reportsData && reportsData.trim() !== '') {
+            let reportsArr = reportsData.split(',').filter(item => item.trim() !== '');
+            if(reportsArr.length > 0) {
+               reportsContainer.style.display = 'block';
+               reportsArr.forEach(r => {
+                  let parts = r.split('|');
+                  let url = parts[0];
+                  let isImg = parts[1];
+                  if(isImg === 'True') {
+                      reportsContent.innerHTML += `<img src="${url}" class="print-image" alt="Report Image" style="border-radius:8px; border:1px solid #E2E8F0;">`;
+                  } else {
+                      reportsContent.innerHTML += `<div style="padding:15px; background:#F8FAFC; border:1px solid #E2E8F0; margin:10px 0; border-radius:8px; font-weight:600;"><i class="fa-solid fa-file-pdf text-danger"></i> <a href="${url}" target="_blank" style="text-decoration:none;">View Attached PDF Document</a></div>`;
+                  }
+               });
+            } else {
+               reportsContainer.style.display = 'none';
+            }
+        } else {
+            reportsContainer.style.display = 'none';
+        }
+        
+        // Show modal and prevent body scroll
+        document.getElementById('caseStudyModalOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeCaseStudyModal() {
+        document.getElementById('caseStudyModalOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function downloadPDF() {
+        // Copy exact data to clean template
+        var ptName = document.querySelector('.pm-patient-tags .pm-tag:nth-child(1)').textContent.replace(' ', '').trim() || 'Patient';
+        if(ptName.startsWith(' ')) ptName = ptName.substring(1).trim();
+        var ptGender = document.querySelector('.pm-patient-tags .pm-tag:nth-child(2)').textContent.trim() || '-';
+        var ptId = document.querySelector('.pm-patient-tags .pm-tag:nth-child(3)').textContent.trim() || '-';
+        var ptDate = document.getElementById('modal-date').textContent.trim();
+        
+        document.getElementById('pt-name').textContent = ptName;
+        document.getElementById('pt-gender').textContent = ptGender;
+        document.getElementById('pt-id').textContent = ptId;
+        document.getElementById('pt-date').textContent = ptDate;
+        
+        document.getElementById('pt-symptoms').textContent = document.getElementById('modal-symptoms').textContent;
+        document.getElementById('pt-diagnosis').textContent = document.getElementById('modal-diagnosis').textContent;
+        document.getElementById('pt-prescription').textContent = document.getElementById('modal-prescription').textContent;
+        
+        var notesContent = document.getElementById('modal-notes').textContent;
+        if (notesContent && notesContent.trim() !== '') {
+            document.getElementById('pt-notes').textContent = notesContent;
+            document.getElementById('pt-notes-container').style.display = 'block';
+        } else {
+            document.getElementById('pt-notes-container').style.display = 'none';
+        }
+        
+        // Handle images
+        var reportsContentHtml = document.getElementById('modal-reports-content').innerHTML;
+        var ptReports = document.getElementById('pt-reports');
+        if (reportsContentHtml && reportsContentHtml.trim() !== '') {
+            // Re-map images, strip PDFs since they can't be embedded in this html2pdf layer cleanly
+            var printHtml = '';
+            var images = document.getElementById('modal-reports-content').getElementsByTagName('img');
+            for(var i=0; i<images.length; i++) {
+                printHtml += `<img src="${images[i].src}" style="max-width:100%; max-height:800px; display:block; margin:0 auto 20px; page-break-inside:avoid; border:1px solid #ccc;">`;
+            }
+            if (printHtml !== '') {
+                ptReports.innerHTML = printHtml;
+                document.getElementById('pt-reports-container').style.display = 'block';
+            } else {
+                document.getElementById('pt-reports-container').style.display = 'none';
+            }
+        } else {
+            document.getElementById('pt-reports-container').style.display = 'none';
+        }
+
+        var element = document.getElementById('print-template');
+        element.style.display = 'block'; // Make visible for capture
+
+        var opt = {
+            margin:       [0.5, 0.5],
+            filename:     'Medical_Report_' + ptName.replace(/\s+/g, '_') + '.pdf',
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  { 
+                scale: 2, 
+                useCORS: true, 
+                logging: false,
+                letterRendering: true
+            },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        // Generate PDF
+        html2pdf().set(opt).from(element).save().then(function() {
+            element.style.display = 'none'; // Hide it back
+        });
+    }
+
 </script>
 
 {% endblock %}

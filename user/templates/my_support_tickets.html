@@ -216,7 +216,7 @@
         <div class="ticket-list-container">
             {% if my_tickets %}
                 {% for ticket in my_tickets %}
-                <div class="ticket-item">
+                <div class="ticket-item" style="cursor: pointer;" onclick="window.location.href='{% url 'supportTicketDetails' ticket.ticketID %}'">
                     <div class="ticket-info">
                         <div class="ticket-subject">{{ ticket.subject }}</div>
                         <div class="ticket-meta">
@@ -238,7 +238,7 @@
                             <span class="status-badge badge-closed">Closed</span>
                         {% endif %}
                         
-                        <div class="text-muted" style="cursor:pointer;"><i class="fa-solid fa-chevron-right fs-5"></i></div>
+                        <div class="text-muted"><i class="fa-solid fa-chevron-right fs-5"></i></div>
                     </div>
                 </div>
                 {% endfor %}

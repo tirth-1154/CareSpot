@@ -648,6 +648,23 @@ def doctorUpdateProfile(request):
     doctor = tblDoctor.objects.filter(userID=user_id).first()
     subcategories = tblSubcategory.objects.all()
     
+    if request.POST.get('btnUpdatePassword'):
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        if new_password != confirm_password:
+            messages.error(request, 'New password and confirm password do not match.')
+        elif len(new_password) < 8:
+            messages.error(request, 'New password must be at least 8 characters long.')
+        elif user.password != current_password:
+            messages.error(request, 'Current password is incorrect.')
+        else:
+            user.password = new_password
+            user.save()
+            request.session['password'] = new_password
+            messages.success(request, 'Password updated successfully!')
+        return redirect('doctorUpdateProfile')
+
     if request.POST.get('btnUpdate'):
         # 1. Update User related fields
         user.email = request.POST.get('email')
@@ -1193,7 +1210,20 @@ def doctorMessages(request):
             })
     
     active_partner_id = request.GET.get('partner', '')
-    
+    if active_partner_id:
+        try:
+            active_pid = int(active_partner_id)
+            if active_pid not in partner_ids:
+                p_user = tblUser.objects.filter(userID=active_pid).first()
+                if p_user:
+                    partners_list.insert(0, {
+                        'user': p_user,
+                        'last_message': None,
+                        'unread_count': 0
+                    })
+        except ValueError:
+            pass
+
     data = {
         "doctor": tblDoctor.objects.filter(doctorID=doctor_id).first(),
         "partners": partners_list,
@@ -2235,10 +2265,6 @@ def videoMeeting(request, appointment_id):
         'user_email': user.email if user else '',
         'is_doctor': is_doctor,
         'back_url': back_url,
-        'description': blog.description[:120] + '...' if len(blog.description) > 120 else blog.description,
-        'thumbnail': blog.thumbnail.url if blog.thumbnail else None,
-        'doctor_name': blog.doctorID.displayName,
-        'specialization': blog.doctorID.subcategoryID.subcategoryName,
     }
     return render(request, 'video_meeting.html', data)
 
@@ -2288,6 +2314,7 @@ def doctorViewPatientProfile(request, id):
     upcoming_appointments = [a for a in appointments if a.status_label == "Accepted"]
     completed_appointments = [a for a in appointments if a.status_label == "Completed"]
     
+
     # Global Status Filtering
     active_status = request.GET.get('status', 'all')
     if active_status == 'accepted':
@@ -2306,7 +2333,6 @@ def doctorViewPatientProfile(request, id):
         appointments_page = paginator.page(1)
     except EmptyPage:
         appointments_page = paginator.page(paginator.num_pages)
-    
     data = {
         'doctor': doctor,
         'client': client,
@@ -2471,5 +2497,29 @@ def mySupportTickets(request):
         'user_data': user_context, 
         'my_tickets': my_tickets,
         'open_tickets_count': open_tickets_count,
+        'base_template': base_template
+    })
+
+def supportTicketDetails(request, id):
+    # Standardize userID/user_id lookup
+    user_id = request.session.get('user_id') or request.session.get('userID')
+    user_context = tblUser.objects.filter(userID=user_id).first() if user_id else None
+    
+    if not user_context:
+        return redirect('Login')
+
+    # Fetch the ticket and ensure it belongs to the user
+    ticket = tblSupportTicket.objects.filter(ticketID=id, userID=user_context).first()
+    
+    if not ticket:
+        messages.error(request, "Ticket not found or you don't have permission to view it.")
+        return redirect('mySupportTickets')
+
+    # Determine base_template
+    base_template = 'base.html' if request.session.get('isDoctor') else 'patient_base.html'
+
+    return render(request, 'support_ticket_details.html', {
+        'ticket': ticket,
+        'user_data': user_context,
         'base_template': base_template
     })
