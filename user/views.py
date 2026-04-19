@@ -2006,6 +2006,12 @@ def get_available_slots(request):
     current_schedule = tblDoctorSchedule.objects.filter(doctorID=doctor_id, day_of_week=day_of_week, is_available=True).first()
     if current_schedule and current_schedule.start_time:
         start_dt = dt.combine(sel_date, current_schedule.start_time)
+        # Round start_dt UP to the nearest 30-minute boundary for clean slots
+        minutes = start_dt.minute
+        if minutes % 30 != 0:
+            start_dt = start_dt.replace(minute=0, second=0, microsecond=0) + timedelta(minutes=(30 * ((minutes // 30) + 1)))
+        else:
+            start_dt = start_dt.replace(second=0, microsecond=0)
         # If end_time < start_time, it crosses midnight into next day. End of "today" is midnight.
         if current_schedule.end_time and current_schedule.end_time <= current_schedule.start_time:
             end_dt = dt.combine(sel_date + timedelta(days=1), current_schedule.end_time)
@@ -2028,6 +2034,12 @@ def get_available_slots(request):
         # This shift started yesterday and ends today
         prev_date = sel_date - timedelta(days=1)
         start_dt = dt.combine(prev_date, prev_schedule.start_time)
+        # Round start_dt UP to the nearest 30-minute boundary for clean slots
+        minutes = start_dt.minute
+        if minutes % 30 != 0:
+            start_dt = start_dt.replace(minute=0, second=0, microsecond=0) + timedelta(minutes=(30 * ((minutes // 30) + 1)))
+        else:
+            start_dt = start_dt.replace(second=0, microsecond=0)
         end_dt = dt.combine(sel_date, prev_schedule.end_time)
         
         temp_curr = start_dt

@@ -52,7 +52,7 @@ UNFOLD = {
     "THEME": "light",
     "STYLES": [
         "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css",
-        lambda request: "admin/css/admin_premium.css",
+        lambda request: "/static/admin/css/admin_premium.css",
     ],
     "COLORS": {
         "primary": {
