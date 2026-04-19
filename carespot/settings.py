@@ -49,6 +49,7 @@ UNFOLD = {
     "SITE_LOGO": "/media/images/careSpotText.png",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": True,
+    "THEME": "light",
     "STYLES": [
         "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css",
         lambda request: "admin/css/admin_premium.css",
