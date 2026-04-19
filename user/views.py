@@ -18,6 +18,29 @@ from datetime import timedelta
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
+def check_and_cancel_missed_appointments():
+    now = datetime.datetime.now()
+    current_date = now.date()
+    
+    # 1. Cancel uncompleted appointments strictly before today
+    tblAppointment.objects.filter(
+        isCompleted=False,
+        appointmentDate__lt=current_date
+    ).update(isAccepted=False, isRejected=True)
+    
+    # 2. Cancel uncompleted appointments today if time + 1 hour has passed
+    today_appts = tblAppointment.objects.filter(
+        isCompleted=False,
+        appointmentDate=current_date
+    )
+    for app in today_appts:
+        if app.appointmentTime:
+            app_dt = datetime.datetime.combine(current_date, app.appointmentTime)
+            if app_dt + timedelta(hours=1) < now:
+                app.isAccepted = False
+                app.isRejected = True
+                app.save()
+
 def home(request):
     user_id = request.session.get('user_id')
 
@@ -294,7 +317,7 @@ def resetPassword(request):
                 del request.session['reset_email']
                 del request.session['otp_verified']
                 
-                messages.success(request, 'Password reset successfully. You can now login with your new password.')
+                messages.success(request, 'Password reset successfully. You can now login with your new password.', extra_tags='login_auth')
                 return redirect('Login')
         else:
             messages.error(request, 'Passwords do not match.')
@@ -715,6 +738,7 @@ def doctorUpdateProfile(request):
     return render(request,'doctor_update_profile.html',data)
 
 def doctorDashboard(request):
+    check_and_cancel_missed_appointments()
     if 'doctorID' not in request.session:
         return redirect('Login')
     
@@ -994,6 +1018,7 @@ def patientDoctorsList(request):
     return render(request, 'patient_search_doctors.html', data)
     
 def patientAppointments(request):
+    check_and_cancel_missed_appointments()
     if 'user_id' not in request.session:
         return redirect('Login')
     
@@ -1008,6 +1033,16 @@ def patientAppointments(request):
 
         time_slot=dt.strptime(time, '%H:%M').time()
         doctor = tblDoctor.objects.filter(doctorID=doctor_id).first()
+        
+        # --- Validation: Check if doctor supports selected appointment mode ---
+        # Doctor mode: 1=Online, 2=Offline, 3=Both
+        if doctor:
+            if doctor.mode == 1 and mode != 'online':
+                messages.error(request, f'{doctor.displayName} only offers online consultations.')
+                return redirect('patientAppointments')
+            elif doctor.mode == 2 and mode != 'offline':
+                messages.error(request, f'{doctor.displayName} only offers offline (in-clinic) consultations.')
+                return redirect('patientAppointments')
         
         # --- Validation: One appointment per doctor per day per patient ---
         # Block if there is an ACCEPTED appointment on this date
@@ -2061,7 +2096,17 @@ def get_available_slots(request):
 
     # Filter out already booked slots
     booked_times = tblAppointment.objects.filter(doctorID=doctor_id, appointmentDate=sel_date, isRejected=False).values_list('appointmentTime', flat=True)
-    booked_set = set(t.strftime('%H:%M') for t in booked_times)
+    
+    booked_set = set()
+    for t in booked_times:
+        # Round the booked time to nearest 30 minutes to match generated slots
+        minutes = t.minute
+        if minutes % 30 != 0:
+            # Round down to nearest 30 min (e.g. 12:01 -> 12:00)
+            rounded_min = (minutes // 30) * 30
+            t = t.replace(minute=rounded_min, second=0, microsecond=0)
+        booked_set.add(t.strftime('%H:%M'))
+        
     slots = [s for s in slots if s['value'] not in booked_set]
     
     # If today, filter out past times
@@ -2261,11 +2306,16 @@ def videoMeeting(request, appointment_id):
     # Extract room name from meetLink (e.g., "https://meet.jit.si/CareSpot-DrName-123-abc123")
     room_name = appointment.meetLink.replace('https://meet.jit.si/', '')
     
+    # Mark appointment as completed if it hasn't been already
+    if not appointment.isCompleted:
+        appointment.isCompleted = True
+        appointment.save()
+    
     # Set display name and redirect URL based on role
     user = tblUser.objects.filter(userID=user_id).first()
     if is_doctor:
         user_display_name = f"{doctor.displayName}"
-        back_url = '/doctorAppointments/'
+        back_url = '/doctorDashboard/'  # You might want to change this depending on where the doc manages appointments
     else:
         user_display_name = client.name
         back_url = '/patientMyAppointments/'
@@ -2382,6 +2432,7 @@ def updateAppointmentStatusAjax(request):
     return JsonResponse({'status': 'error'}, status=400)
 
 def doctorSetSchedule(request):
+    check_and_cancel_missed_appointments()
     if 'doctorID' not in request.session:
         return redirect('Login')
     
@@ -2402,12 +2453,14 @@ def doctorSetSchedule(request):
         except:
             pass
         
-        if a.isAccepted and a.appointmentDate < date.today():
+        if a.isCompleted:
+            status = 'Completed'
+        elif a.isAccepted and a.appointmentDate < date.today():
             status = 'Completed'
         elif a.isAccepted:
             status = 'Accepted'
         elif a.isRejected:
-            status = 'Rejected'
+            status = 'Cancelled'
         else:
             status = 'Pending'
         

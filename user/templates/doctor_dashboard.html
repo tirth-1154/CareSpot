@@ -576,10 +576,12 @@
                                 </td>
                                 <td data-label="Reason">{{ appointment.clientID.description|truncatechars:28|default:"—" }}</td>
                                 <td data-label="Status">
-                                    {% if appointment.isAccepted %}
+                                    {% if appointment.isCompleted %}
+                                    <span class="status-badge badge-accepted" style="background: #e6f9ee; color: #15803d;"><i class="fa-solid fa-check-double"></i>Completed</span>
+                                    {% elif appointment.isAccepted %}
                                     <span class="status-badge badge-accepted"><i class="fa-solid fa-circle-check"></i>Accepted</span>
                                     {% elif appointment.isRejected %}
-                                    <span class="status-badge badge-rejected"><i class="fa-solid fa-circle-xmark"></i>Rejected</span>
+                                    <span class="status-badge badge-rejected"><i class="fa-solid fa-ban"></i> Cancelled</span>
                                     {% else %}
                                     <span class="status-badge badge-pending"><i class="fa-regular fa-clock"></i>Pending</span>
                                     {% endif %}
@@ -675,7 +677,11 @@
                                             </span>
                                         </td>
                                         <td data-label="Status">
-                                            <span class="status-badge badge-upcoming">Accepted</span>
+                                            {% if appointment.isCompleted %}
+                                            <span class="status-badge badge-accepted" style="background: #e6f9ee; color: #15803d;"><i class="fa-solid fa-check-double"></i> Completed</span>
+                                            {% else %}
+                                            <span class="status-badge badge-upcoming">Upcoming</span>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endif %}

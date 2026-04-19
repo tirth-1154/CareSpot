@@ -555,10 +555,12 @@
 
             {% if messages %}
                 {% for message in messages %}
-                <div class="error-msg" {% if message.tags == 'success' %}style="background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.18); color: #047857;"{% endif %}>
-                    <i class="fa-solid {% if message.tags == 'success' %}fa-check-circle{% else %}fa-circle-exclamation{% endif %}"></i>
-                    <span>{{ message }}</span>
-                </div>
+                    {% if 'login_auth' in message.tags %}
+                    <div class="error-msg" {% if 'success' in message.tags %}style="background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.18); color: #047857;"{% endif %}>
+                        <i class="fa-solid {% if 'success' in message.tags %}fa-check-circle{% else %}fa-circle-exclamation{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
 

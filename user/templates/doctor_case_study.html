@@ -1094,7 +1094,7 @@
                         </button>
                         <button class="history-tab-btn" onclick="switchView('reports')" id="reportsBtn">
                             <i class="fa-solid fa-file-pdf"></i> Patient Reports
-                            {% if patient_reports %}<span class="badge bg-primary ms-1 px-2 rounded-pill">{{ patient_reports|length }}</span>{% endif %}
+                            {% comment %} {% if patient_reports %}<span class="badge bg-primary ms-1 px-2 rounded-pill">{{ patient_reports|length }}</span>{% endif %} {% endcomment %}
                         </button>
                     </div>
                 </div>

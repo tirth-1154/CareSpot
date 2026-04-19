@@ -113,6 +113,7 @@ class tblAppointment(models.Model):
     meetLink=models.TextField(max_length=500, null=True, blank=True)
     isAccepted=models.BooleanField(default=False)
     isRejected=models.BooleanField(default=False)
+    isCompleted=models.BooleanField(default=False)
     createdDT=models.DateTimeField(auto_now_add=True, null=True)
     def __str__(self):
         return '%d'' %s' % (self.appointmentID,self.clientID)

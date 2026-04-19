@@ -339,7 +339,8 @@
                 name: "{{ d.displayName|escapejs }}",
                 specialization: "{{ d.subcategoryID.subcategoryName|escapejs }}",
                 fee: parseInt("{{ d.consultationFees|default:0 }}"),
-                pic: "{% if d.userID.profilePic %}{{ d.userID.profilePic.url }}{% else %}https://ui-avatars.com/api/?name={{ d.displayName|escapejs }}&background=076FC5&color=fff{% endif %}"
+                pic: "{% if d.userID.profilePic %}{{ d.userID.profilePic.url }}{% else %}https://ui-avatars.com/api/?name={{ d.displayName|escapejs }}&background=076FC5&color=fff{% endif %}",
+                mode: {{ d.mode }}
             },
         {% endfor %}
     };
@@ -378,11 +379,44 @@
         document.getElementById('sumFee').innerText = '₹' + data.fee;
         document.getElementById('sumTotal').innerText = '₹' + (data.fee + platFee);
 
+        // Restrict mode based on doctor's supported modes (1=Online, 2=Offline, 3=Both)
+        applyModeRestrictions(data.mode);
+
         if(resetUI) {
             resetSelections();
             renderCal();
         } else {
             renderCal();
+        }
+    }
+
+    function applyModeRestrictions(doctorMode) {
+        const mOff = document.getElementById('mOff');
+        const mOn = document.getElementById('mOn');
+
+        // Reset both buttons
+        mOff.disabled = false;
+        mOn.disabled = false;
+        mOff.style.opacity = '1';
+        mOn.style.opacity = '1';
+        mOff.style.pointerEvents = 'auto';
+        mOn.style.pointerEvents = 'auto';
+
+        if (doctorMode === 1) {
+            // Online only — disable Offline, force Online
+            mOff.disabled = true;
+            mOff.style.opacity = '0.4';
+            mOff.style.pointerEvents = 'none';
+            updateMode('online');
+        } else if (doctorMode === 2) {
+            // Offline only — disable Online, force Offline
+            mOn.disabled = true;
+            mOn.style.opacity = '0.4';
+            mOn.style.pointerEvents = 'none';
+            updateMode('offline');
+        } else {
+            // Both (3) — keep current or default to offline
+            updateMode(curMode);
         }
     }
 

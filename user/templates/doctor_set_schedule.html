@@ -346,13 +346,15 @@
     }
     .apt-indicator.status-accepted { background: #dcfce7; color: #15803d; }
     .apt-indicator.status-pending  { background: #fef3c7; color: #92400e; }
-    .apt-indicator.status-rejected { background: #fee2e2; color: #991b1b; }
+    .apt-indicator.status-rejected,
+    .apt-indicator.status-cancelled { background: #fee2e2; color: #991b1b; }
     .apt-indicator.status-completed { background: #dbeafe; color: #1e40af; }
     
     .apt-dot-sm { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     .status-accepted .apt-dot-sm { background: var(--green); }
     .status-pending .apt-dot-sm  { background: var(--yellow); }
-    .status-rejected .apt-dot-sm { background: var(--red); }
+    .status-rejected .apt-dot-sm,
+    .status-cancelled .apt-dot-sm { background: var(--red); }
     .status-completed .apt-dot-sm { background: #3b82f6; }
 
     .apt-more { font-size: 0.7rem; color: var(--primary-blue); font-weight: 800; padding: 2px 8px; }
@@ -382,7 +384,8 @@
     .modal-status-badge { padding: 5px 14px; border-radius: 30px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
     .modal-status-badge.accepted { background: #dcfce7; color: #15803d; }
     .modal-status-badge.pending  { background: #fef3c7; color: #92400e; }
-    .modal-status-badge.rejected { background: #fee2e2; color: #991b1b; }
+    .modal-status-badge.rejected,
+    .modal-status-badge.cancelled { background: #fee2e2; color: #991b1b; }
     .modal-status-badge.completed { background: #dbeafe; color: #1e40af; }
 
     @media (max-width: 768px) {
@@ -466,7 +469,7 @@
             <div class="stat-item"><div class="stat-dot" style="background:var(--green);"></div> Accepted</div>
             <div class="stat-item"><div class="stat-dot" style="background:#3b82f6;"></div> Completed</div>
             <div class="stat-item"><div class="stat-dot" style="background:var(--yellow);"></div> Pending</div>
-            <div class="stat-item"><div class="stat-dot" style="background:var(--red);"></div> Rejected</div>
+            <div class="stat-item"><div class="stat-dot" style="background:var(--red);"></div> Cancelled</div>
         </div>
     </div>
 </div>

@@ -422,14 +422,16 @@
                     <td data-label="Created Date">{{ appointment.createdDT|date:"d M Y" }}</td>
                     <td data-label="Time">{{ appointment.appointmentTime|time:"h:i a" }}</td>
                     <td data-label="Status">
-                        {% if appointment.appointmentDate == today_date %}
+                        {% if appointment.isCompleted %}
+                            <span class="status-badge status-completed">Completed</span>
+                        {% elif appointment.appointmentDate == today_date %}
                             <span class="status-badge status-today">Today</span>
                         {% elif appointment.isAccepted %}
-                            <span class="status-badge status-completed">Completed</span>
+                            <span class="status-badge status-progress">Confirmed</span>
                         {% elif appointment.isRejected %}
                             <span class="status-badge status-cancelled">Cancelled</span>
                         {% else %}
-                            <span class="status-badge status-progress">Progress</span>
+                            <span class="status-badge status-progress" style="background-color: #F8FAFC; color: #64748B;">Pending</span>
                         {% endif %}
                     </td>
                     <td data-label="Payment">
@@ -540,7 +542,10 @@
                     <div class="col-6">
                         <label class="small text-muted fw-bold text-uppercase">Status</label>
                         <p class="fw-semibold">
-                            {% if appointment.isAccepted %}Confirmed{% elif appointment.isRejected %}Cancelled{% else %}Pending{% endif %}
+                            {% if appointment.isCompleted %}Completed
+                            {% elif appointment.isAccepted %}Confirmed
+                            {% elif appointment.isRejected %}Cancelled
+                            {% else %}Pending{% endif %}
                         </p>
                     </div>
                 </div>
