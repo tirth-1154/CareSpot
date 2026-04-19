@@ -12,16 +12,16 @@
 {% block content %}
 {% get_admin_analytics as data %}
 
-<div class="dashboard-wrapper" style="background-color: #F8FAFC; padding: 2.5rem; font-family: 'Outfit', sans-serif; color: #475569; min-height: 100vh;">
+<div class="dashboard-wrapper p-4 sm:p-6 md:p-10" style="background-color: #F8FAFC; font-family: 'Outfit', sans-serif; color: #475569; min-height: 100vh;">
 
     <!-- TOP HEADER: Command Center Greeting -->
-    <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 3rem; padding: 0 4px;">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 px-1">
         <div>
             <p style="font-size: 14px; font-weight: 600; color: #14B8A6; margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase;">Overview Dashboard</p>
             <h1 class="text-premium-heading" style="font-size: 2rem; color: #0F172A; margin: 0;">Good Morning, Administrator</h1>
             <p style="font-size: 14px; color: #94A3B8; margin-top: 6px;">Hospital system operational and steady for <span style="color: #1F2937; font-weight: 700;">{% now "l, d F Y" %}</span></p>
         </div>
-        <div style="display: flex; gap: 1rem;">
+        <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto mt-4 md:mt-0">
             <div style="background: #fff; border: 1px solid #E2E8F0; padding: 10px 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
                 <i class="fa-solid fa-cloud-sun text-orange-400"></i>
                 <span style="font-size: 13px; font-weight: 700; color: #1E293B;">28°C / Surat, IN</span>
@@ -33,7 +33,7 @@
     </div>
 
     <!-- KPI STATS: Data-Rich Matrix -->
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem;">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         
         <!-- Doctors Stat -->
         <div class="evergreen-card hover-lift" style="padding: 1.75rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);">
@@ -97,10 +97,10 @@
     </div>
 
     <!-- MAIN ANALYTICS GRID -->
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- Performance Insights Chart -->
-        <div class="evergreen-card" style="padding: 2rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);">
+        <div class="evergreen-card lg:col-span-2" style="padding: 2rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
                 <div>
                     <h3 style="font-size: 18px; font-weight: 700; color: #0F172A; margin: 0;">Performance Insights</h3>
@@ -166,7 +166,7 @@
             <a href="/admin/user/tblclient/" style="font-size: 13px; font-weight: 700; color: #14B8A6; text-decoration: none;">Explore Full Database →</a>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {% for patient in data.recent_patients|slice:":4" %}
             <div class="evergreen-card hover-lift" style="padding: 1.5rem; border: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); text-align: center;">
                 <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 3px solid #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-weight: 800; font-size: 20px; color: #1e293b;">

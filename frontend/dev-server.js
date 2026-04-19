@@ -8,7 +8,7 @@ const vite = spawn('npx vite --clearScreen false', { stdio: 'inherit', shell: tr
 setTimeout(() => {
   console.log("\n--- [2/2] Starting Python Backend ---\n");
   
-  const django = spawn('python manage.py runserver', { 
+  const django = spawn('py manage.py runserver', { 
     cwd: '..', 
     shell: true,
     env: { ...process.env, PYTHONUNBUFFERED: "1" }
