@@ -11,7 +11,7 @@ from user.models import (
 from .decorators import admin_login_required
 
 # ─── Admin Credentials ───────────────────────────────────────
-ADMIN_EMAIL = 'admin@carespot.com'
+ADMIN_EMAIL = 'admin@docspot.com'
 ADMIN_PASSWORD = 'admin@123'
 
 
@@ -758,8 +758,8 @@ def admin_doctor_reject(request, id):
         from django.core.mail import send_mail
         from django.conf import settings
         
-        subject = 'Carespot - Doctor Registration Rejected'
-        message = f'Hello Dr. {doctor.displayName},\n\nWe regret to inform you that your registration to Carespot has been rejected by the administration.\n\nPlease contact the administrator for more information.\n\nRegards,\nCarespot Team'
+        subject = 'DocSpot - Doctor Registration Rejected'
+        message = f'Hello Dr. {doctor.displayName},\n\nWe regret to inform you that your registration to DocSpot has been rejected by the administration.\n\nPlease contact the administrator for more information.\n\nRegards,\nDocSpot Team'
         
         try:
             send_mail(

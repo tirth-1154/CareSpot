@@ -72,7 +72,7 @@ const AdminLogin = () => {
                 <Shield className="w-8 h-8 text-sky-500" />
               </div>
             </div>
-            <span className="text-3xl font-bold tracking-tight text-slate-800">CareSpot <span className="text-sky-500">Secure</span></span>
+            <span className="text-3xl font-bold tracking-tight text-slate-800">DocSpot <span className="text-sky-500">Secure</span></span>
           </div>
 
           {/* Main Typography */}
@@ -180,11 +180,11 @@ const AdminLogin = () => {
                       type="email"
                       name="email"
                       required
-                      defaultValue="admin@carespot.com"
+                      defaultValue="admin@docspot.com"
                       onFocus={() => setEmailFocus(true)}
                       onBlur={() => setEmailFocus(false)}
                       className="w-full pl-12 pr-4 py-4 bg-white/80 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 outline-none shadow-sm"
-                      placeholder="admin@carespot.com"
+                      placeholder="admin@docspot.com"
                     />
                   </div>
                 </div>

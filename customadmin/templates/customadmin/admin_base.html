@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Dashboard{% endblock %} | CareSpot Admin</title>
+    <title>{% block title %}Dashboard{% endblock %} | DocSpot Admin</title>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
                 <i class="fa-solid fa-notes-medical"></i>
             </div>
             <div class="sidebar-brand-text">
-                <span class="brand-name">CareSpot</span>
+                <span class="brand-name">DocSpot</span>
                 <span class="brand-sub">Admin Portal</span>
             </div>
         </a>
@@ -123,7 +123,7 @@
                 </button>
                 <div class="topbar-search d-none d-md-block">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Search across CareSpot...">
+                    <input type="text" placeholder="Search across DocSpot...">
                 </div>
             </div>
 
@@ -140,7 +140,7 @@
                     <img src="https://ui-avatars.com/api/?name=Admin&background=4F46E5&color=fff&size=100" alt="Admin">
                     <div class="admin-avatar-info">
                         <span class="name">Super Admin</span>
-                        <span class="role">{{ request.session.admin_email|default:"admin@carespot.com" }}</span>
+                        <span class="role">{{ request.session.admin_email|default:"admin@docspot.com" }}</span>
                     </div>
                 </div>
             </div>
@@ -169,7 +169,7 @@
             <!-- Footer -->
             <footer class="admin-footer">
                 <div class="copyright">
-                    &copy; {% now "Y" %} <strong>CareSpot</strong>. All rights reserved.
+                    &copy; {% now "Y" %} <strong>DocSpot</strong>. All rights reserved.
                 </div>
                 <div class="links">
                     <a href="/admin/" target="_blank">Django Super Admin</a>

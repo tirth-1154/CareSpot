@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   CareSpot Custom Admin Panel — JavaScript
+   DocSpot Custom Admin Panel — JavaScript
    ═══════════════════════════════════════════════════════════ */
 
 document.addEventListener('DOMContentLoaded', function () {

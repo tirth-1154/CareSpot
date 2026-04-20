@@ -202,8 +202,8 @@ def forgotPassword(request):
             OTP.objects.create(user=user, otp=otp_code)
             
             # Send Email
-            subject = 'Password Reset OTP - CareSpot'
-            message = f'Hello {user.userName},\n\nYour OTP for password reset is: {otp_code}\n\nThis OTP is valid for 5 minutes.\n\nRegards,\nCareSpot Team'
+            subject = 'Password Reset OTP - DocSpot'
+            message = f'Hello {user.userName},\n\nYour OTP for password reset is: {otp_code}\n\nThis OTP is valid for 5 minutes.\n\nRegards,\nDocSpot Team'
             from_email = settings.EMAIL_HOST_USER
             recipient_list = [email]
             
@@ -228,11 +228,11 @@ def forgotPassword(request):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <h1>CareSpot</h1>
+                        <h1>DocSpot</h1>
                     </div>
                     <div class="content">
                         <p>Hello <strong>{user.userName}</strong>,</p>
-                        <p>We received a request to reset the password for your CareSpot account. Please use the verification code below to securely change your password.</p>
+                        <p>We received a request to reset the password for your DocSpot account. Please use the verification code below to securely change your password.</p>
                         
                         <div class="otp-card">
                             <div class="otp-label">Your Verification Code</div>
@@ -243,8 +243,8 @@ def forgotPassword(request):
                         <p style="margin-top: 25px;">If you did not request a password reset, you can safely ignore this email. Your account remains secure.</p>
                     </div>
                     <div class="footer">
-                        <p>Best Regards,<br><strong>CareSpot Security Team</strong></p>
-                        <p>&copy; 2026 CareSpot. All rights reserved.</p>
+                        <p>Best Regards,<br><strong>DocSpot Security Team</strong></p>
+                        <p>&copy; 2026 DocSpot. All rights reserved.</p>
                     </div>
                 </div>
             </body>
@@ -833,13 +833,13 @@ def _process_appointment_acceptance(appointment):
         # Generate unique Jitsi Meet room
         def get_random_string(length):
             return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
-        room_id = f"CareSpot-{doctor.displayName.replace(' ', '')}-{appointment.appointmentID}-{get_random_string(6)}"
+        room_id = f"DocSpot-{doctor.displayName.replace(' ', '')}-{appointment.appointmentID}-{get_random_string(6)}"
         meet_link = f"https://meet.jit.si/{room_id}"
         appointment.meetLink = meet_link
         appointment.save()
 
         # Prepare Email
-        subject = f"Online Appointment Confirmed - CareSpot"
+        subject = f"Online Appointment Confirmed - DocSpot"
         
         # HTML Email Body
         html_message = f"""
@@ -847,7 +847,7 @@ def _process_appointment_acceptance(appointment):
         <body style="font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 20px;">
             <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
                 <div style="background-color: #0d6efd; color: white; padding: 20px; text-align: center;">
-                    <h2 style="margin: 0; font-size: 24px;">CareSpot</h2>
+                    <h2 style="margin: 0; font-size: 24px;">DocSpot</h2>
                     <p style="margin: 5px 0 0; opacity: 0.9;">Online Consultation Confirmed</p>
                 </div>
                 <div style="padding: 30px;">
@@ -2303,7 +2303,7 @@ def videoMeeting(request, appointment_id):
     if not is_doctor and not is_patient:
         return redirect('home')
     
-    # Extract room name from meetLink (e.g., "https://meet.jit.si/CareSpot-DrName-123-abc123")
+    # Extract room name from meetLink (e.g., "https://meet.jit.si/DocSpot-DrName-123-abc123")
     room_name = appointment.meetLink.replace('https://meet.jit.si/', '')
     
     # Mark appointment as completed if it hasn't been already

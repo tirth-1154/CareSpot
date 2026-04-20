@@ -79,7 +79,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             }`}
           >
             <div className="h-16 flex items-center px-6 border-b border-slate-100">
-              <span className="font-bold text-xl text-slate-800 tracking-tight">Care<span className="text-indigo-600">Spot</span> Admin</span>
+              <span className="font-bold text-xl text-slate-800 tracking-tight">Doc<span className="text-indigo-600">Spot</span> Admin</span>
             </div>
 
             <nav className="flex-1 overflow-y-auto p-4 space-y-1">

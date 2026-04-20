@@ -188,7 +188,7 @@ export default function RegisterExpandable() {
             className="relative z-10 flex flex-col items-center justify-center p-8 max-w-2xl text-center"
           >
             <motion.h1 layoutId="title" className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6">
-              CareSpot <br/>
+              DocSpot <br/>
               <span className="text-[#229FDF]">Network</span>
             </motion.h1>
 
@@ -455,7 +455,7 @@ export default function RegisterExpandable() {
                       </motion.div>
                       <h3 className="text-2xl font-bold text-[#145C8F] mb-2">Account Created!</h3>
                       <p className="text-slate-500 mb-8 max-w-sm mx-auto text-sm leading-relaxed">
-                        Welcome to CareSpot. Your {role} account has been set up securely. You can now access your dashboard.
+                        Welcome to DocSpot. Your {role} account has been set up securely. You can now access your dashboard.
                       </p>
                       <button
                         onClick={() => setIsOpen(false)}

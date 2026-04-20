@@ -1,7 +1,7 @@
 {% extends 'patient_base.html' %}
 {% block nav_doctors_sidebar %}active{% endblock %}
 
-{% block title %}Find a Doctor | CareSpot{% endblock %}
+{% block title %}Find a Doctor | DocSpot{% endblock %}
 
 {% block content %} 
     <!-- Google Fonts for modern typography -->
@@ -625,7 +625,7 @@
                             <div class="card-footer-custom">
                                 <div class="fee-row">
                                     <span class="fee-label">Consultation Fee</span>
-                                    <span class="fee-value">₹{{ doc.consultationFee }}</span>
+                                    <span class="fee-value">₹{{ doc.consultationFees }}</span>
                                 </div>
                                 <div class="action-group">
                                     <a href="{% url 'patientAppointments' %}?doctor_id={{ doc.doctorID }}" class="btn-action-primary">Book</a>

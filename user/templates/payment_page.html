@@ -1,6 +1,6 @@
 {% extends 'patient_base.html' %}
 
-{% block title %}Payment | CareSpot{% endblock %}
+{% block title %}Payment | DocSpot{% endblock %}
 
 {% block content %}
 <style>
@@ -176,7 +176,7 @@
             "key": "{{ razorpay_key_id }}",
             "amount": "{{ amount_paise }}",
             "currency": "INR",
-            "name": "CareSpot",
+            "name": "DocSpot",
             "description": "Appointment Fee - {{ appointment.doctorID.displayName }}",
             "order_id": "{{ razorpay_order_id }}",
             "callback_url": "{{ callback_url }}",

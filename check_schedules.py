@@ -2,7 +2,7 @@ from user.models import tblDoctorSchedule
 import django
 import os
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CareSpot.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'carespot.settings')
 django.setup()
 
 schedules = tblDoctorSchedule.objects.filter(doctorID=1).order_by('day_of_week')

@@ -11,8 +11,8 @@
 
     <!-- CSS
 ================================================== -->
-    <!-- carespot theme -->
-    <link href="{% static 'css/carespot-theme.css' %}" rel="stylesheet">
+    <!-- DocSpot theme -->
+    <link href="{% static 'css/docspot-theme.css' %}" rel="stylesheet">
     {% block css %}{% endblock %}
 
     <!-- Bootstrap 5 CSS for responsive layout and components -->
@@ -245,7 +245,7 @@
             <div class="container-fluid px-4">
                 <!-- Website Logo / Hospital Name -->
                 <a class="navbar-brand d-flex align-items-center me-0 me-sm-2" href="{% url 'doctorDashboard' %}">
-                    <img src="/media/images/careSpotText.png" alt="" class="align center height-58" width="100" style="max-width: 90px; sm:max-width: 110px;">
+                    <img src="/media/images/docSpotText.png" alt="" class="align center height-58" width="100" style="max-width: 90px; sm:max-width: 110px;">
                 </a>
 
                 <!-- Navigation items that stay visible on the right -->
@@ -408,7 +408,7 @@
     ================================================== -->
                 {% block footer %}
                 <footer class="dashboard-footer d-flex justify-content-between align-items-center flex-wrap pt-3 mt-5">
-                    <p class="mb-0 small">&copy; 2026 <strong>CareSpot</strong>. All Rights Reserved. &nbsp; | &nbsp; <a href="{% url 'supportPage' %}" class="text-muted fw-bold text-decoration-none">Support</a></p>
+                    <p class="mb-0 small">&copy; 2026 <strong>DocSpot</strong>. All Rights Reserved. &nbsp; | &nbsp; <a href="{% url 'supportPage' %}" class="text-muted fw-bold text-decoration-none">Support</a></p>
                     <ul class="list-inline mb-0 small">
                         <li class="list-inline-item"><a href="#" class="text-decoration-none text-muted"><i
                                     class="fa-brands fa-facebook"></i></a></li>
